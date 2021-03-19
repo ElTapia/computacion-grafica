@@ -12,20 +12,15 @@
          fill="transparent"
          stroke-width="4"/>
 
-
-
-<path d="M 85 20
-         L 70 60
-         M 85 20
-         L 100 60
-         M 75 45
-         h 20
+<path d="M 65 45
+         h 40 
+         M 70 60
+         Q 84 -30, 100 60
          "
          fill="none"
          stroke="black"
          stroke-width="4"/>
 
-         
 <path d="M 55 70
          h -30
          M 40 70
