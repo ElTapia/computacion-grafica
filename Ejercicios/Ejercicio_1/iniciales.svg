@@ -16,7 +16,7 @@
          C 55 0, 5 30, 45 35
          S 35 75, 30 50" 
          stroke="black" 
-         fill="none"
+         fill="rgba(216,27,27,0.678)"
          stroke-width="5"/>
 
 <path d="M 65 45
@@ -24,7 +24,7 @@
          M 70 60
          Q 84 -30, 100 60
          "
-         fill="none"
+         fill="rgba(81,57,218,0.363)"
          stroke="black"
          stroke-width="5"/>
 
@@ -35,7 +35,7 @@
          v 30
          S 46 111, 53 102
          "
-         fill="none"
+         fill="rgba(236,233,34,0.664)"
          stroke="black"
          stroke-width="5"/>
 
@@ -44,10 +44,8 @@
          M 85 98
          C 92 35, 98 75, 102 105
          "
-         fill="none"
+         fill="rgba(217,16,224,0.452)"
          stroke="black"
          stroke-width="5"/>
-
-
 
 </svg>
