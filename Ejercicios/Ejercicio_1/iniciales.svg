@@ -3,7 +3,8 @@
 
 <defs>
         <radialGradient id="RadialGradient1">
-        <stop offset="0%" stop-color="rgba(54,231,187,0.993)"/>
+        <stop offset="0%" stop-color="rgba(255,251,0,0.993)"/>
+        <stop offset="50%" stop-color="rgba(62,224,184,0.993)"/>
         <stop offset="100%" stop-color="#3638ad"/>
     </radialGradient>
 </defs>
@@ -12,6 +13,21 @@
         stroke="none"
         fill="url(#RadialGradient1)"
         transform="scale(2)"/>
+
+<polygon points="270 5 
+                330 180
+                490 150
+                370 300
+                420 430
+                270 340
+                120 430
+                170 300
+                50 150
+                210 180"
+      stroke="rgba(238,255,0,0.527)"
+      fill="none"
+      stroke-width="3"
+      transform="scale(1)"/>
 
 <path d="M 110 40 
          C 110 0, 10 60, 90 70
