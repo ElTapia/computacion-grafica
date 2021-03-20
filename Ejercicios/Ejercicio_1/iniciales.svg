@@ -3,13 +3,13 @@
 
 <defs>
         <radialGradient id="RadialGradient1">
-        <stop offset="0%" stop-color="rgba(139,207,75,0.993)"/>
-        <stop offset="100%" stop-color="#1e9b7e"/>
+        <stop offset="0%" stop-color="rgba(7,55,110,0.993)"/>
+        <stop offset="100%" stop-color="#29dda1"/>
     </radialGradient>
 </defs>
 
-<circle cx="65" cy="59" r="58"
-        stroke="rgba(15,22,116,0.918)"
+<circle cx="67" cy="61" r="60"
+        stroke="rgba(36,43,146,0.918)"
         fill="url(#RadialGradient1)"/>
 
 <path d="M 55 20 
@@ -47,8 +47,17 @@
          v 30
          "
          fill="none"
-         stroke="black"
+         stroke="none"
          stroke-width="4"/>
+
+<path d="M 85 98
+         C 75 35, 72 75, 67 105
+         M 85 98
+         C 92 35, 98 75, 102 105
+         "
+         fill="none"
+         stroke="black"
+         stroke-width="5"/>
 
 
 
