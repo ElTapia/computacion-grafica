@@ -1,5 +1,5 @@
 <?xml version="1.0" standalone="no"?>
-<svg width="3000" height="3000" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<svg width="1000" height="1000" version="1.1" xmlns="http://www.w3.org/2000/svg">
 
 <defs>
         <radialGradient id="RadialGradient1">
@@ -8,44 +8,49 @@
     </radialGradient>
 </defs>
 
-<circle cx="1350" cy="1220" r="1200"
+<circle cx="135" cy="122" r="120"
         stroke="none"
-        fill="url(#RadialGradient1)"/>
+        fill="url(#RadialGradient1)"
+        transform="scale(2)"/>
 
-<path d="M 1100 400 
-         C 1100 0, 100 600, 900 700
-         S 700 1500, 600 1000" 
+<path d="M 110 40 
+         C 110 0, 10 60, 90 70
+         S 70 150, 60 100" 
          stroke="black" 
-         fill="rgba(216,27,27,0.678)"
-         stroke-width="80"/>
+         fill="rgba(255,0,0,0.712)"
+         stroke-width="8"
+         transform="scale(2)"/>
 
-<path d="M 1300 900
-         h 800 
-         M 1400 1200
-         Q 1680 -600, 2000 1200
+<path d="M 130 90
+         h 80 
+         M 140 120
+         Q 168 -60, 200 120
          "
          fill="rgba(81,57,218,0.363)"
          stroke="black"
-         stroke-width="80"/>
+         stroke-width="8"
+         transform="scale(2)"/>
 
-<path d="M 500 1460
-         C 600 1260, 660 1260, 860 1460
-         S 1300 1460, 1200 1260
-         M 880 1480
-         v 600
-         S 920 2220, 1060 2040
+<path d="M 50 146
+         C 60 126, 66 126, 86 146 
+         S 130 146, 120 126
+         M 88 148
+         v 60
+         S 92 222, 106 204
          "
          fill="rgba(236,233,34,0.664)"
          stroke="black"
-         stroke-width="80"/>
+         stroke-width="8"
+         transform="scale(2)"/>
 
-<path d="M 1700 1960
-         C 1500 700, 1440 1500, 1340 2100
-         M 1700 1960
-         C 1840 700, 1960 1500, 2040 2100
+<path d="M 170 196
+         C 150 70, 144 150, 134 210
+         M 170 196
+         C 184 70, 196 150, 204 210
          "
          fill="rgba(217,16,224,0.452)"
          stroke="black"
-         stroke-width="80"/>
+         stroke-width="8"
+         transform="scale(2)"/>
 
 </svg>
