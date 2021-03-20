@@ -1,16 +1,23 @@
 <?xml version="1.0" standalone="no"?>
 <svg width="130" height="140" version="1.1" xmlns="http://www.w3.org/2000/svg">
 
+<defs>
+        <radialGradient id="RadialGradient1">
+        <stop offset="0%" stop-color="rgba(139,207,75,0.993)"/>
+        <stop offset="100%" stop-color="rgba(30,155,126,0.808)"/>
+    </radialGradient>
+</defs>
+
 <circle cx="65" cy="59" r="58"
         stroke="rgba(15,22,116,0.918)"
-        fill="rgba(30,155,126,0.808)"/>
+        fill="url(#RadialGradient1)"/>
 
 <path d="M 55 20 
          C 55 0, 5 30, 45 35
          S 35 75, 30 50" 
          stroke="black" 
-         fill="transparent"
-         stroke-width="4"/>
+         fill="none"
+         stroke-width="5"/>
 
 <path d="M 65 45
          h 40 
@@ -19,7 +26,7 @@
          "
          fill="none"
          stroke="black"
-         stroke-width="4"/>
+         stroke-width="5"/>
 
 <path d="M 55 70
          h -30
@@ -28,7 +35,7 @@
          "
          fill="none"
          stroke="black"
-         stroke-width="4"/>
+         stroke-width="5"/>
 
 <path d="M 85 85
          L 70 70
