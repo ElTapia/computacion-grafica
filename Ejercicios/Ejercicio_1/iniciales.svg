@@ -39,17 +39,6 @@
          stroke="black"
          stroke-width="5"/>
 
-<path d="M 85 85
-         L 70 70
-         v 30
-         M 84 85
-         L 100 70
-         v 30
-         "
-         fill="none"
-         stroke="none"
-         stroke-width="4"/>
-
 <path d="M 85 98
          C 75 35, 72 75, 67 105
          M 85 98
