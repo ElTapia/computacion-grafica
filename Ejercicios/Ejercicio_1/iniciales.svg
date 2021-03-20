@@ -1,10 +1,10 @@
 <?xml version="1.0" standalone="no"?>
-<svg width="130" height="140" version="1.1" xmlns="http://www.w3.org/2000/svg">
+<svg width="150" height="150" version="1.1" xmlns="http://www.w3.org/2000/svg">
 
 <defs>
         <radialGradient id="RadialGradient1">
         <stop offset="0%" stop-color="rgba(139,207,75,0.993)"/>
-        <stop offset="100%" stop-color="rgba(30,155,126,0.808)"/>
+        <stop offset="100%" stop-color="#1e9b7e"/>
     </radialGradient>
 </defs>
 
@@ -32,6 +32,17 @@
          h -30
          M 40 70
          v 30
+         "
+         fill="none"
+         stroke="none"
+         stroke-width="5"/>
+
+<path d="M 25 73
+         C 30 63, 33 63, 43 73 
+         S 65 73, 60 63
+         M 44 74
+         v 30
+         S 46 111, 53 102
          "
          fill="none"
          stroke="black"
