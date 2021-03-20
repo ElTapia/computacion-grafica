@@ -3,8 +3,8 @@
 
 <defs>
         <radialGradient id="RadialGradient1">
-        <stop offset="0%" stop-color="rgba(7,55,110,0.993)"/>
-        <stop offset="100%" stop-color="#29dda1"/>
+        <stop offset="0%" stop-color="rgba(54,231,187,0.993)"/>
+        <stop offset="100%" stop-color="#3638ad"/>
     </radialGradient>
 </defs>
 
