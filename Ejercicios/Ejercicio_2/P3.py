@@ -186,7 +186,7 @@ if __name__ == "__main__":
     glUseProgram(pipeline.shaderProgram)
 
     # Creating shapes on GPU memory
-    shapeTriangle = createTriangle()
+    shapeTriangle = createQuads()
     gpuTriangle = GPUShape().initBuffers()
     pipeline.setupVAO(gpuTriangle)
     gpuTriangle.fillBuffers(shapeTriangle.vertices, shapeTriangle.indices, GL_STATIC_DRAW)

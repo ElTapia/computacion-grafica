@@ -64,7 +64,7 @@ class SimpleShaderProgram:
             out vec4 outColor;
             void main()
             {   
-                outColor = vec4(newColor.r*1.5f, newColor.g*0.3f, newColor.b*0.3f, 1.0f);
+                outColor = vec4(newColor.r*0.5f, newColor.g*0.5f, newColor.b*1.5f, 1.0f);
             }
             """
 
@@ -112,13 +112,15 @@ def createTriangle():
     # Defining the location and colors of each vertex  of the shape
     vertices = [
     #   positions        colors
-        -0.5, -0.5, 0.0,  1.0, 1.0, 0.0,
-         0.5, -0.5, 0.0,  1.0, 1.0, 0.0,
-         0.0,  0.5, 0.0,  1.0, 1.0, 0.7 ]
+        -0.5, -0.5, 0.0,  1.0, 1.0, 1.0,
+         0.5, -0.5, 0.0,  0.0, 1.0, 1.0,
+         0.0,  0.5, 0.0,  0.0, 0.0, 1.0,
+         -1.0, 0.5, 0.0,  0.8, 1.0, 1.0]
 
     # Defining connections among vertices
     # We have a triangle every 3 indices specified
-    indices = [0, 1, 2]
+    indices = [0, 1, 2,
+               2, 3, 0]
 
     return Shape(vertices, indices)
 

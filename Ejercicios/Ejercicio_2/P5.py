@@ -47,6 +47,7 @@ class Shape:
         self.vertices = vertices
         self.indices = indices
 
+# * Shader original
 class SimpleShaderProgram:
 
     def __init__(self):
@@ -111,6 +112,7 @@ class SimpleShaderProgram:
         # Unbind the current VAO
         glBindVertexArray(0)
 
+# * Shader solo verde
 class GreenShaderProgram:
 
     def __init__(self):
@@ -181,6 +183,7 @@ class GreenShaderProgram:
         # Unbind the current VAO
         glBindVertexArray(0)
 
+# * Shader atardecer
 class SunsetShaderProgram:
 
     def __init__(self):
@@ -246,6 +249,7 @@ class SunsetShaderProgram:
         # Unbind the current VAO
         glBindVertexArray(0)
 
+# * Cielo
 def create_sky(y0, y1):
 
     # Defining the location and colors of each vertex  of the shape
@@ -263,6 +267,7 @@ def create_sky(y0, y1):
 
     return Shape(vertices, indices)
 
+# * oceano
 def create_ocean(y0, y1):
 
     # Defining the location and colors of each vertex  of the shape
@@ -280,6 +285,7 @@ def create_ocean(y0, y1):
 
     return Shape(vertices, indices)
 
+# * Isla
 def create_island(x0, y0, width, height):
 
     # Defining the location and colors of each vertex  of the shape
@@ -305,6 +311,7 @@ def create_island(x0, y0, width, height):
 
     return Shape(vertices, indices)
 
+# * Volcan
 def create_volcano(x0, y0, width, height):
 
     # Defining the location and colors of each vertex  of the shape
@@ -356,12 +363,12 @@ if __name__ == "__main__":
     VAO = glGenVertexArrays(1)
     glBindVertexArray(VAO)
 
-    # Creating our shader program and telling OpenGL to use it
+    # * Creating our shader program and telling OpenGL to use it
     simplePipeline = SimpleShaderProgram()
     greenPipeline = GreenShaderProgram()
     sunsetPipeline = SunsetShaderProgram()
 
-    # Creating shapes on GPU memory
+    # * Creating shapes on GPU memory
     sky_shape = create_sky(y0=-0.2, y1=1.0)
     gpu_sky = GPUShape().initBuffers()
     simplePipeline.setupVAO(gpu_sky)
@@ -390,7 +397,7 @@ if __name__ == "__main__":
     sunsetPipeline.setupVAO(gpu_volcano)
     gpu_volcano.fillBuffers(volcano_shape.vertices, volcano_shape.indices, GL_STATIC_DRAW)
 
-
+# * Recordar cambiar figuras
     while not glfw.window_should_close(window):
         # Using GLFW to check for input events
         glfw.poll_events()
