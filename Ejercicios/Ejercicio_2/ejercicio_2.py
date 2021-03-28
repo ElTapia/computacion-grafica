@@ -322,11 +322,11 @@ def create_ovni(x0, y0, width, height):
          x0 + width/2,  y0 - height *0.4, 0.0,  0.66, 0.66, 0.66,
          x0 + width, y0,                  0.0,  0.66, 0.66, 0.66,
 
-         # capsula
-         x0 + 0.1,      y0 - 0.05,       0.0,  1, 0.0, 0.0,
-         x0 + width/2,  y0 + height*0.3, 0.0,  1, 0.0, 0.0,
-         x0 + width/5, y0 + height *0.1,  0.0,  1, 0.0, 0.0,
-         x0 + width/3,  y0 - 0.05,            0.0,  1, 0.0, 0.0,]
+         # capsula                                       colors
+         x0 + width/4,      y0 - height/10,     0.0,   0.77, 0.77, 0.77,
+         x0 + width*0.65 ,  y0 + height * 0.5,  0.0,   0.55, 0.55, 0.55,
+         x0 + width/3.3, y0 + height * 0.5,     0.0,   0.55, 0.55, 0.55,
+         x0 + width*0.7,  y0 - height/10,       0.0,   0.77, 0.77, 0.77,]
 
     # Defining connections among vertices
     # We have a triangle every 3 indices specified
@@ -338,24 +338,29 @@ def create_ovni(x0, y0, width, height):
 
     return Shape(vertices, indices)
 
-# * Volcan
-def create_volcano(x0, y0, width, height):
+
+# * Montaña
+def create_mountain(x0, y0, width, height):
 
     # Defining the location and colors of each vertex  of the shape
     vertices = [
     #   positions        colors
-         x0, y0, 0.0,  0.3, 0.15, 0.1,
-         x0 + width*0.8, y0, 0.0,  0.3, 0.15, 0.1,
-         x0 + width*0.4, y0 + height, 0.0,  0.6, 0.31, 0.17,
+         x0, y0, 0.0,                       0.3, 0.15, 0.1,
+         x0 + width, y0, 0.0,           0.3, 0.15, 0.1,
+         x0 + width*0.5, y0 + height*1.25, 0.0,  0.6, 0.31, 0.17,
 
-         x0 + width*0.2, y0, 0.0,  0.3, 0.15, 0.1,
-         x0 + width, y0, 0.0,  0.3, 0.15, 0.1,
-         x0 + width*0.6, y0 + height, 0.0, 0.6, 0.31, 0.17]
+         x0 + width*0.4, y0 + height, 0.0,      1.0, 1.0, 1.0,
+         x0 + width*0.6, y0 + height, 0.0,      1.0, 1.0, 1.0,
+         x0 + width*0.4, y0 + height*0.8, 0.0,  1.0, 1.0, 1.0,
+         x0 + width*0.6, y0 + height*0.8, 0.0,  1.0, 1.0, 1.0,
+         x0 + width*0.5, y0 + height*1.25, 0.0,  1.0, 1.0, 1.0,]
 
     # Defining connections among vertices
     # We have a triangle every 3 indices specified
     indices = [0, 1, 2,
-                3, 4, 5]
+                3, 4, 5,
+                3, 4, 6,
+                3, 4, 7]
 
     return Shape(vertices, indices)
 
@@ -424,12 +429,12 @@ if __name__ == "__main__":
     sunsetPipeline.setupVAO(gpu_ovni)
     gpu_ovni.fillBuffers(ovni_shape.vertices, ovni_shape.indices, GL_STATIC_DRAW)
 
-    volcano_shape = create_volcano(x0=-0.3, y0=-0.22, width=0.6, height=0.4)
-    gpu_volcano = GPUShape().initBuffers()
-    simplePipeline.setupVAO(gpu_volcano)
-    greenPipeline.setupVAO(gpu_volcano)
-    sunsetPipeline.setupVAO(gpu_volcano)
-    gpu_volcano.fillBuffers(volcano_shape.vertices, volcano_shape.indices, GL_STATIC_DRAW)
+    mountain_shape = create_mountain(x0=-0.5, y0=0.0, width=1, height=0.8)
+    gpu_mountain = GPUShape().initBuffers()
+    simplePipeline.setupVAO(gpu_mountain)
+    greenPipeline.setupVAO(gpu_mountain)
+    sunsetPipeline.setupVAO(gpu_mountain)
+    gpu_mountain.fillBuffers(mountain_shape.vertices, mountain_shape.indices, GL_STATIC_DRAW)
 
 # * Recordar cambiar figuras
     while not glfw.window_should_close(window):
@@ -451,21 +456,21 @@ if __name__ == "__main__":
             greenPipeline.drawCall(gpu_ground)
             greenPipeline.drawCall(gpu_grass)
             greenPipeline.drawCall(gpu_ovni)
-            greenPipeline.drawCall(gpu_volcano)
+            greenPipeline.drawCall(gpu_mountain)
         elif (controller.effect2):
             glUseProgram(sunsetPipeline.shaderProgram)
             sunsetPipeline.drawCall(gpu_sky)
             sunsetPipeline.drawCall(gpu_ground)
             sunsetPipeline.drawCall(gpu_grass)
             sunsetPipeline.drawCall(gpu_ovni)
-            sunsetPipeline.drawCall(gpu_volcano)
+            sunsetPipeline.drawCall(gpu_mountain)
         else:
             glUseProgram(simplePipeline.shaderProgram)
             simplePipeline.drawCall(gpu_sky)
             simplePipeline.drawCall(gpu_ground)
             simplePipeline.drawCall(gpu_grass)
             simplePipeline.drawCall(gpu_ovni)
-            simplePipeline.drawCall(gpu_volcano)
+            simplePipeline.drawCall(gpu_mountain)
 
         # Once the render is done, buffers are swapped, showing only the complete scene.
         glfw.swap_buffers(window)
@@ -475,6 +480,6 @@ if __name__ == "__main__":
     gpu_ground.clear()
     gpu_grass.clear()
     gpu_ovni.clear()
-    gpu_volcano.clear()
+    gpu_mountain.clear()
 
     glfw.terminate()
