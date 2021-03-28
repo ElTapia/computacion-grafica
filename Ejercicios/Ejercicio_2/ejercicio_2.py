@@ -48,6 +48,7 @@ class Shape:
         self.indices = indices
 
 # * Shader original
+
 class SimpleShaderProgram:
 
     def __init__(self):
@@ -267,16 +268,16 @@ def create_sky(y0, y1):
 
     return Shape(vertices, indices)
 
-# * oceano
-def create_ocean(y0, y1):
+# * ground
+def create_ground(y0, y1):
 
     # Defining the location and colors of each vertex  of the shape
     vertices = [
     #   positions        colors
-        -1.0, y0, 0.0,  0.0, 0.0, 0.5,
-         1.0, y0, 0.0,  0.0, 0.0, 0.5,
-         1.0, y1, 0.0,  0.2, 0.4, 1.0,
-        -1.0, y1, 0.0,  0.2, 0.4, 1.0]
+        -1.0, y0, 0.0,  0.54, 0.55, 0.55,
+         1.0, y0, 0.0,  0.54, 0.55, 0.55,
+         1.0, y1, 0.0,  0.23, 0.23, 0.23,
+        -1.0, y1, 0.0,  0.23, 0.23, 0.23]
 
     # Defining connections among vertices
     # We have a triangle every 3 indices specified
@@ -285,8 +286,26 @@ def create_ocean(y0, y1):
 
     return Shape(vertices, indices)
 
-# * Isla
-def create_island(x0, y0, width, height):
+# * grass
+def create_grass(y0, y1):
+
+    # Defining the location and colors of each vertex  of the shape
+    vertices = [
+    #   positions        colors
+        -1.0, y0, 0.0,  0.0, 0.66, 0.22,
+         1.0, y0, 0.0,  0.0, 0.66, 0.22,
+         1.0, y1, 0.0,  0.0, 0.76, 0.11,
+        -1.0, y1, 0.0,  0.00, 0.76, 0.11]
+
+    # Defining connections among vertices
+    # We have a triangle every 3 indices specified
+    indices = [0, 1, 2,
+                2, 3, 0]
+
+    return Shape(vertices, indices)
+
+# * Ovni
+def create_ovni(x0, y0, width, height):
 
     # Defining the location and colors of each vertex  of the shape
     vertices = [
@@ -376,19 +395,26 @@ if __name__ == "__main__":
     sunsetPipeline.setupVAO(gpu_sky)
     gpu_sky.fillBuffers(sky_shape.vertices, sky_shape.indices, GL_STATIC_DRAW)
 
-    ocean_shape = create_ocean(y0=-1.0, y1=-0.2)
-    gpu_ocean = GPUShape().initBuffers()
-    simplePipeline.setupVAO(gpu_ocean)
-    greenPipeline.setupVAO(gpu_ocean)
-    sunsetPipeline.setupVAO(gpu_ocean)
-    gpu_ocean.fillBuffers(ocean_shape.vertices, ocean_shape.indices, GL_STATIC_DRAW)
+    ground_shape = create_ground(y0=-1.0, y1=-0.3)
+    gpu_ground = GPUShape().initBuffers()
+    simplePipeline.setupVAO(gpu_ground)
+    greenPipeline.setupVAO(gpu_ground)
+    sunsetPipeline.setupVAO(gpu_ground)
+    gpu_ground.fillBuffers(ground_shape.vertices, ground_shape.indices, GL_STATIC_DRAW)
 
-    island_shape = create_island(x0=-0.8, y0=-0.2, width=1.6, height=0.4)
-    gpu_island = GPUShape().initBuffers()
-    simplePipeline.setupVAO(gpu_island)
-    greenPipeline.setupVAO(gpu_island)
-    sunsetPipeline.setupVAO(gpu_island)
-    gpu_island.fillBuffers(island_shape.vertices, island_shape.indices, GL_STATIC_DRAW)
+    grass_shape = create_grass(y0=-0.3, y1=0.0)
+    gpu_grass = GPUShape().initBuffers()
+    simplePipeline.setupVAO(gpu_grass)
+    greenPipeline.setupVAO(gpu_grass)
+    sunsetPipeline.setupVAO(gpu_grass)
+    gpu_grass.fillBuffers(grass_shape.vertices, grass_shape.indices, GL_STATIC_DRAW)
+
+    ovni_shape = create_ovni(x0=-0.8, y0=0.8, width=0.2, height=0.05)
+    gpu_ovni = GPUShape().initBuffers()
+    simplePipeline.setupVAO(gpu_ovni)
+    greenPipeline.setupVAO(gpu_ovni)
+    sunsetPipeline.setupVAO(gpu_ovni)
+    gpu_ovni.fillBuffers(ovni_shape.vertices, ovni_shape.indices, GL_STATIC_DRAW)
 
     volcano_shape = create_volcano(x0=-0.3, y0=-0.22, width=0.6, height=0.4)
     gpu_volcano = GPUShape().initBuffers()
@@ -414,20 +440,23 @@ if __name__ == "__main__":
         if (controller.effect1):
             glUseProgram(greenPipeline.shaderProgram)
             greenPipeline.drawCall(gpu_sky)
-            greenPipeline.drawCall(gpu_ocean)
-            greenPipeline.drawCall(gpu_island)
+            greenPipeline.drawCall(gpu_ground)
+            greenPipeline.drawCall(gpu_grass)
+            greenPipeline.drawCall(gpu_ovni)
             greenPipeline.drawCall(gpu_volcano)
         elif (controller.effect2):
             glUseProgram(sunsetPipeline.shaderProgram)
             sunsetPipeline.drawCall(gpu_sky)
-            sunsetPipeline.drawCall(gpu_ocean)
-            sunsetPipeline.drawCall(gpu_island)
+            sunsetPipeline.drawCall(gpu_ground)
+            sunsetPipeline.drawCall(gpu_grass)
+            sunsetPipeline.drawCall(gpu_ovni)
             sunsetPipeline.drawCall(gpu_volcano)
         else:
             glUseProgram(simplePipeline.shaderProgram)
             simplePipeline.drawCall(gpu_sky)
-            simplePipeline.drawCall(gpu_ocean)
-            simplePipeline.drawCall(gpu_island)
+            simplePipeline.drawCall(gpu_ground)
+            simplePipeline.drawCall(gpu_grass)
+            simplePipeline.drawCall(gpu_ovni)
             simplePipeline.drawCall(gpu_volcano)
 
         # Once the render is done, buffers are swapped, showing only the complete scene.
@@ -435,8 +464,9 @@ if __name__ == "__main__":
 
     # freeing GPU memory
     gpu_sky.clear()
-    gpu_ocean.clear()
-    gpu_island.clear()
+    gpu_ground.clear()
+    gpu_grass.clear()
+    gpu_ovni.clear()
     gpu_volcano.clear()
 
     glfw.terminate()
