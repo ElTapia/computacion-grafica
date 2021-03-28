@@ -309,24 +309,32 @@ def create_ovni(x0, y0, width, height):
 
     # Defining the location and colors of each vertex  of the shape
     vertices = [
-    #   positions                           colors
-         x0,         y0,               0.0,  0.63, 0.25, 0.0,
-         x0 + width/2,  y0 - height,      0.0,  0.63, 0.25, 0.0,
-         x0 + width/2,  y0 - height *0.4, 0.0,  0.63, 0.25, 0.0,
+    #   positions                                    colors
+         x0,         y0,                  0.0,  0.66, 0.66, 0.66,
+         x0 + width/2,  y0 - height,      0.0,  0.66, 0.66, 0.66,
+         x0 + width/2,  y0 - height *0.4, 0.0,  0.77, 0.77, 0.77,
 
-         x0 + width/2,  y0 - height,      0.0,  0.9, 0.49, 0.13,
-         x0 + width, y0,               0.0,  0.9, 0.49, 0.13,
-         x0 + width/2,  y0 - height *0.4, 0.0,  0.9, 0.49, 0.13,
+         x0 + width/2,  y0 - height,      0.0,  0.99, 0.99, 0.99,
+         x0 + width, y0,                  0.0,  0.99, 0.99, 0.99,
+         x0 + width/2,  y0 - height *0.4, 0.0,  0.79, 0.79, 0.79,
 
-         x0,         y0,               0.0,  0.0, 0.7, 0.0,
-         x0 + width/2,  y0 - height *0.4, 0.0,  0.1, 1.0, 0.0,
-         x0 + width, y0,               0.0,  0.0, 0.7, 0.0]
+         x0,         y0,                  0.0,  0.77, 0.77, 0.77,
+         x0 + width/2,  y0 - height *0.4, 0.0,  0.66, 0.66, 0.66,
+         x0 + width, y0,                  0.0,  0.66, 0.66, 0.66,
+
+         # capsula
+         x0 + 0.1,      y0 - 0.05,       0.0,  1, 0.0, 0.0,
+         x0 + width/2,  y0 + height*0.3, 0.0,  1, 0.0, 0.0,
+         x0 + width/5, y0 + height *0.1,  0.0,  1, 0.0, 0.0,
+         x0 + width/3,  y0 - 0.05,            0.0,  1, 0.0, 0.0,]
 
     # Defining connections among vertices
     # We have a triangle every 3 indices specified
     indices =  [0, 1, 2,
                 3, 4, 5,
-                6, 7, 8]
+                6, 7, 8,
+                9, 10, 11,
+                9, 10, 12]
 
     return Shape(vertices, indices)
 
@@ -409,7 +417,7 @@ if __name__ == "__main__":
     sunsetPipeline.setupVAO(gpu_grass)
     gpu_grass.fillBuffers(grass_shape.vertices, grass_shape.indices, GL_STATIC_DRAW)
 
-    ovni_shape = create_ovni(x0=-0.8, y0=0.8, width=0.2, height=0.05)
+    ovni_shape = create_ovni(x0=-0.8, y0=0.8, width=0.1, height=0.05)
     gpu_ovni = GPUShape().initBuffers()
     simplePipeline.setupVAO(gpu_ovni)
     greenPipeline.setupVAO(gpu_ovni)
