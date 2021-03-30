@@ -383,20 +383,49 @@ def create_building(x0, y0, y1, width=0.4):
     return Shape(vertices, indices)
 
 # * carretera
-def create_street(y0, height):
+def create_street(x0, y0, height):
 
     # Defining the location and colors of each vertex  of the shape
     vertices = [
     #   positions        colors
-        -1.0, y0, 0.0,        0.23, 0.23, 0.23,
-         1.0, y0, 0.0,        0.23, 0.23, 0.23,
-         1.0, y0+height, 0.0, 0.1, 0.1, 0.1,
-        -1.0, y0+height, 0.0, 0.1, 0.1, 0.1]
+        x0, y0, 0.0,        0.23, 0.23, 0.23,
+         -x0, y0, 0.0,        0.23, 0.23, 0.23,
+         -x0, y0*height, 0.0, 0.1, 0.1, 0.1,
+        x0, y0*height, 0.0, 0.1, 0.1, 0.1,
+
+    # Lineas divisorias calle        colors
+        x0+0.1, y0+0.3, 0.0,        1, 1, 1,
+        x0+0.4, y0+0.3, 0.0,        1, 1, 1,
+        x0+0.4, y0*1.7*height, 0.0,   1, 1, 1,
+        x0+0.1, y0*1.7*height, 0.0,   1, 1, 1,
+        
+        x0+0.6, y0+0.3, 0.0,        1, 1, 1,
+        x0+0.9, y0+0.3, 0.0,        1, 1, 1,
+        x0+0.9, y0*1.7*height, 0.0,   1, 1, 1,
+        x0+0.6, y0*1.7*height, 0.0,   1, 1, 1,
+        
+        x0+1.1, y0+0.3, 0.0,        1, 1, 1,
+        x0+1.4, y0+0.3, 0.0,        1, 1, 1,
+        x0+1.4, y0*1.7*height, 0.0,   1, 1, 1,
+        x0+1.1, y0*1.7*height, 0.0,   1, 1, 1,
+        
+        x0+1.6, y0+0.3, 0.0,        1, 1, 1,
+        x0+1.9, y0+0.3, 0.0,        1, 1, 1,
+        x0+1.9, y0*1.7*height, 0.0,   1, 1, 1,
+        x0+1.6, y0*1.7*height, 0.0,   1, 1, 1]
 
     # Defining connections among vertices
     # We have a triangle every 3 indices specified
     indices = [0, 1, 2,
-                2, 3, 0]
+                2, 3, 0,
+                4, 5, 6,
+                6, 7, 4,
+                8, 9, 10,
+                10, 11, 8,
+                12, 13, 14,
+                14, 15, 12,
+                16, 17, 18,
+                18, 19, 16]
 
     return Shape(vertices, indices)
 
@@ -452,7 +481,7 @@ if __name__ == "__main__":
     sunsetPipeline.setupVAO(gpu_ground)
     gpu_ground.fillBuffers(ground_shape.vertices, ground_shape.indices, GL_STATIC_DRAW)
 
-    street_shape = create_street(y0=-0.8, height=0.4)
+    street_shape = create_street(x0=-1.0, y0=-0.9, height=0.4)
     gpu_street = GPUShape().initBuffers()
     simplePipeline.setupVAO(gpu_street)
     greenPipeline.setupVAO(gpu_street)
