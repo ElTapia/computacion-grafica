@@ -382,6 +382,25 @@ def create_building(x0, y0, y1, width=0.4):
 
     return Shape(vertices, indices)
 
+# * carretera
+def create_street(y0, height):
+
+    # Defining the location and colors of each vertex  of the shape
+    vertices = [
+    #   positions        colors
+        -1.0, y0, 0.0,        0.23, 0.23, 0.23,
+         1.0, y0, 0.0,        0.23, 0.23, 0.23,
+         1.0, y0+height, 0.0, 0.1, 0.1, 0.1,
+        -1.0, y0+height, 0.0, 0.1, 0.1, 0.1]
+
+    # Defining connections among vertices
+    # We have a triangle every 3 indices specified
+    indices = [0, 1, 2,
+                2, 3, 0]
+
+    return Shape(vertices, indices)
+
+
 if __name__ == "__main__":
 
     # Initialize glfw
@@ -432,6 +451,13 @@ if __name__ == "__main__":
     greenPipeline.setupVAO(gpu_ground)
     sunsetPipeline.setupVAO(gpu_ground)
     gpu_ground.fillBuffers(ground_shape.vertices, ground_shape.indices, GL_STATIC_DRAW)
+
+    street_shape = create_street(y0=-0.8, height=0.4)
+    gpu_street = GPUShape().initBuffers()
+    simplePipeline.setupVAO(gpu_street)
+    greenPipeline.setupVAO(gpu_street)
+    sunsetPipeline.setupVAO(gpu_street)
+    gpu_street.fillBuffers(street_shape.vertices, street_shape.indices, GL_STATIC_DRAW)
 
     building_1_shape = create_building(x0=-0.8, y0=-0.3, y1=0.4)
     gpu_building_1 = GPUShape().initBuffers()
@@ -493,6 +519,7 @@ if __name__ == "__main__":
             glUseProgram(greenPipeline.shaderProgram)
             greenPipeline.drawCall(gpu_sky)
             greenPipeline.drawCall(gpu_ground)
+            greenPipeline.drawCall(gpu_street)
             greenPipeline.drawCall(gpu_grass)
             greenPipeline.drawCall(gpu_ovni)
             greenPipeline.drawCall(gpu_mountain)
@@ -503,6 +530,7 @@ if __name__ == "__main__":
             glUseProgram(sunsetPipeline.shaderProgram)
             sunsetPipeline.drawCall(gpu_sky)
             sunsetPipeline.drawCall(gpu_ground)
+            sunsetPipeline.drawCall(gpu_street)
             sunsetPipeline.drawCall(gpu_grass)
             sunsetPipeline.drawCall(gpu_ovni)
             sunsetPipeline.drawCall(gpu_mountain)
@@ -513,6 +541,7 @@ if __name__ == "__main__":
             glUseProgram(simplePipeline.shaderProgram)
             simplePipeline.drawCall(gpu_sky)
             simplePipeline.drawCall(gpu_ground)
+            simplePipeline.drawCall(gpu_street)
             simplePipeline.drawCall(gpu_grass)
             simplePipeline.drawCall(gpu_ovni)
             simplePipeline.drawCall(gpu_mountain)
@@ -532,5 +561,6 @@ if __name__ == "__main__":
     gpu_building_1.clear()
     gpu_building_2.clear()
     gpu_building_3.clear()
+    gpu_street.clear()
 
     glfw.terminate()
