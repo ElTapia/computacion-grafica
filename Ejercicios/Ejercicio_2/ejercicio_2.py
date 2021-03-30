@@ -364,6 +364,24 @@ def create_mountain(x0, y0, width, height):
 
     return Shape(vertices, indices)
 
+# * edificio
+def create_building(x0, y0, y1, width=0.4):
+
+    # Defining the location and colors of each vertex  of the shape
+    vertices = [
+    #   positions        colors
+        x0, y0,     0.0,  0.388, 0.388, 0.388,
+        x0+width, y0, 0.0,  0.388, 0.388, 0.388,
+        x0+width, y1, 0.0,  0.490, 0.490, 0.490,
+        x0, y1,     0.0,  0.490, 0.490, 0.490]
+
+    # Defining connections among vertices
+    # We have a triangle every 3 indices specified
+    indices = [0, 1, 2,
+                2, 3, 0]
+
+    return Shape(vertices, indices)
+
 if __name__ == "__main__":
 
     # Initialize glfw
@@ -378,7 +396,7 @@ if __name__ == "__main__":
     glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, GL_TRUE)
     glfw.window_hint(glfw.OPENGL_PROFILE,       glfw.OPENGL_CORE_PROFILE)
 
-    window = glfw.create_window(width, height, "P5: Efectos con shaders", None, None)
+    window = glfw.create_window(width, height, "Ejercicio: Escena de edificios con montaña de fondo", None, None)
 
     if not window:
         glfw.terminate()
@@ -414,6 +432,27 @@ if __name__ == "__main__":
     greenPipeline.setupVAO(gpu_ground)
     sunsetPipeline.setupVAO(gpu_ground)
     gpu_ground.fillBuffers(ground_shape.vertices, ground_shape.indices, GL_STATIC_DRAW)
+
+    building_1_shape = create_building(x0=-0.8, y0=-0.3, y1=0.4)
+    gpu_building_1 = GPUShape().initBuffers()
+    simplePipeline.setupVAO(gpu_building_1)
+    greenPipeline.setupVAO(gpu_building_1)
+    sunsetPipeline.setupVAO(gpu_building_1)
+    gpu_building_1.fillBuffers(building_1_shape.vertices, building_1_shape.indices, GL_STATIC_DRAW)
+
+    building_2_shape = create_building(x0=-0.2, y0=-0.3, y1=0.6, width=0.3)
+    gpu_building_2 = GPUShape().initBuffers()
+    simplePipeline.setupVAO(gpu_building_2)
+    greenPipeline.setupVAO(gpu_building_2)
+    sunsetPipeline.setupVAO(gpu_building_2)
+    gpu_building_2.fillBuffers(building_2_shape.vertices, building_2_shape.indices, GL_STATIC_DRAW)
+
+    building_3_shape = create_building(x0=0.4, y0=-0.3, y1=0.2)
+    gpu_building_3 = GPUShape().initBuffers()
+    simplePipeline.setupVAO(gpu_building_3)
+    greenPipeline.setupVAO(gpu_building_3)
+    sunsetPipeline.setupVAO(gpu_building_3)
+    gpu_building_3.fillBuffers(building_3_shape.vertices, building_3_shape.indices, GL_STATIC_DRAW)
 
     grass_shape = create_grass(y0=-0.3, y1=0.0)
     gpu_grass = GPUShape().initBuffers()
@@ -457,6 +496,9 @@ if __name__ == "__main__":
             greenPipeline.drawCall(gpu_grass)
             greenPipeline.drawCall(gpu_ovni)
             greenPipeline.drawCall(gpu_mountain)
+            greenPipeline.drawCall(gpu_building_1)
+            greenPipeline.drawCall(gpu_building_2)
+            greenPipeline.drawCall(gpu_building_3)
         elif (controller.effect2):
             glUseProgram(sunsetPipeline.shaderProgram)
             sunsetPipeline.drawCall(gpu_sky)
@@ -464,6 +506,9 @@ if __name__ == "__main__":
             sunsetPipeline.drawCall(gpu_grass)
             sunsetPipeline.drawCall(gpu_ovni)
             sunsetPipeline.drawCall(gpu_mountain)
+            sunsetPipeline.drawCall(gpu_building_1)
+            sunsetPipeline.drawCall(gpu_building_2)
+            sunsetPipeline.drawCall(gpu_building_3)
         else:
             glUseProgram(simplePipeline.shaderProgram)
             simplePipeline.drawCall(gpu_sky)
@@ -471,6 +516,9 @@ if __name__ == "__main__":
             simplePipeline.drawCall(gpu_grass)
             simplePipeline.drawCall(gpu_ovni)
             simplePipeline.drawCall(gpu_mountain)
+            simplePipeline.drawCall(gpu_building_1)
+            simplePipeline.drawCall(gpu_building_2)
+            simplePipeline.drawCall(gpu_building_3)
 
         # Once the render is done, buffers are swapped, showing only the complete scene.
         glfw.swap_buffers(window)
@@ -481,5 +529,8 @@ if __name__ == "__main__":
     gpu_grass.clear()
     gpu_ovni.clear()
     gpu_mountain.clear()
+    gpu_building_1.clear()
+    gpu_building_2.clear()
+    gpu_building_3.clear()
 
     glfw.terminate()
