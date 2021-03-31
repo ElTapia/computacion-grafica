@@ -213,7 +213,7 @@ class inverseShaderProgram:
             out vec3 newColor;
             void main()
             {
-                gl_Position = vec4(position, 1.0f);
+                gl_Position = vec4(position*-1, 1.0f);
                 newColor = vec3(1-color.r, 1-color.g, 1-color.b);
             }
             """
