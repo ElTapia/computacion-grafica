@@ -9,7 +9,7 @@ Mini instructivo:
 El shader de noche hace cambios en FragmentShader
 El shader invertido hace cambios en VertexShader
 
-La escena consta de 3 edificios, un volcan, un ovni y una carretera.
+La escena consta de 3 edificios, una montaña, un ovni y una carretera.
 """
 
 import glfw
