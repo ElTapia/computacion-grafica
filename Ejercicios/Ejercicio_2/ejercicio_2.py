@@ -1,6 +1,16 @@
-"""P5) [Efectos con Shaders] Realice un par de shaders, donde el primero solo dibuje los píxeles con un tono verde
- y el segundo represente un modo atardecer. Además agregue la funcionalidad de que se puedan alternar entre los shaders
-apretando teclas. Con [Q] activa el primer efecto, y con [W] activa el segundo ejemplo"""
+"""
+Sebastián Tapia
+Ejercicio 2
+
+Mini instructivo:
+- Con la tecla N se activa el shader de noche
+- Con la tecla I se activa el shader de colores invertidos
+
+El shader de noche hace cambios en FragmentShader
+El shader invertido hace cambios en VertexShader
+
+La escena consta de 3 edificios, un volcan, un ovni y una carretera.
+"""
 
 import glfw
 from OpenGL.GL import *
@@ -35,7 +45,7 @@ def on_key(window, key, scancode, action, mods):
     elif key == glfw.KEY_N:
         controller.effect1 = not controller.effect1
 
-    elif key == glfw.KEY_W:
+    elif key == glfw.KEY_I:
         controller.effect2 = not controller.effect2
 
     else:
@@ -189,7 +199,7 @@ class NolightShaderProgram:
         # Unbind the current VAO
         glBindVertexArray(0)
 
-# * Shader atardecer
+# * Shader colores invertidos
 class SunsetShaderProgram:
 
     def __init__(self):
@@ -204,7 +214,7 @@ class SunsetShaderProgram:
             void main()
             {
                 gl_Position = vec4(position, 1.0f);
-                newColor = color;
+                newColor = vec3(1-color.r, 1-color.g, 1-color.b);
             }
             """
 
@@ -214,9 +224,8 @@ class SunsetShaderProgram:
 
             out vec4 outColor;
             void main()
-            {   
-                vec3 finalColor = vec3((newColor.r + 0.4) , newColor.g + 0.2, newColor.b * 0.1 );
-                outColor = vec4(finalColor, 1.0f);
+            {
+                outColor = vec4(newColor, 1.0f);
             }
             """
 
