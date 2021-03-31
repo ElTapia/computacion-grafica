@@ -365,20 +365,63 @@ def create_mountain(x0, y0, width, height):
     return Shape(vertices, indices)
 
 # * edificio
-def create_building(x0, y0, y1, width=0.4):
+def create_building(x0, y0, height, width=0.4):
 
     # Defining the location and colors of each vertex  of the shape
     vertices = [
     #   positions        colors
         x0, y0,     0.0,  0.388, 0.388, 0.388,
         x0+width, y0, 0.0,  0.388, 0.388, 0.388,
-        x0+width, y1, 0.0,  0.490, 0.490, 0.490,
-        x0, y1,     0.0,  0.490, 0.490, 0.490]
+        x0+width, y0+height, 0.0,  0.490, 0.490, 0.490,
+        x0, y0+height,     0.0,  0.490, 0.490, 0.490,
+        
+        # ventanas        colors
+        x0+width*0.2, y0+height*0.3, 0.0,        1, 1, 0,
+        x0+width*0.4, y0+height*0.3, 0.0,        1, 1, 0,
+        x0+width*0.4, y0+height*0.4, 0.0,   1, 1, 0,
+        x0+width*0.2, y0+height*0.4, 0.0,   1, 1, 0,
+        
+        x0+width*0.6, y0+height*0.3, 0.0,        1, 1, 0,
+        x0+width*0.8, y0+height*0.3, 0.0,        1, 1, 0,
+        x0+width*0.8, y0+height*0.4, 0.0,   1, 1, 0,
+        x0+width*0.6, y0+height*0.4, 0.0,   1, 1, 0,
+
+        x0+width*0.6, y0+height*0.5, 0.0,        1, 1, 0,
+        x0+width*0.8, y0+height*0.5, 0.0,        1, 1, 0,
+        x0+width*0.8, y0+height*0.6, 0.0,   1, 1, 0,
+        x0+width*0.6, y0+height*0.6, 0.0,   1, 1, 0,
+
+        x0+width*0.2, y0+height*0.5, 0.0,        1, 1, 0,
+        x0+width*0.4, y0+height*0.5, 0.0,        1, 1, 0,
+        x0+width*0.4, y0+height*0.6, 0.0,   1, 1, 0,
+        x0+width*0.2, y0+height*0.6, 0.0,   1, 1, 0,
+
+        x0+width*0.2, y0+height*0.7, 0.0,        1, 1, 0,
+        x0+width*0.4, y0+height*0.7, 0.0,        1, 1, 0,
+        x0+width*0.4, y0+height*0.8, 0.0,   1, 1, 0,
+        x0+width*0.2, y0+height*0.8, 0.0,   1, 1, 0,
+
+        x0+width*0.6, y0+height*0.7, 0.0,        1, 1, 0,
+        x0+width*0.8, y0+height*0.7, 0.0,        1, 1, 0,
+        x0+width*0.8, y0+height*0.8, 0.0,   1, 1, 0,
+        x0+width*0.6, y0+height*0.8, 0.0,   1, 1, 0]
 
     # Defining connections among vertices
     # We have a triangle every 3 indices specified
     indices = [0, 1, 2,
-                2, 3, 0]
+                2, 3, 0,
+                4, 5, 6,
+                6, 7, 4,
+                8, 9, 10,
+                10, 11, 8,
+                12, 13, 14,
+                14, 15, 12,
+                16, 17, 18,
+                18, 19, 16,
+                20, 21, 22,
+                22, 23, 20,
+                24, 25, 26,
+                26, 27, 24]
 
     return Shape(vertices, indices)
 
@@ -488,21 +531,21 @@ if __name__ == "__main__":
     sunsetPipeline.setupVAO(gpu_street)
     gpu_street.fillBuffers(street_shape.vertices, street_shape.indices, GL_STATIC_DRAW)
 
-    building_1_shape = create_building(x0=-0.8, y0=-0.3, y1=0.4)
+    building_1_shape = create_building(x0=-0.8, y0=-0.3, height=0.7)
     gpu_building_1 = GPUShape().initBuffers()
     simplePipeline.setupVAO(gpu_building_1)
     greenPipeline.setupVAO(gpu_building_1)
     sunsetPipeline.setupVAO(gpu_building_1)
     gpu_building_1.fillBuffers(building_1_shape.vertices, building_1_shape.indices, GL_STATIC_DRAW)
 
-    building_2_shape = create_building(x0=-0.2, y0=-0.3, y1=0.6, width=0.3)
+    building_2_shape = create_building(x0=-0.2, y0=-0.3, height=1)
     gpu_building_2 = GPUShape().initBuffers()
     simplePipeline.setupVAO(gpu_building_2)
     greenPipeline.setupVAO(gpu_building_2)
     sunsetPipeline.setupVAO(gpu_building_2)
     gpu_building_2.fillBuffers(building_2_shape.vertices, building_2_shape.indices, GL_STATIC_DRAW)
 
-    building_3_shape = create_building(x0=0.4, y0=-0.3, y1=0.2)
+    building_3_shape = create_building(x0=0.4, y0=-0.3, height=0.5)
     gpu_building_3 = GPUShape().initBuffers()
     simplePipeline.setupVAO(gpu_building_3)
     greenPipeline.setupVAO(gpu_building_3)
