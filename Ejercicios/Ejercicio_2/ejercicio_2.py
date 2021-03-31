@@ -32,7 +32,7 @@ def on_key(window, key, scancode, action, mods):
     elif key == glfw.KEY_ESCAPE:
         glfw.set_window_should_close(window, True)
 
-    elif key == glfw.KEY_Q:
+    elif key == glfw.KEY_N:
         controller.effect1 = not controller.effect1
 
     elif key == glfw.KEY_W:
