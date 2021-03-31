@@ -142,7 +142,13 @@ class NolightShaderProgram:
                 vec3 finalColor = newColor;
                 if (newColor.g < newColor.b +0.2|| newColor.r < newColor.b +0.2)
                 {
-                    finalColor = vec3(newColor.r*0.15, newColor.g*0.15, newColor.b*0.3);
+                    finalColor = vec3(newColor.r*0.15, newColor.g*0.15, newColor.b*0.35);
+                }
+                if (newColor.b > 0.8|| newColor.g < 1.0|| newColor.r < 1.0)
+                {
+                    finalColor[0] = finalColor[0]*0.1;
+                    finalColor[1] = finalColor[1]*0.1;
+                    finalColor[2] = newColor.b*0.25;
                 }
                 outColor = vec4(finalColor, 1.0f);
             }
