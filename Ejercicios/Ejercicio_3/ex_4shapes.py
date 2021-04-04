@@ -84,21 +84,26 @@ if __name__ == "__main__":
     glClearColor(0.15, 0.15, 0.15, 1.0)
 
     # Creating shapes on GPU memory
-    shapeTriangle = bs.createRainbowTriangle()
-    gpuTriangle = es.GPUShape().initBuffers()
-    gpuTriangle.fillBuffers(shapeTriangle.vertices, shapeTriangle.indices, GL_STATIC_DRAW)
+    shapeTierra = bs.createPlanet(100, [0, 0, 1])
+    gpuTierra = es.GPUShape().initBuffers()
+    gpuTierra.fillBuffers(shapeTierra.vertices, shapeTierra.indices, GL_STATIC_DRAW)
 
-    shapeQuad = bs.createRainbowQuad()
-    gpuQuad = es.GPUShape().initBuffers()
-    gpuQuad.fillBuffers(shapeQuad.vertices, shapeQuad.indices, GL_STATIC_DRAW)
+    shapeSol = bs.createPlanet(100, [1, 1, 0])
+    gpuSol = es.GPUShape().initBuffers()
+    gpuSol.fillBuffers(shapeSol.vertices, shapeSol.indices, GL_STATIC_DRAW)
 
-    glBindVertexArray(gpuQuad.vao)
+    shapeLuna = bs.createPlanet(100, [0.5, 0.5, 0.5])
+    gpuLuna = es.GPUShape().initBuffers()
+    gpuLuna.fillBuffers(shapeLuna.vertices, shapeLuna.indices, GL_STATIC_DRAW)
+
+    glBindVertexArray(gpuSol.vao)
 
     # Creating our shader program and telling OpenGL to use it
     pipeline = es.SimpleTransformShaderProgram()
     glUseProgram(pipeline.shaderProgram)
-    pipeline.setupVAO(gpuTriangle)
-    pipeline.setupVAO(gpuQuad)
+    pipeline.setupVAO(gpuTierra)
+    pipeline.setupVAO(gpuSol)
+    pipeline.setupVAO(gpuLuna)
 
 
     while not glfw.window_should_close(window):
@@ -118,52 +123,52 @@ if __name__ == "__main__":
         theta = glfw.get_time()
 
         # Triangle
-        triangleTransform = tr.matmul([
+        tierraTransform = tr.matmul([
             tr.translate(0.5, 0.5, 0),
             tr.rotationZ(2 * theta),
             tr.uniformScale(0.5)
         ])
 
         # updating the transform attribute
-        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, triangleTransform)
-
+        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tierraTransform)
         # drawing function
-        pipeline.drawCall(gpuTriangle)
+        pipeline.drawCall(gpuTierra)
 
         # Another instance of the triangle
-        triangleTransform2 = tr.matmul([
+        tierraTransform2 = tr.matmul([
             tr.translate(-0.5, 0.5, 0),
             tr.scale(
                 0.5 + 0.2 * np.cos(1.5 * theta),
                 0.5 + 0.2 * np.sin(2 * theta),
                 0)
         ])
-        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, triangleTransform2)
-        pipeline.drawCall(gpuTriangle)
+        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tierraTransform2)
+        pipeline.drawCall(gpuTierra)
 
-        # Quad
-        quadTransform = tr.matmul([
+        # Sol
+        solTransform = tr.matmul([
             tr.translate(-0.5, -0.5, 0),
             tr.rotationZ(-theta),
             tr.uniformScale(0.7)
         ])
-        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, quadTransform)
-        pipeline.drawCall(gpuQuad)
+        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, solTransform)
+        pipeline.drawCall(gpuSol)
 
         # Another instance of the Quad
-        quadTransform2 = tr.matmul([
+        lunaTransform = tr.matmul([
             tr.translate(0.5, -0.5, 0),
             tr.shearing(0.3 * np.cos(theta), 0, 0, 0, 0, 0),
             tr.uniformScale(0.7)
         ])
-        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, quadTransform2)
-        pipeline.drawCall(gpuQuad)
+        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, lunaTransform)
+        pipeline.drawCall(gpuLuna)
 
         # Once the drawing is rendered, buffers are swap so an uncomplete drawing is never seen.
         glfw.swap_buffers(window)
 
     # freeing GPU memory
-    gpuTriangle.clear()
-    gpuQuad.clear()
+    gpuTierra.clear()
+    gpuSol.clear()
+    gpuLuna.clear()
     
     glfw.terminate()

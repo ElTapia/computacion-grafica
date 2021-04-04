@@ -169,6 +169,33 @@ def createRainbowCircle(N):
     return Shape(vertices, indices)
 
 
+def createPlanet(N, color):
+
+    # First vertex at the center
+    vertices = [0, 0, 0, color[0], color[1], color[2]]
+    indices = []
+
+    dtheta = 2 * math.pi / N
+
+    for i in range(N):
+        theta = i * dtheta
+
+        vertices += [
+            # vertex coordinates
+            0.5 * math.cos(theta), 0.5 * math.sin(theta), 0,
+
+            # color generates varying between 0 and 1
+                math.cos(theta)*0.1,       math.cos(theta)*0.1, math.cos(theta)*0.1]
+
+        # A triangle is created using the center, this and the next vertex
+        indices += [0, i, i+1]
+
+    # The final triangle connects back to the second vertex
+    indices += [0, N, 1]
+
+    return Shape(vertices, indices)
+
+
 def createRainbowCube():
 
     # Defining the location and colors of each vertex  of the shape
