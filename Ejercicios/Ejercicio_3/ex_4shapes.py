@@ -126,8 +126,8 @@ if __name__ == "__main__":
         # Triangle
         tierraTransform = tr.matmul([
             tr.translate(0, 0, 0),
-            tr.rotationZ(2 * theta),
-            tr.translate(math.sin(theta)*0.8, math.cos(theta)*0.8, 0),
+            tr.rotationZ(-theta),
+            tr.translate(math.sin(theta*0.5)*0.8, math.cos(theta*0.5)*0.8, 0),
             tr.uniformScale(0.3)
         ])
 
@@ -147,8 +147,10 @@ if __name__ == "__main__":
 
         # Another instance of the Quad
         lunaTransform = tr.matmul([
-            tr.translate(0.5, -0.5, 0),
+            tr.translate(0, 0, 0),
             tr.rotationZ(-theta),
+            tr.translate(math.sin(theta*0.5)*0.8, math.cos(theta*0.5)*0.8, 0),
+            tr.translate(-0.2, -0.2, 0),
             tr.uniformScale(0.1)
         ])
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, lunaTransform)
