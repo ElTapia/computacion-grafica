@@ -11,6 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import basic_shapes as bs
 import easy_shaders as es
 import transformations as tr
+import math
 
 __author__ = "Daniel Calderon"
 __license__ = "MIT"
@@ -124,8 +125,9 @@ if __name__ == "__main__":
 
         # Triangle
         tierraTransform = tr.matmul([
-            tr.translate(0.5, 0.5, 0),
+            tr.translate(0, 0, 0),
             tr.rotationZ(2 * theta),
+            tr.translate(math.sin(theta)*0.8, math.cos(theta)*0.8, 0),
             tr.uniformScale(0.3)
         ])
 
@@ -136,7 +138,7 @@ if __name__ == "__main__":
 
         # Sol
         solTransform = tr.matmul([
-            tr.translate(-0.5, -0.5, 0),
+            tr.translate(0, 0, 0),
             tr.rotationZ(-theta),
             tr.uniformScale(0.5)
         ])
