@@ -126,7 +126,7 @@ if __name__ == "__main__":
         tierraTransform = tr.matmul([
             tr.translate(0.5, 0.5, 0),
             tr.rotationZ(2 * theta),
-            tr.uniformScale(0.5)
+            tr.uniformScale(0.3)
         ])
 
         # updating the transform attribute
@@ -134,22 +134,11 @@ if __name__ == "__main__":
         # drawing function
         pipeline.drawCall(gpuTierra)
 
-        # Another instance of the triangle
-        tierraTransform2 = tr.matmul([
-            tr.translate(-0.5, 0.5, 0),
-            tr.scale(
-                0.5 + 0.2 * np.cos(1.5 * theta),
-                0.5 + 0.2 * np.sin(2 * theta),
-                0)
-        ])
-        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tierraTransform2)
-        pipeline.drawCall(gpuTierra)
-
         # Sol
         solTransform = tr.matmul([
             tr.translate(-0.5, -0.5, 0),
             tr.rotationZ(-theta),
-            tr.uniformScale(0.7)
+            tr.uniformScale(0.5)
         ])
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, solTransform)
         pipeline.drawCall(gpuSol)
@@ -157,8 +146,8 @@ if __name__ == "__main__":
         # Another instance of the Quad
         lunaTransform = tr.matmul([
             tr.translate(0.5, -0.5, 0),
-            tr.shearing(0.3 * np.cos(theta), 0, 0, 0, 0, 0),
-            tr.uniformScale(0.7)
+            tr.rotationZ(-theta),
+            tr.uniformScale(0.1)
         ])
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, lunaTransform)
         pipeline.drawCall(gpuLuna)
