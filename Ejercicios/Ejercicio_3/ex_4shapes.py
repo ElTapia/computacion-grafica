@@ -139,7 +139,6 @@ if __name__ == "__main__":
         # Sol
         solTransform = tr.matmul([
             tr.translate(0, 0, 0),
-            tr.rotationZ(-theta),
             tr.uniformScale(0.5)
         ])
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, solTransform)
@@ -150,7 +149,6 @@ if __name__ == "__main__":
             tr.translate(math.sin(theta*1.1)*0.7, math.cos(theta*1.1)*0.7, 0),
             tr.rotationZ(-theta),
             tr.translate(math.sin(theta*2)*0.3, math.cos(theta*2)*0.3, 0),
-            #tr.translate(math.sin(theta*0.5)**2 - math.sin(theta*0.5*(1 + 0.4/0.1))**2, math.cos(theta*0.5)**2 - math.cos(theta*0.5*(1 + 0.4/0.1))**2, 0),
             tr.uniformScale(0.1)
         ])
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, lunaTransform)

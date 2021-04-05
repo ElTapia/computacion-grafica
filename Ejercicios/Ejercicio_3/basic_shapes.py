@@ -185,7 +185,7 @@ def createPlanet(N, color):
             0.5 * math.cos(theta), 0.5 * math.sin(theta), 0,
 
             # color generates varying between 0 and 1
-                math.cos(theta)*0.1,       math.cos(theta)*0.1, math.cos(theta)*0.1]
+                math.cos(theta)*0.2,       math.cos(theta)*0.2, math.cos(theta)*0.2]
 
         # A triangle is created using the center, this and the next vertex
         indices += [0, i, i+1]
