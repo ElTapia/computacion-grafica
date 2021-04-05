@@ -6,7 +6,6 @@ import OpenGL.GL.shaders
 import numpy as np
 from PIL import Image
 
-import basic_shapes as bs
 from gpu_shape import GPUShape
 
 __author__ = "Daniel Calderon"
