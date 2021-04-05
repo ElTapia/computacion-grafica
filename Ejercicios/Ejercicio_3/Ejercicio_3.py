@@ -1,5 +1,8 @@
 # coding=utf-8
-"""Drawing 4 shapes with different transformations"""
+"""Ejercicio 3: Planeta tierra orbitando alrededor del sol y luna alrededor de la tierra
+
+Extra: La tierra y la luna también tienen movimiento de rotación.
+"""
 
 import glfw
 from OpenGL.GL import *
@@ -8,7 +11,7 @@ import numpy as np
 import sys
 import os.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-import basic_shapes as bs
+import planet_shape as ps
 import easy_shaders as es
 import transformations as tr
 import math
@@ -85,15 +88,18 @@ if __name__ == "__main__":
     glClearColor(0.15, 0.15, 0.15, 1.0)
 
     # Creating shapes on GPU memory
-    shapeTierra = bs.createPlanet(100, [0, 0, 1])
+    # * Crea shape de la tierra
+    shapeTierra = ps.createPlanet(100, [0, 0, 1])
     gpuTierra = es.GPUShape().initBuffers()
     gpuTierra.fillBuffers(shapeTierra.vertices, shapeTierra.indices, GL_STATIC_DRAW)
 
-    shapeSol = bs.createPlanet(100, [1, 1, 0])
+    # * Crea shape del sol
+    shapeSol = ps.createPlanet(100, [1, 1, 0])
     gpuSol = es.GPUShape().initBuffers()
     gpuSol.fillBuffers(shapeSol.vertices, shapeSol.indices, GL_STATIC_DRAW)
 
-    shapeLuna = bs.createPlanet(100, [0.5, 0.5, 0.5])
+    # * Crea shape de la luna
+    shapeLuna = ps.createPlanet(100, [0.5, 0.5, 0.5])
     gpuLuna = es.GPUShape().initBuffers()
     gpuLuna.fillBuffers(shapeLuna.vertices, shapeLuna.indices, GL_STATIC_DRAW)
 
@@ -123,7 +129,7 @@ if __name__ == "__main__":
         # Using the time as the theta parameter
         theta = glfw.get_time()
 
-        # Triangle
+        # * Movimiento tierra
         tierraTransform = tr.matmul([
             tr.rotationZ(-theta),
             tr.translate(math.sin(theta/10)*0.7, math.cos(theta/10)*0.7, 0),
@@ -135,7 +141,7 @@ if __name__ == "__main__":
         # drawing function
         pipeline.drawCall(gpuTierra)
 
-        # Sol
+        # * Posición sol
         solTransform = tr.matmul([
             tr.translate(0, 0, 0),
             tr.uniformScale(0.5)
@@ -143,7 +149,7 @@ if __name__ == "__main__":
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, solTransform)
         pipeline.drawCall(gpuSol)
 
-        # Another instance of the Quad
+        #  * Movimiento luna
         lunaTransform = tr.matmul([
             tr.translate(math.sin(theta*1.1)*0.7, math.cos(theta*1.1)*0.7, 0),
             tr.rotationZ(-theta),
