@@ -125,7 +125,6 @@ if __name__ == "__main__":
 
         # Triangle
         tierraTransform = tr.matmul([
-            #tr.translate(0, 0, 0),
             tr.rotationZ(-theta),
             tr.translate(math.sin(theta/10)*0.7, math.cos(theta/10)*0.7, 0),
             tr.uniformScale(0.3)
