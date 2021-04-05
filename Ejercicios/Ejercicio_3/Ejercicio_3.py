@@ -65,7 +65,7 @@ if __name__ == "__main__":
     glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, GL_TRUE)
     glfw.window_hint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
 
-    window = glfw.create_window(width, height, "Displaying multiple shapes - Modern OpenGL", None, None)
+    window = glfw.create_window(width, height, "Ejercicio 3: Movimiento órbitas Tierra y luna", None, None)
 
     if not window:
         glfw.terminate()
