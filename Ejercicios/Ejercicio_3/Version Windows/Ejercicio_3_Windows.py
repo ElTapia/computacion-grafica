@@ -12,7 +12,7 @@ import sys
 import os.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import planet_shape as ps
-import easy_shaders as es
+import easy_shaders_Windows as es
 import transformations as tr
 import math
 
@@ -60,11 +60,6 @@ if __name__ == "__main__":
     width = 600
     height = 600
 
-    glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 4)
-    glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 1)
-    glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, GL_TRUE)
-    glfw.window_hint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
-
     window = glfw.create_window(width, height, "Ejercicio 3: Movimiento órbitas Tierra y luna", None, None)
 
     if not window:
@@ -75,10 +70,6 @@ if __name__ == "__main__":
 
     # Connecting the callback function 'on_key' to handle keyboard events
     glfw.set_key_callback(window, on_key)
-
-    # Binding artificial vertex array object for validation
-    VAO = glGenVertexArrays(1)
-    glBindVertexArray(VAO)
 
     # Creating our shader program and telling OpenGL to use it
     pipeline = es.SimpleTransformShaderProgram()
