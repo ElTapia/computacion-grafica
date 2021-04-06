@@ -99,7 +99,7 @@ if __name__ == "__main__":
     gpuTierra.fillBuffers(shapeTierra.vertices, shapeTierra.indices, GL_STATIC_DRAW)
 
     # * Crea trayectoria de la tierra
-    trayectoriaTierra = ps.createTrayectoria(100)
+    trayectoriaTierra = ps.createTrayectoria(200)
     gpuTrayectoriaTierra = es.GPUShape().initBuffers()
     gpuTrayectoriaTierra.fillBuffers(trayectoriaTierra.vertices, trayectoriaTierra.indices, GL_STATIC_DRAW)
 
@@ -112,6 +112,11 @@ if __name__ == "__main__":
     shapeSol = ps.createPlanet(100, [1, 1, 0])
     gpuSol = es.GPUShape().initBuffers()
     gpuSol.fillBuffers(shapeSol.vertices, shapeSol.indices, GL_STATIC_DRAW)
+
+    # * Crea trayectoria de la luna
+    trayectoriaLuna = ps.createTrayectoria(100)
+    gpuTrayectoriaLuna = es.GPUShape().initBuffers()
+    gpuTrayectoriaLuna.fillBuffers(trayectoriaLuna.vertices, trayectoriaLuna.indices, GL_STATIC_DRAW)
 
     # * Crea shape de la luna
     shapeLuna = ps.createPlanet(100, [0.5, 0.5, 0.5])
@@ -128,6 +133,7 @@ if __name__ == "__main__":
     pipeline.setupVAO(gpuTrayectoriaTierra)
     pipeline.setupVAO(gpuContourSol)
     pipeline.setupVAO(gpuSol)
+    pipeline.setupVAO(gpuTrayectoriaLuna)
     pipeline.setupVAO(gpuLuna)
 
 
@@ -204,6 +210,20 @@ if __name__ == "__main__":
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, solTransform)
         pipeline.drawCall(gpuSol)
 
+
+        # * Tamaño trayectoria luna
+        trayectoriaLunaTransform = tr.matmul([
+            #tr.rotationZ(-theta),
+            tr.translate(math.sin(theta*1.1)*0.7, math.cos(theta*1.1)*0.7, 0),
+            tr.uniformScale(0.6)
+        ])
+
+        # updating the transform attribute
+        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, trayectoriaLunaTransform)
+        # drawing function
+        pipeline.drawCall(gpuTrayectoriaLuna, mode=GL_LINES)
+
+
         #  * Movimiento luna
         lunaTransform = tr.matmul([
             tr.translate(math.sin(theta*1.1)*0.7, math.cos(theta*1.1)*0.7, 0),
@@ -221,6 +241,7 @@ if __name__ == "__main__":
     gpuTierra.clear()
     gpuContourTierra.clear()
     gpuTrayectoriaTierra.clear()
+    gpuTrayectoriaLuna.clear()
     gpuSol.clear()
     gpuContourSol.clear()
     gpuLuna.clear()
