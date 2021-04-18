@@ -134,7 +134,7 @@ class SimpleTextureShaderProgram:
             """
 
         fragment_shader = """
-            #version 130
+            #version 410
 
             in vec2 outTexCoords;
 
@@ -187,7 +187,7 @@ class SimpleTransformShaderProgram:
     def __init__(self):
 
         vertex_shader = """
-            #version 130
+            #version 410
             
             uniform mat4 transform;
 
@@ -204,7 +204,7 @@ class SimpleTransformShaderProgram:
             """
 
         fragment_shader = """
-            #version 130
+            #version 410
             in vec3 newColor;
 
             out vec4 outColor;
@@ -254,7 +254,7 @@ class SimpleTextureTransformShaderProgram:
     def __init__(self):
 
         vertex_shader = """
-            #version 130
+            #version 410
 
             uniform mat4 transform;
 
@@ -271,7 +271,7 @@ class SimpleTextureTransformShaderProgram:
             """
 
         fragment_shader = """
-            #version 130
+            #version 410
 
             in vec2 outTexCoords;
 
@@ -321,13 +321,12 @@ class SimpleTextureTransformShaderProgram:
         # Unbind the current VAO
         glBindVertexArray(0)
 
-
 class SimpleModelViewProjectionShaderProgram:
 
     def __init__(self):
 
         vertex_shader = """
-            #version 130
+            #version 410
             
             uniform mat4 projection;
             uniform mat4 view;
@@ -345,7 +344,7 @@ class SimpleModelViewProjectionShaderProgram:
             """
 
         fragment_shader = """
-            #version 130
+            #version 410
             in vec3 newColor;
 
             out vec4 outColor;
@@ -396,7 +395,7 @@ class SimpleTextureModelViewProjectionShaderProgram:
     def __init__(self):
 
         vertex_shader = """
-            #version 130
+            #version 410
             
             uniform mat4 projection;
             uniform mat4 view;
@@ -415,7 +414,7 @@ class SimpleTextureModelViewProjectionShaderProgram:
             """
 
         fragment_shader = """
-            #version 130
+            #version 410
 
             uniform sampler2D samplerTex;
 
