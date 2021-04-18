@@ -25,7 +25,6 @@ class Controller:
 ###################################################################################################
         # Agregamos dos nuevas variables a nuestro controlador
         self.actual_sprite = 1
-        self.static_controller = 1
         self.x = 0.0
 ###################################################################################################
 
@@ -162,8 +161,11 @@ if __name__ == "__main__":
         # Drawing the shapes
         
 ################################################################
+        t = glfw.get_time()
+
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
-            tr.translate(controller.x, 0, 0),
+            tr.translate(controller.x, -t/2, 0),
+            tr.translate(0, 5, 0),
             tr.uniformScale(0.5)
         ]))
 
