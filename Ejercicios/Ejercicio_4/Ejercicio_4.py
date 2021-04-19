@@ -144,6 +144,16 @@ if __name__ == "__main__":
 
     gpuRain.fillBuffers(shapeRain.vertices, shapeRain.indices, GL_STATIC_DRAW)
 
+
+    shapeUpperRain = bs.createTextureBackground(8, 8)
+    gpuUpperRain = GPUShape().initBuffers()
+    pipeline.setupVAO(gpuUpperRain)
+
+    gpuUpperRain.texture = es.textureSimpleSetup(
+        rainPath, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST)
+
+    gpuUpperRain.fillBuffers(shapeUpperRain.vertices, shapeUpperRain.indices, GL_STATIC_DRAW)
+
 #######################################################################################################    
 
     while not glfw.window_should_close(window):
@@ -164,13 +174,23 @@ if __name__ == "__main__":
         t = glfw.get_time()
 
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
-            tr.translate(controller.x, -t/2, 0),
-            tr.translate(0, 5, 0),
+            tr.translate(controller.x, -(t%6), 0),
+            tr.translate(0, 3, 0),
             tr.uniformScale(0.5)
         ]))
 
         # glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "texture_index"), controller.actual_sprite)
         pipeline.drawCall(gpuRain)
+
+
+        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
+            tr.translate(controller.x, -((t+3)%6), 0),
+            tr.translate(0, 3, 0),
+            tr.uniformScale(0.5)
+        ]))
+
+        # glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "texture_index"), controller.actual_sprite)
+        pipeline.drawCall(gpuUpperRain)
 
 ##############################################################################################################################
 
@@ -192,5 +212,6 @@ if __name__ == "__main__":
     # freeing GPU memory
     gpuKnight.clear()
     gpuRain.clear()
+    gpuUpperRain.clear()
 
     glfw.terminate()
