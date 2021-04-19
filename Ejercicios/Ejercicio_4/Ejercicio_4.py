@@ -25,7 +25,7 @@ class Controller:
 ###################################################################################################
         # Agregamos dos nuevas variables a nuestro controlador
         self.actual_sprite = 1
-        self.x = 0.0
+        self.x = 0
 ###################################################################################################
 
 
@@ -49,11 +49,11 @@ def on_key(window, key, scancode, action, mods):
 #############################################################################################
     # Agregamos dos nuevas teclas para interactuar
     elif key == glfw.KEY_RIGHT:
-        controller.x -= 0.05
+        controller.x += 0.05
         controller.actual_sprite = (controller.actual_sprite + 1)%10
     
     elif key == glfw.KEY_LEFT:
-        controller.x += 0.05
+        controller.x -= 0.05
         controller.actual_sprite = (controller.actual_sprite - 1)%10
 #############################################################################################
 
@@ -145,15 +145,6 @@ if __name__ == "__main__":
     gpuRain.fillBuffers(shapeRain.vertices, shapeRain.indices, GL_STATIC_DRAW)
 
 
-    shapeUpperRain = bs.createTextureBackground(8, 8)
-    gpuUpperRain = GPUShape().initBuffers()
-    pipeline.setupVAO(gpuUpperRain)
-
-    gpuUpperRain.texture = es.textureSimpleSetup(
-        rainPath, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST)
-
-    gpuUpperRain.fillBuffers(shapeUpperRain.vertices, shapeUpperRain.indices, GL_STATIC_DRAW)
-
 #######################################################################################################    
 
     while not glfw.window_should_close(window):
@@ -174,7 +165,7 @@ if __name__ == "__main__":
         t = glfw.get_time()
 
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
-            tr.translate(controller.x, -(t%6), 0),
+            tr.translate(-controller.x%0.5, -(t%6), 0),
             tr.translate(0, 3, 0),
             tr.uniformScale(0.5)
         ]))
@@ -182,15 +173,16 @@ if __name__ == "__main__":
         # glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "texture_index"), controller.actual_sprite)
         pipeline.drawCall(gpuRain)
 
-
+        # * Repite caida lluvia
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
-            tr.translate(controller.x, -((t+3)%6), 0),
+            tr.translate(-controller.x%0.5, -((t+3)%6), 0),
             tr.translate(0, 3, 0),
             tr.uniformScale(0.5)
         ]))
 
         # glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "texture_index"), controller.actual_sprite)
-        pipeline.drawCall(gpuUpperRain)
+        pipeline.drawCall(gpuRain)
+        #print(controller.x)
 
 ##############################################################################################################################
 
@@ -203,7 +195,7 @@ if __name__ == "__main__":
 
         # Dibujamos la figura
         pipeline.drawCall(gpus[controller.actual_sprite])
-        
+
 ##############################################################################################################################
 
         # Once the render is done, buffers are swapped, showing only the complete scene.
@@ -212,6 +204,4 @@ if __name__ == "__main__":
     # freeing GPU memory
     gpuKnight.clear()
     gpuRain.clear()
-    gpuUpperRain.clear()
-
     glfw.terminate()
