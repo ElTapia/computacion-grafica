@@ -165,7 +165,7 @@ if __name__ == "__main__":
         t = glfw.get_time()
 
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
-            tr.translate(-controller.x%0.5, -(t%6), 0),
+            tr.translate(-(controller.x%2.4), -(t%6), 0),
             tr.translate(0, 3, 0),
             tr.uniformScale(0.5)
         ]))
@@ -175,7 +175,7 @@ if __name__ == "__main__":
 
         # * Repite caida lluvia
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
-            tr.translate(-controller.x%0.5, -((t+3)%6), 0),
+            tr.translate(-(controller.x%2.4), -((t+3)%6), 0),
             tr.translate(0, 3, 0),
             tr.uniformScale(0.5)
         ]))
@@ -184,6 +184,26 @@ if __name__ == "__main__":
         pipeline.drawCall(gpuRain)
         #print(controller.x)
 
+
+        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
+            tr.translate(-((controller.x)%2.4), -(t%6), 0),
+            tr.translate(3, 3, 0),
+            tr.uniformScale(0.5)
+        ]))
+
+        # glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "texture_index"), controller.actual_sprite)
+        pipeline.drawCall(gpuRain)
+
+        # * Repite caida lluvia
+        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
+            tr.translate(-((controller.x)%2.4), -((t+3)%6), 0),
+            tr.translate(3, 3, 0),
+            tr.uniformScale(0.5)
+        ]))
+
+        # glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "texture_index"), controller.actual_sprite)
+        pipeline.drawCall(gpuRain)
+        #print(controller.x)
 ##############################################################################################################################
 
         # Le entregamos al vertex shader la matriz de transformación
