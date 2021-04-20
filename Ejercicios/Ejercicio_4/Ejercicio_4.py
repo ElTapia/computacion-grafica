@@ -37,7 +37,7 @@ def on_key(window, key, scancode, action, mods):
 
     if action != glfw.PRESS:
         return
-    
+
     global controller
 
     if key == glfw.KEY_SPACE:
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, GL_TRUE)
     glfw.window_hint(glfw.OPENGL_PROFILE,       glfw.OPENGL_CORE_PROFILE)
 
-    window = glfw.create_window(width, height, "Boo!", None, None)
+    window = glfw.create_window(width, height, "Ejercicio 4: Caballero bajo la lluvia", None, None)
 
     if not window:
         glfw.terminate()
@@ -104,25 +104,23 @@ if __name__ == "__main__":
 
 ######################################################################################################
 
-
     # Creating shapes on GPU memory
 
     # Creamos una lista para guardar todas las gpu shapes necesarias
     gpus = []
 
 
-    # Definimos donde se encuentra la textura
+    #* Definimos donde se encuentran las texturas
     thisFilePath = os.path.abspath(__file__)
     thisFolderPath = os.path.dirname(thisFilePath)
     spritesDirectory = os.path.join(thisFolderPath, "Sprites")
     spritePath = os.path.join(spritesDirectory, "sprites.png")
     rainPath = os.path.join(spritesDirectory, "lluvia.png")
-    gotaPath = os.path.join(spritesDirectory, "gota.png")
 
     texture = es.textureSimpleSetup(
             spritePath, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST)
 
-    # Creamos una gpushape por cada frame de textura
+    #* Creamos una gpushape por cada frame de textura
     for i in range(10):
         gpuKnight = GPUShape().initBuffers()
         pipeline.setupVAO(gpuKnight)
@@ -135,6 +133,7 @@ if __name__ == "__main__":
 
         gpus.append(gpuKnight)
 
+    #* Creamos gpushape para la lluvia
     shapeRain = bs.createTextureBackground(8, 8)
     gpuRain = GPUShape().initBuffers()
     pipeline.setupVAO(gpuRain)
@@ -162,6 +161,8 @@ if __name__ == "__main__":
         # Drawing the shapes
         
 ################################################################
+        # * Movimiento lluvia
+
         t = glfw.get_time()
 
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
@@ -170,7 +171,6 @@ if __name__ == "__main__":
             tr.uniformScale(0.5)
         ]))
 
-        # glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "texture_index"), controller.actual_sprite)
         pipeline.drawCall(gpuRain)
 
         # * Repite caida lluvia
@@ -180,10 +180,9 @@ if __name__ == "__main__":
             tr.uniformScale(0.5)
         ]))
 
-        # glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "texture_index"), controller.actual_sprite)
         pipeline.drawCall(gpuRain)
-        #print(controller.x)
 
+        # * Repite lluvia mientras avanza
 
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
             tr.translate(-((controller.x)%2.4), -(t%6), 0),
@@ -191,19 +190,15 @@ if __name__ == "__main__":
             tr.uniformScale(0.5)
         ]))
 
-        # glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "texture_index"), controller.actual_sprite)
         pipeline.drawCall(gpuRain)
 
-        # * Repite caida lluvia
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
             tr.translate(-((controller.x)%2.4), -((t+3)%6), 0),
             tr.translate(3, 3, 0),
             tr.uniformScale(0.5)
         ]))
 
-        # glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "texture_index"), controller.actual_sprite)
         pipeline.drawCall(gpuRain)
-        #print(controller.x)
 ##############################################################################################################################
 
         # Le entregamos al vertex shader la matriz de transformación
