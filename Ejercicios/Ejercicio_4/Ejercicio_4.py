@@ -25,6 +25,7 @@ class Controller:
 ###################################################################################################
         # Agregamos dos nuevas variables a nuestro controlador
         self.actual_sprite = 1
+        self.actual_key = 0
         self.x = 0
 ###################################################################################################
 
@@ -51,10 +52,12 @@ def on_key(window, key, scancode, action, mods):
     elif key == glfw.KEY_RIGHT:
         controller.x += 0.05
         controller.actual_sprite = (controller.actual_sprite + 1)%10
+        controller.actual_key = 0
     
     elif key == glfw.KEY_LEFT:
         controller.x -= 0.05
         controller.actual_sprite = (controller.actual_sprite - 1)%10
+        controller.actual_key = 1
 #############################################################################################
 
     else:
@@ -179,7 +182,7 @@ if __name__ == "__main__":
 
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
             tr.translate(-((controller.x)*0.3)*0.5, 0, 0),
-            tr.translate(1.5, 0, 0),
+            tr.translate(0, 0, 0),
             tr.uniformScale(0.5)
         ]))
 
@@ -228,7 +231,8 @@ if __name__ == "__main__":
 
         # Le entregamos al vertex shader la matriz de transformación
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
-            tr.translate(-0.2, -0.5, 0),
+            tr.rotationY(controller.actual_key * np.pi),
+            tr.translate(0, -0.7, 0),
             tr.uniformScale(0.5)
         ]))
 #############################################
