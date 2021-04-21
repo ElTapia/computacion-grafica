@@ -35,8 +35,8 @@ controller = Controller()
 
 def on_key(window, key, scancode, action, mods):
 
-    if action != glfw.PRESS:
-        return
+    #if action != glfw.PRESS:
+    #    return
 
     global controller
 
@@ -116,6 +116,7 @@ if __name__ == "__main__":
     spritesDirectory = os.path.join(thisFolderPath, "Sprites")
     spritePath = os.path.join(spritesDirectory, "sprites.png")
     rainPath = os.path.join(spritesDirectory, "lluvia.png")
+    backgroundPath = os.path.join(spritesDirectory, "fondo.jpeg")
 
     texture = es.textureSimpleSetup(
             spritePath, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST)
@@ -134,7 +135,7 @@ if __name__ == "__main__":
         gpus.append(gpuKnight)
 
     #* Creamos gpushape para la lluvia
-    shapeRain = bs.createTextureBackground(8, 8)
+    shapeRain = bs.createTextureBackground(3, 3, 10, 10)
     gpuRain = GPUShape().initBuffers()
     pipeline.setupVAO(gpuRain)
 
@@ -142,6 +143,17 @@ if __name__ == "__main__":
         rainPath, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST)
 
     gpuRain.fillBuffers(shapeRain.vertices, shapeRain.indices, GL_STATIC_DRAW)
+
+
+    #* Creamos gpushape para el fondo
+    shapeBackground = bs.createTextureBackground(5, 2, 1, 1)
+    gpuBackground = GPUShape().initBuffers()
+    pipeline.setupVAO(gpuBackground)
+
+    gpuBackground.texture = es.textureSimpleSetup(
+        backgroundPath, GL_REPEAT, GL_REPEAT, GL_NEAREST, GL_NEAREST)
+
+    gpuBackground.fillBuffers(shapeBackground.vertices, shapeBackground.indices, GL_STATIC_DRAW)
 
 
 #######################################################################################################    
@@ -160,13 +172,26 @@ if __name__ == "__main__":
 
         # Drawing the shapes
         
+###############################################################
+        # * Movimiento fondo
+
+        t = glfw.get_time()
+
+        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
+            tr.translate(-((controller.x)*0.3)*0.5, 0, 0),
+            tr.translate(1.5, 0, 0),
+            tr.uniformScale(0.5)
+        ]))
+
+        pipeline.drawCall(gpuBackground)
+
 ################################################################
         # * Movimiento lluvia
 
         t = glfw.get_time()
 
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
-            tr.translate(-(controller.x%2.4), -(t%6), 0),
+            tr.translate(-(controller.x%2.4)*0.8, -(t%6), 0),
             tr.translate(0, 3, 0),
             tr.uniformScale(0.5)
         ]))
@@ -175,7 +200,7 @@ if __name__ == "__main__":
 
         # * Repite caida lluvia
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
-            tr.translate(-(controller.x%2.4), -((t+3)%6), 0),
+            tr.translate(-(controller.x%2.4)*0.8, -((t+3)%6), 0),
             tr.translate(0, 3, 0),
             tr.uniformScale(0.5)
         ]))
@@ -185,7 +210,7 @@ if __name__ == "__main__":
         # * Repite lluvia mientras avanza
 
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
-            tr.translate(-((controller.x)%2.4), -(t%6), 0),
+            tr.translate(-((controller.x)%2.4)*0.8, -(t%6), 0),
             tr.translate(3, 3, 0),
             tr.uniformScale(0.5)
         ]))
@@ -193,7 +218,7 @@ if __name__ == "__main__":
         pipeline.drawCall(gpuRain)
 
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
-            tr.translate(-((controller.x)%2.4), -((t+3)%6), 0),
+            tr.translate(-((controller.x)%2.4)*0.8, -((t+3)%6), 0),
             tr.translate(3, 3, 0),
             tr.uniformScale(0.5)
         ]))
@@ -203,7 +228,7 @@ if __name__ == "__main__":
 
         # Le entregamos al vertex shader la matriz de transformación
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "transform"), 1, GL_TRUE, tr.matmul([
-            tr.translate(-0.5, 0, 0),
+            tr.translate(-0.2, -0.5, 0),
             tr.uniformScale(0.5)
         ]))
 #############################################
@@ -219,4 +244,5 @@ if __name__ == "__main__":
     # freeing GPU memory
     gpuKnight.clear()
     gpuRain.clear()
+    gpuBackground.clear()
     glfw.terminate()

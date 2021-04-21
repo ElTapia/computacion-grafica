@@ -123,15 +123,15 @@ def createColorQuad(r, g, b):
     return Shape(vertices, indices)
 
 
-def createTextureBackground(nx, ny):
+def createTextureBackground(x, y, nx, ny):
 
     # Defining locations and texture coordinates for each vertex of the shape    
     vertices = [
     #   positions        texture
-        -3, -3, 0.0,  0, ny,
-         3, -3, 0.0, nx, ny,
-         3,  3, 0.0, nx, 0,
-        -3,  3, 0.0,  0, 0]
+        -x, -y, 0.0,  0, ny,
+         x, -y, 0.0, nx, ny,
+         x,  y, 0.0, nx, 0,
+        -x,  y, 0.0,  0, 0]
 
     # Defining connections among vertices
     # We have a triangle every 3 indices specified
