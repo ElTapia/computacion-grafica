@@ -1,4 +1,4 @@
-""" P3 [Drive simulator] """
+""" Ejercicio 5 [Drive simulator] """
 
 import glfw
 import OpenGL.GL.shaders
@@ -124,7 +124,7 @@ if __name__ == "__main__":
     # Se instancia el modelo del auto
     player = Player(0.3)
     # Se indican las referencias del nodo y el controller al modelo
-    player.set_model(car)
+    player.set_model(car, mainScene)
     player.set_controller(controller)
 
     # Shape con textura de la carga

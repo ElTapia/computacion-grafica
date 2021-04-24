@@ -232,7 +232,7 @@ def createScene(pipeline):
 
     # Nodo de la carretera, quad gris escalado y posicionado
     highwayNode = sg.SceneGraphNode("highway")
-    highwayNode.transform = tr.matmul([tr.translate(0, -0.65, 0), tr.scale(2.0, 0.4, 1)])
+    highwayNode.transform = tr.matmul([tr.translate(0, -0.65, 0), tr.scale(4, 0.4, 1)])
     highwayNode.childs = [gpuGrayQuad]
 
     # Nodo del triangulo cafe escalado y posicionado
@@ -306,7 +306,7 @@ def createScene(pipeline):
     
     # nodo de la linea de pista, quad blanco escalado y posicionado
     lineNode = sg.SceneGraphNode("line")
-    lineNode.transform = tr.matmul([tr.translate(0, -0.65, 0), tr.scale(2, 0.02, 1)])
+    lineNode.transform = tr.matmul([tr.translate(0, -0.65, 0), tr.scale(4, 0.02, 1)])
     lineNode.childs = [gpuWhiteQuad]
 
     # Nodo del background izquierdo con todos los nodos anteriores
@@ -320,12 +320,12 @@ def createScene(pipeline):
 
     # Nodo del background derecho con todos los nodos anteriores
     rightBackGroundNode = sg.SceneGraphNode("right background")
-    rightBackGroundNode.transform = tr.matmul([tr.translate(3, 0, 0)])
+    rightBackGroundNode.transform = tr.matmul([tr.translate(2, 0, 0)])
     rightBackGroundNode.childs = [skyNode, mountainsNode, highwayNode, windMillGroupNode, lineNode]
 
     # Nodo padre de la escena, sol se deja en mundo para poder desplazarlo
     sceneNode = sg.SceneGraphNode("world")
-    sceneNode.childs = [leftBackGroundNode, centerBackGroundNode, rightBackGroundNode, sunNode]
+    sceneNode.childs = [rightBackGroundNode, leftBackGroundNode, centerBackGroundNode, sunNode]
 
     return sceneNode
 
