@@ -82,7 +82,7 @@ if __name__ == "__main__":
     # Creating a glfw window
     width = 800
     height = 800
-    title = "P3 - Drive simulator"
+    title = "Ejercicio 5 - Drive simulator"
     glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 4)
     glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 1)
     glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, GL_TRUE)
