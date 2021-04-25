@@ -3,22 +3,21 @@
 import glfw
 import numpy as np
 import grafica.transformations as tr
+import grafica.scene_graph as sg
 
 class Player():
     # Clase que contiene al modelo del player / auro
     def __init__(self, size):
         self.pos = [0,-0.65] # Posicion en el escenario
         self.vel = [1,1] # Velocidad de desplazamiento
-        self.carModel = None # Referencia al grafo de escena asociado al auto
-        self.background = None # Referencia al grafo de escena asociado al fondo
+        self.model = None # Referencia al grafo de escena asociado
         self.controller = None # Referencia del controlador, para acceder a sus variables
         self.size = size # Escala a aplicar al nodo 
         self.radio = 0.1 # distancia para realiozar los calculos de colision
 
-    def set_model(self, new_carModel, new_background):
+    def set_model(self, new_model):
         # Se obtiene una referencia a dos nodo
-        self.carModel = new_carModel
-        self.background = new_background
+        self.model = new_model
 
     def set_controller(self, new_controller):
         # Se obtiene la referencia al controller
@@ -41,8 +40,17 @@ class Player():
             self.pos[1] -= self.vel[1] * delta
 
         # Se le aplica la transformacion de traslado segun la posicion actual
-        self.carModel.transform = tr.matmul([tr.translate(0, self.pos[1], 0), tr.scale(self.size, self.size, 1)])
-        self.background.transform = tr.matmul([tr.translate(self.pos[0], 0, 0), tr.scale(self.size, self.size, 1)])
+        car = sg.findNode(self.model, "car")
+        backgrounds = sg.findNode(self.model, "backgrounds")
+
+        leftBackground = sg.findNode(backgrounds, "left background")
+        centerBackground = sg.findNode(backgrounds, "center background")
+        rightBackground = sg.findNode(backgrounds, "right background")
+
+        car.transform = tr.matmul([tr.translate(-0.5, self.pos[1], 0), tr.scale(self.size*0.3, self.size*0.3, 1)])
+        leftBackground.transform = tr.matmul([tr.translate(self.pos[0], 0, 0),  tr.translate(-2, 0, 0), tr.scale(self.size, self.size, 1)])
+        centerBackground.transform = tr.matmul([tr.translate(self.pos[0], 0, 0), tr.scale(self.size, self.size, 1)])
+        rightBackground.transform = tr.matmul([tr.translate(self.pos[0], 0, 0),  tr.translate(2, 0, 0), tr.scale(self.size, self.size, 1)])
 
     def collision(self, cargas):
         # Funcion para detectar las colisiones con las cargas

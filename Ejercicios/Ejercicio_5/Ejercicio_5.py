@@ -121,10 +121,10 @@ if __name__ == "__main__":
     # Se añade el auto a la escena principal
     mainScene.childs += [car]
 
-    # Se instancia el modelo del auto
-    player = Player(0.3)
+    # Se instancia el modelo
+    player = Player(1)
     # Se indican las referencias del nodo y el controller al modelo
-    player.set_model(car, mainScene)
+    player.set_model(mainScene)
     player.set_controller(controller)
 
     # Shape con textura de la carga
@@ -203,5 +203,5 @@ if __name__ == "__main__":
     # freeing GPU memory
     mainScene.clear()
     tex_scene.clear()
-    
+
     glfw.terminate()
