@@ -130,21 +130,29 @@ if __name__ == "__main__":
     # Shape con textura de la carga
     garbage = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "sprites/bag.png")
 
-    # Se crean dos nodos de carga
+
+    # Se crean cuatro nodos de carga
     garbage1Node = sg.SceneGraphNode("garbage1")
     garbage1Node.childs = [garbage]
 
     garbage2Node = sg.SceneGraphNode("garbage2")
     garbage2Node.childs = [garbage]
 
+    garbage3Node = sg.SceneGraphNode("garbage3")
+    garbage3Node.childs = [garbage]
+
+    garbage4Node = sg.SceneGraphNode("garbage4")
+    garbage4Node.childs = [garbage]
+
     # Se crean el grafo de escena con textura y se agregan las cargas
     tex_scene = sg.SceneGraphNode("textureScene")
-    tex_scene.childs = [garbage1Node, garbage2Node]
+    tex_scene.childs = [garbage1Node, garbage2Node, garbage3Node, garbage4Node]
 
     # Posición cargas
     y = np.array([-0.55, -0.75])
-    y1 = y[np.random.randint(0, 2, 1)]
-    y2 = y[np.random.randint(0, 2, 1)]
+    index = np.random.randint(0, 2, 4)
+    new_y = y[index]
+    y1, y2, y3, y4 = new_y
 
     # Se crean los modelos de la carga, se indican su nodo y se actualiza
     carga1 = Carga(0, y1, 0.1)
@@ -155,8 +163,16 @@ if __name__ == "__main__":
     carga2.set_model(garbage2Node)
     carga2.update()
 
+    carga3 = Carga(0, y3, 0.1)
+    carga3.set_model(garbage3Node)
+    carga3.update()
+
+    carga4 = Carga(0, y4, 0.1)
+    carga4.set_model(garbage4Node)
+    carga4.update()
+
     # Lista con todas las cargas
-    cargas = [carga1, carga2]
+    cargas = [carga1, carga2, carga3, carga4]
 
     perfMonitor = pm.PerformanceMonitor(glfw.get_time(), 0.5)
     # glfw will swap buffers as soon as possible
@@ -176,20 +192,30 @@ if __name__ == "__main__":
         player.pos[2]-=0.003
 
         # Actualiza posicion cargas
-        carga1.pos[0] = player.pos[1]+1.5
-        carga2.pos[0] = player.pos[1]+2
+        carga1.pos[0] = player.pos[0]-0.5
+        carga2.pos[0] = player.pos[1]+1
+        carga3.pos[0] = player.pos[1]+1.4
+        carga4.pos[0] = player.pos[2]+0.3
 
         carga1.update()
         carga2.update()
+        carga3.update()
+        carga4.update()
 
-        if carga1.pos[0] > 3:
-            y1 = y[np.random.randint(0, 2, 1)]
-            y2 = y[np.random.randint(0, 2, 1)]
+        if carga4.pos[0]-0.5 > 3.4:
+            index = np.random.randint(0, 2, 4)
+            new_y = y[index]
+            y1, y2, y3, y4 = new_y
+
             carga1.pos[1] = y1
             carga2.pos[1] = y2
+            carga3.pos[1] = y3
+            carga4.pos[1] = y4
 
             carga1.update()
             carga2.update()
+            carga3.update()
+            carga4.update()
 
         # Measuring performance
         perfMonitor.update(glfw.get_time())
