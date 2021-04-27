@@ -29,9 +29,7 @@ class SceneGraphNode:
         for child in self.childs:
             child.clear()
 
-            
 
-    
 def findNode(node, name):
 
     # The name was not found in this path
