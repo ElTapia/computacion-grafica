@@ -141,12 +141,17 @@ if __name__ == "__main__":
     tex_scene = sg.SceneGraphNode("textureScene")
     tex_scene.childs = [garbage1Node, garbage2Node]
 
-    # Se crean los modelos de la carga, se indican su nodo y se actualiza la posicion fija
-    carga1 = Carga(0.2, -0.55, 0.1)
+    # Posición cargas
+    y = np.array([-0.55, -0.75])
+    y1 = y[np.random.randint(0, 2, 1)]
+    y2 = y[np.random.randint(0, 2, 1)]
+
+    # Se crean los modelos de la carga, se indican su nodo y se actualiza
+    carga1 = Carga(0, y1, 0.1)
     carga1.set_model(garbage1Node)
     carga1.update()
 
-    carga2 = Carga(0.7, -0.75, 0.1)
+    carga2 = Carga(0, y2, 0.1)
     carga2.set_model(garbage2Node)
     carga2.update()
 
@@ -164,6 +169,27 @@ if __name__ == "__main__":
         t1 = glfw.get_time()
         delta = t1 -t0
         t0 = t1
+
+        # Actualiza posición fondo
+        player.pos[0]-=0.003
+        player.pos[1]-=0.003
+        player.pos[2]-=0.003
+
+        # Actualiza posicion cargas
+        carga1.pos[0] = player.pos[1]+1.5
+        carga2.pos[0] = player.pos[1]+2
+
+        carga1.update()
+        carga2.update()
+
+        if carga1.pos[0] > 3:
+            y1 = y[np.random.randint(0, 2, 1)]
+            y2 = y[np.random.randint(0, 2, 1)]
+            carga1.pos[1] = y1
+            carga2.pos[1] = y2
+
+            carga1.update()
+            carga2.update()
 
         # Measuring performance
         perfMonitor.update(glfw.get_time())
