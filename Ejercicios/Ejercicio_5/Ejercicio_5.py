@@ -202,7 +202,7 @@ if __name__ == "__main__":
         carga3.update()
         carga4.update()
 
-        if carga4.pos[0]-0.35 > 3.4:
+        if carga4.pos[0]-0.39 > 3.4:
             index = np.random.randint(0, 2, 4)
             new_y = y[index]
             y1, y2, y3, y4 = new_y
