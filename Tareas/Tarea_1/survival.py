@@ -73,6 +73,18 @@ def on_key(window, key, scancode, action, mods):
     elif key == glfw.KEY_ESCAPE and action ==glfw.PRESS:
         glfw.set_window_should_close(window, True)
 
+def on_key_stop(window, key, scancode, action, mods):
+    
+    global controller
+
+    # Caso de detecar la barra espaciadora, se cambia el metodo de dibujo
+    if key == glfw.KEY_SPACE and action ==glfw.PRESS:
+        controller.fillPolygon = not controller.fillPolygon
+
+    # Caso en que se cierra la ventana
+    elif key == glfw.KEY_ESCAPE and action ==glfw.PRESS:
+        glfw.set_window_should_close(window, True)
+
 
 if __name__ == "__main__":
 
@@ -129,6 +141,8 @@ if __name__ == "__main__":
     zombie_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/zombie.png")
     human_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/kageyama.png")
     store_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/store.png")
+    you_win_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/you_win.png")
+    game_over_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/game_over.png")
 
     # Se crean nodos para cada shape
     hinataNode = sg.SceneGraphNode("hinata")
@@ -143,9 +157,17 @@ if __name__ == "__main__":
     storeNode = sg.SceneGraphNode("store")
     storeNode.childs = [store_png]
 
+    you_winNode = sg.SceneGraphNode("win")
+    you_winNode.transform = tr.matmul([tr.scale(0, 0, 0)])
+    you_winNode.childs = [you_win_png]
+
+    game_overNode = sg.SceneGraphNode("lose")
+    game_overNode.transform = tr.matmul([tr.scale(0, 0, 0)])
+    game_overNode.childs = [game_over_png]
+
     # Se crean el grafo de escena con textura y se agregan las cargas
     tex_scene = sg.SceneGraphNode("textureScene")
-    tex_scene.childs = [zombieNode, humanNode, storeNode, hinataNode]
+    tex_scene.childs = [zombieNode, humanNode, storeNode, hinataNode, you_winNode, game_overNode]
 
     # Se instancia el modelo
     player = Player(0.2)
@@ -153,7 +175,6 @@ if __name__ == "__main__":
     # Se indican las referencias del nodo y el controller al modelo
     player.set_model(hinataNode)
     player.set_controller(controller)
-
 
     # Posición zombie y humano
     x_zombie, y_zombie = 0, 0.8
@@ -210,8 +231,13 @@ if __name__ == "__main__":
         # * Se llama al metodo del player para detectar colisiones
         # TODO: Agregar colisiones
 
-        if player.collision_store(store) or player.collision_human([human]) or player.collision_zombie([zombie]):
-            glfw.set_window_should_close(window, True)
+        if player.collision_store(store):
+            you_winNode.transform = tr.matmul([tr.scale(2, 2, 1)])
+            glfw.set_key_callback(window, on_key_stop)
+        
+        if player.collision_zombie([zombie]):
+            game_overNode.transform = tr.matmul([tr.scale(2, 2, 1)])
+            glfw.set_key_callback(window, on_key_stop)
 
         # Se llama al metodo del player para actualizar su posicion
         player.update(delta)
