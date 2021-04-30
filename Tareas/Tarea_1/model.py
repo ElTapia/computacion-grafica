@@ -48,6 +48,10 @@ class Player():
 
         # Se le aplica la transformacion de traslado segun la posicion actual
         self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
+    
+    def stop(self):
+        # Deja quieto al personaje en su posición actual
+        self.pos = [0.58, -0.75]
 
     def collision_store(self, store):
 

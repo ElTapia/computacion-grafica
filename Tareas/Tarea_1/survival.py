@@ -233,8 +233,9 @@ if __name__ == "__main__":
 
         if player.collision_store(store):
             you_winNode.transform = tr.matmul([tr.scale(2, 2, 1)])
+            player.stop()
             glfw.set_key_callback(window, on_key_stop)
-        
+
         if player.collision_zombie([zombie]):
             game_overNode.transform = tr.matmul([tr.scale(2, 2, 1)])
             glfw.set_key_callback(window, on_key_stop)
