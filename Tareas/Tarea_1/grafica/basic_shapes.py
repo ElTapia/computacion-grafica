@@ -110,9 +110,9 @@ def createColorQuad(r, g, b):
     vertices = [
     #   positions        colors
         -0.5, -0.5, 0.0,  r, g, b,
-         0.5, -0.5, 0.0,  r, g, b,
-         0.5,  0.5, 0.0,  r, g, b,
-        -0.5,  0.5, 0.0,  r, g, b]
+         0.5, -0.5, 0.0,  r+0.1, g+0.1, b+0.1,
+         0.5,  0.5, 0.0,  r+0.2, g+0.2, b+0.2,
+        -0.5,  0.5, 0.0,  r+0.23, g+0.23, b+0.23]
 
     # Defining connections among vertices
     # We have a triangle every 3 indices specified
