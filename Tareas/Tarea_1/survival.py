@@ -229,7 +229,6 @@ if __name__ == "__main__":
         glClear(GL_COLOR_BUFFER_BIT)
 
         # * Se llama al metodo del player para detectar colisiones
-        # TODO: Agregar colisiones
 
         if player.collision_store(store):
             you_winNode.transform = tr.matmul([tr.scale(2, 2, 1)])
@@ -238,6 +237,7 @@ if __name__ == "__main__":
 
         if player.collision_zombie([zombie]):
             game_overNode.transform = tr.matmul([tr.scale(2, 2, 1)])
+            player.stop()
             glfw.set_key_callback(window, on_key_stop)
 
         # Se llama al metodo del player para actualizar su posicion
