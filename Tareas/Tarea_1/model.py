@@ -27,7 +27,7 @@ class Player():
         # Se obtiene la referencia al controller
         self.controller = new_controller
 
-    def update(self, delta):
+    def update(self, delta, stop=False):
         # Se actualiza la posicion de hinata
 
         # Si detecta la tecla [D] presionada hinata se mueve hacia la derecha
@@ -48,10 +48,10 @@ class Player():
 
         # Se le aplica la transformacion de traslado segun la posicion actual
         self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
-    
-    def stop(self):
-        # Deja quieto al personaje en su posición actual
-        self.pos = [0.58, -0.75]
+
+        if stop:
+            self.controller.stop = True
+
 
     def collision_store(self, store):
 

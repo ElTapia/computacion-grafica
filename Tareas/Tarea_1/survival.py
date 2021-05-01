@@ -1,5 +1,6 @@
 
 # * Tarea 1 Beauchefville
+#TODO: Arreglar stop de personaje
 
 import sys
 import glfw
@@ -40,6 +41,7 @@ class Controller:
         self.is_s_pressed = False
         self.is_a_pressed = False
         self.is_d_pressed = False
+        self.stop = False
 
 
 # we will use the global controller as communication with the callback function
@@ -77,18 +79,12 @@ def on_key(window, key, scancode, action, mods):
             controller.is_d_pressed = True
         elif action == glfw.RELEASE:
             controller.is_d_pressed = False
-
-    # Caso de detecar la barra espaciadora, se cambia el metodo de dibujo
-    if key == glfw.KEY_SPACE and action ==glfw.PRESS:
-        controller.fillPolygon = not controller.fillPolygon
-
-    # Caso en que se cierra la ventana
-    elif key == glfw.KEY_ESCAPE and action ==glfw.PRESS:
-        glfw.set_window_should_close(window, True)
-
-def on_key_stop(window, key, scancode, action, mods):
     
-    global controller
+    if controller.stop:
+        controller.is_d_pressed = False
+        controller.is_a_pressed = False
+        controller.is_w_pressed = False
+        controller.is_s_pressed = False
 
     # Caso de detecar la barra espaciadora, se cambia el metodo de dibujo
     if key == glfw.KEY_SPACE and action ==glfw.PRESS:
@@ -245,13 +241,11 @@ if __name__ == "__main__":
 
         if player.collision_store(store):
             you_winNode.transform = tr.matmul([tr.scale(2, 2, 1)])
-            player.stop()
-            glfw.set_key_callback(window, on_key_stop)
+            player.update(0, True)
 
         if player.collision_zombie([zombie]):
             game_overNode.transform = tr.matmul([tr.scale(2, 2, 1)])
-            player.stop()
-            glfw.set_key_callback(window, on_key_stop)
+            player.update(0, True)
 
         # Se llama al metodo del player para actualizar su posicion
         player.update(delta)
