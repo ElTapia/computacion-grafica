@@ -13,6 +13,19 @@ import grafica.scene_graph as sg
 from shapes import *
 from model import *
 
+# Inicializa parámetros
+
+Z = sys.argv[1]
+H = sys.argv[2]
+T = sys.argv[3]
+P = sys.argv[4]
+
+print("Inicia el juego")
+print("{} zombies".format(Z))
+print("{} humanos".format(H))
+print("{} segundos".format(T))
+print("{} probabilidad de contagio".format(P))
+
 #############################################################################
 
 # We will use 32 bits data, so an integer has 4 bytes
