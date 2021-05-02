@@ -4,10 +4,11 @@ import glfw
 import numpy as np
 import grafica.transformations as tr
 import grafica.scene_graph as sg
+from shapes import *
 
-#TODO: Definir player para hinata
-#TODO: Definir modelo para zombie
-#TODO: Definir modelo para humano
+#// TODO: Definir player para hinata
+# // TODO: Definir modelo para zombie
+# // TODO: Definir modelo para humano
 
 class Player():
     # Clase que contiene al modelo del player
@@ -71,36 +72,52 @@ class Player():
         for human in humans:
             # si la distancia al humano es menor que la suma de los radios ha ocurrido en la colision
             return (self.radio+human.radio)**2 > ((self.pos[0] - human.pos[0])**2 + (self.pos[1]-human.pos[1])**2)
-        
+
 class Zombie():
     # Clase para contener las caracteristicas de un objeto que representa un zombie 
-    def __init__(self, posx, posy, size):
-        self.pos = [posx, posy]
+    def __init__(self, x_ini, y_ini, size):
+        self.t = 0
+        self.x_ini = x_ini # x de partida
+        self.y_ini = y_ini # y de partida
+        self.pos = [0, 0]
         self.radio = 0.05
         self.size = size
         self.model = None
     
     def set_model(self, new_model):
         self.model = new_model
+    
+    def movement(self):
+        # self.pos[0] = 1.2 * np.sin(0.6 * self.t/4)
+        self.pos[1] = 1.2 * np.sin(-0.7 *(self.t/4 - 1.5))
 
     def update(self):
         # Se posiciona el nodo referenciado
+        self.movement()
         self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
 
 
 class Human():
     # Clase para contener las caracteristicas de un objeto que representa un zombie 
-    def __init__(self, posx, posy, size):
-        self.pos = [posx, posy]
+    def __init__(self, x_ini, y_ini, size):
+        self.t = 0
+        self.x_ini = x_ini
+        self.y_ini = y_ini
+        self.pos = [0.3, 0]
         self.radio = 0.05
         self.size = size
         self.model = None
-    
+
     def set_model(self, new_model):
         self.model = new_model
 
+    def movement(self):
+        #self.pos[0] = 1.2 * np.sin(self.y_orientation * 0.6 * self.t/4)+self.y_ini
+        self.pos[1] = 1.2 * np.sin(0.7 *(self.t/4 - 1.5))
+
     def update(self):
         # Se posiciona el nodo referenciado
+        self.movement()
         self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
 
 

@@ -79,7 +79,8 @@ def on_key(window, key, scancode, action, mods):
             controller.is_d_pressed = True
         elif action == glfw.RELEASE:
             controller.is_d_pressed = False
-    
+
+    # Detiene al personaje
     if controller.stop:
         controller.is_d_pressed = False
         controller.is_a_pressed = False
@@ -186,8 +187,8 @@ if __name__ == "__main__":
     player.set_controller(controller)
 
     # Posición zombie y humano
-    x_zombie, y_zombie = 0, 0.8
-    x_human, y_human = 0, -0.8
+    x_zombie, y_zombie = 0, 0
+    x_human, y_human = 0, 0
     x_store, y_store = -0.78, 0.8
 
     # Se crean los modelos de zombie y humano, se indican su nodo y se actualiza
@@ -236,6 +237,14 @@ if __name__ == "__main__":
 
         # Clearing the screen
         glClear(GL_COLOR_BUFFER_BIT)
+
+        # Avanza zombie
+        zombie.t = t1
+        zombie.update()
+        
+        # Avanza humano
+        human.t = t1
+        human.update()
 
         # * Se llama al metodo del player para detectar colisiones
 
