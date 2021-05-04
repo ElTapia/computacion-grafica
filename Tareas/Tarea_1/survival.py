@@ -160,10 +160,10 @@ if __name__ == "__main__":
     hinataNode = sg.SceneGraphNode("hinata")
     hinataNode.childs = [hinata_png]
 
-    zombieNode = sg.SceneGraphNode("human")
+    zombieNode = sg.SceneGraphNode("zombie")
     zombieNode.childs = [zombie_png]
 
-    humanNode = sg.SceneGraphNode("zombie")
+    humanNode = sg.SceneGraphNode("human")
     humanNode.childs = [human_png]
 
     storeNode = sg.SceneGraphNode("store")
@@ -177,9 +177,8 @@ if __name__ == "__main__":
     game_overNode.transform = tr.matmul([tr.scale(0, 0, 0)])
     game_overNode.childs = [game_over_png]
 
-    # Se crean el grafo de escena con textura y se agregan las cargas
-    tex_scene = sg.SceneGraphNode("textureScene")
-    tex_scene.childs = [zombieNode, humanNode, storeNode, hinataNode, you_winNode, game_overNode]
+    zombiesNode = sg.SceneGraphNode("zombies")
+    zombiesNode.childs = [zombieNode]
 
     # Se instancia el modelo
     player = Player(0.2)
@@ -202,9 +201,21 @@ if __name__ == "__main__":
     human.set_model(humanNode)
     human.update()
 
+    infectedHumansNode = sg.SceneGraphNode("infected humans")
+    notInfectedHumansNode = sg.SceneGraphNode("not infected humans")
+
+    if human.is_infected:
+        infectedHumansNode.childs.append(humanNode)
+
+    notInfectedHumansNode.childs.append(humanNode)
+
     store = Store(x_store, y_store, 0.5)
     store.set_model(storeNode)
     store.update()
+
+    # Se crean el grafo de escena con textura y se agregan las cargas
+    tex_scene = sg.SceneGraphNode("textureScene")
+    tex_scene.childs = [zombiesNode, notInfectedHumansNode, storeNode, hinataNode, you_winNode, game_overNode]
 
     # * Sirve para colision. Lista con todas las cargas
 
@@ -266,8 +277,12 @@ if __name__ == "__main__":
 
         # Se dibuja el grafo de escena con texturas
         if controller.is_infected:
+
+            glUseProgram(tex_pipeline.shaderProgram)
+            sg.drawSceneGraphNode(tex_scene, tex_pipeline, "transform")
+
             glUseProgram(infected_pipeline.shaderProgram)
-            sg.drawSceneGraphNode(tex_scene, infected_pipeline, "transform")
+            sg.drawSceneGraphNode(infectedHumansNode, infected_pipeline, "transform")
 
         else:
             glUseProgram(tex_pipeline.shaderProgram)
