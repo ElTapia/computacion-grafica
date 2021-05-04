@@ -68,9 +68,10 @@ class Player():
             # si la distancia al zombie es menor que la suma de los radios ha ocurrido en la colision
             return (self.radio+zombie.radio)**2 > ((self.pos[0] - zombie.pos[0])**2 + (self.pos[1]-zombie.pos[1])**2)
     
-    def collision_human(self, human):
-        # si la distancia al humano es menor que la suma de los radios ha ocurrido en la colision
-        return (self.radio+human.radio)**2 > ((self.pos[0] - human.pos[0])**2 + (self.pos[1]-human.pos[1])**2)
+    def collision_human(self, humans):
+        for human in humans:
+            # si la distancia al humano es menor que la suma de los radios ha ocurrido en la colision
+            return (self.radio+human.radio)**2 > ((self.pos[0] - human.pos[0])**2 + (self.pos[1]-human.pos[1])**2)
 
     def infected(self, human):
         if self.collision_human(human) and human.is_infected:
@@ -111,7 +112,7 @@ class Human():
         self.radio = 0.05
         self.size = size
         self.model = None
-        self.is_infected = False
+        self.is_infected = True
 
     def set_model(self, new_model):
         self.model = new_model

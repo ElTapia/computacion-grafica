@@ -267,6 +267,10 @@ if __name__ == "__main__":
         if player.collision_zombie([zombie]):
             game_overNode.transform = tr.matmul([tr.scale(2, 2, 1)])
             player.update(0, True)
+        
+        if player.collision_human([human]) and human.is_infected:
+            player.is_infected = True
+            infectedHumansNode.childs.append(hinataNode)
 
         # Se llama al metodo del player para actualizar su posicion
         player.update(delta)
