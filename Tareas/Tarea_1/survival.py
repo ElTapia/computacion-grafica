@@ -42,6 +42,7 @@ class Controller:
         self.is_a_pressed = False
         self.is_d_pressed = False
         self.stop = False
+        self.is_infected = False
 
 
 # we will use the global controller as communication with the callback function
@@ -89,7 +90,7 @@ def on_key(window, key, scancode, action, mods):
 
     # Caso de detecar la barra espaciadora, se cambia el metodo de dibujo
     if key == glfw.KEY_SPACE and action ==glfw.PRESS:
-        controller.fillPolygon = not controller.fillPolygon
+        controller.is_infected = not controller.is_infected
 
     # Caso en que se cierra la ventana
     elif key == glfw.KEY_ESCAPE and action ==glfw.PRESS:
@@ -137,6 +138,7 @@ if __name__ == "__main__":
     # Pipelines para shapes con colores interpolados y texturas, respectivamente
     pipeline = es.SimpleTransformShaderProgram()
     tex_pipeline = es.SimpleTextureTransformShaderProgram()
+    infected_pipeline = es.InfectedTextureTransformShaderProgram()
 
     # Setting up the clear screen color
     glClearColor(0.15, 0.15, 0.15, 1.0)
@@ -205,7 +207,6 @@ if __name__ == "__main__":
     store.update()
 
     # * Sirve para colision. Lista con todas las cargas
-    # cargas = [carga1, carga2, carga3, carga4]
 
     perfMonitor = pm.PerformanceMonitor(glfw.get_time(), 0.5)
     # glfw will swap buffers as soon as possible
@@ -264,8 +265,13 @@ if __name__ == "__main__":
         sg.drawSceneGraphNode(mainScene, pipeline, "transform")
 
         # Se dibuja el grafo de escena con texturas
-        glUseProgram(tex_pipeline.shaderProgram)
-        sg.drawSceneGraphNode(tex_scene, tex_pipeline, "transform")
+        if controller.is_infected:
+            glUseProgram(infected_pipeline.shaderProgram)
+            sg.drawSceneGraphNode(tex_scene, infected_pipeline, "transform")
+
+        else:
+            glUseProgram(tex_pipeline.shaderProgram)
+            sg.drawSceneGraphNode(tex_scene, tex_pipeline, "transform")
 
         # Once the drawing is rendered, buffers are swap so an uncomplete drawing is never seen.
         glfw.swap_buffers(window)

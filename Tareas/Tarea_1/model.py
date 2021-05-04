@@ -19,6 +19,7 @@ class Player():
         self.controller = None # Referencia del controlador, para acceder a sus variables
         self.size = size # Escala a aplicar al nodo
         self.radio = 0.1 # distancia para realizar los calculos de colision
+        self.is_infected = False
 
     def set_model(self, new_model):
         # Se obtiene una referencia a un nodo
@@ -67,11 +68,14 @@ class Player():
             # si la distancia al zombie es menor que la suma de los radios ha ocurrido en la colision
             return (self.radio+zombie.radio)**2 > ((self.pos[0] - zombie.pos[0])**2 + (self.pos[1]-zombie.pos[1])**2)
     
-    def collision_human(self, humans):
+    def collision_human(self, human):
+        # si la distancia al humano es menor que la suma de los radios ha ocurrido en la colision
+        return (self.radio+human.radio)**2 > ((self.pos[0] - human.pos[0])**2 + (self.pos[1]-human.pos[1])**2)
 
-        for human in humans:
-            # si la distancia al humano es menor que la suma de los radios ha ocurrido en la colision
-            return (self.radio+human.radio)**2 > ((self.pos[0] - human.pos[0])**2 + (self.pos[1]-human.pos[1])**2)
+    def infected(self, human):
+        if self.collision_human(human) and human.is_infected:
+            self.infected = True
+
 
 class Zombie():
     # Clase para contener las caracteristicas de un objeto que representa un zombie 
@@ -99,14 +103,15 @@ class Zombie():
 
 class Human():
     # Clase para contener las caracteristicas de un objeto que representa un zombie 
-    def __init__(self, x_ini, y_ini, size):
+    def __init__(self, x_ini, y_ini, size, is_zombie=False):
         self.t = 0
         self.x_ini = x_ini
         self.y_ini = y_ini
-        self.pos = [0.3, 0]
+        self.pos = [0, 0]
         self.radio = 0.05
         self.size = size
         self.model = None
+        self.is_infected = False
 
     def set_model(self, new_model):
         self.model = new_model
@@ -119,6 +124,13 @@ class Human():
         # Se posiciona el nodo referenciado
         self.movement()
         self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
+
+    def collision_zombie(self, zombies):
+
+        # Se recorren los zombies
+        for zombie in zombies:
+            # si la distancia al zombie es menor que la suma de los radios ha ocurrido en la colision
+            return (self.radio+zombie.radio)**2 > ((self.pos[0] - zombie.pos[0])**2 + (self.pos[1]-zombie.pos[1])**2)
 
 
 class Store():
