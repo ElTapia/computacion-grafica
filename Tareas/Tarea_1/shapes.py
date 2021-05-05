@@ -94,6 +94,7 @@ def createTree(gpuGreenTriangle, gpuBrownQuad):
     treeNode.childs = [treeLogNode, treeTop2Node, treeTopNode]
     return treeNode
 
+
 def createScene(pipeline):
     # Funcion que crea la escena de la pregunta 2
 

@@ -16,16 +16,17 @@ from model import *
 
 # Inicializa parámetros
 
-Z = sys.argv[1]
-H = sys.argv[2]
-T = sys.argv[3]
-P = sys.argv[4]
+Z = int(sys.argv[1])
+H = int(sys.argv[2])
+T = int(sys.argv[3])
+P = float(sys.argv[4])
 
 print("Inicia el juego")
 print("{} zombies".format(Z))
 print("{} humanos".format(H))
 print("{} segundos".format(T))
 print("{} probabilidad de contagio".format(P))
+
 
 #############################################################################
 
@@ -43,7 +44,6 @@ class Controller:
         self.is_d_pressed = False
         self.stop = False
         self.is_infected = False
-
 
 # we will use the global controller as communication with the callback function
 controller = Controller()
@@ -160,12 +160,6 @@ if __name__ == "__main__":
     hinataNode = sg.SceneGraphNode("hinata")
     hinataNode.childs = [hinata_png]
 
-    zombieNode = sg.SceneGraphNode("zombie")
-    zombieNode.childs = [zombie_png]
-
-    humanNode = sg.SceneGraphNode("human")
-    humanNode.childs = [human_png]
-
     storeNode = sg.SceneGraphNode("store")
     storeNode.childs = [store_png]
 
@@ -177,9 +171,6 @@ if __name__ == "__main__":
     game_overNode.transform = tr.matmul([tr.scale(0, 0, 0)])
     game_overNode.childs = [game_over_png]
 
-    zombiesNode = sg.SceneGraphNode("zombies")
-    zombiesNode.childs = [zombieNode]
-
     # Se instancia el modelo
     player = Player(0.2)
 
@@ -187,47 +178,95 @@ if __name__ == "__main__":
     player.set_model(hinataNode)
     player.set_controller(controller)
 
-    # Posición zombie y humano
-    x_zombie, y_zombie = 0, 0
-    x_human, y_human = 0, 0
+    # Posición store
     x_store, y_store = -0.78, 0.8
 
-    # Se crean los modelos de zombie y humano, se indican su nodo y se actualiza
-    zombie = Zombie(x_zombie, y_zombie, 0.35)
-    zombie.set_model(zombieNode)
-    zombie.update()
+    def spawn_humans(P, N, y_human, infectedHumans, notInfectedHumans):
 
-    human = Human(x_human, y_human, 0.2)
-    human.set_model(humanNode)
-    human.update()
+        x_human = np.random.uniform(-0.58, 0.58, N)
+
+        humans = np.empty(N, dtype=object)
+
+        for i in range(N):
+            humanNode = sg.SceneGraphNode("human")
+            humanNode.childs = [human_png]
+
+            human = Human(x_human[i], y_human, 0.2, P)
+            human.set_model(humanNode)
+            human.update()
+
+            humans[i] = human
+
+            if human.is_infected:
+                infectedHumans.childs += [human.model]
+
+            else:
+                notInfectedHumans.childs += [human.model]
+
+        return humans
+
+    def spawn_zombies(P, N, y_zombie, zombiesNode):
+
+        x_zombie = np.random.uniform(-0.58, 0.58, N)
+        zombies = np.empty(N, dtype=object)
+
+        for i in range(N):
+            zombieNode = sg.SceneGraphNode("zombie")
+            zombieNode.childs = [zombie_png]
+
+            # Se crean los modelos de zombie, se indican su nodo y se actualiza
+            zombie = Zombie(x_zombie[i], y_zombie, 0.35)
+            zombie.set_model(zombieNode)
+            zombie.update()
+
+            zombies[i] = zombie
+            zombiesNode.childs += [zombieNode]
+
+        return zombies
+
+    def entity_stop(entities):
+        for entity in entities:
+                    entity.stop = True
 
     infectedHumansNode = sg.SceneGraphNode("infected humans")
     notInfectedHumansNode = sg.SceneGraphNode("not infected humans")
-
-    if human.is_infected:
-        infectedHumansNode.childs.append(humanNode)
-
-    notInfectedHumansNode.childs.append(humanNode)
+    zombiesNode = sg.SceneGraphNode("zombies")
 
     store = Store(x_store, y_store, 0.5)
     store.set_model(storeNode)
     store.update()
 
+    # Crea primeros humanos
+    humans = spawn_humans(P, H, 0, infectedHumansNode, notInfectedHumansNode)
+    # Crea primeros zombies
+    zombies = spawn_zombies(P, Z, 0, zombiesNode)
+
     # Se crean el grafo de escena con textura y se agregan las cargas
     tex_scene = sg.SceneGraphNode("textureScene")
-    tex_scene.childs = [zombiesNode, notInfectedHumansNode, storeNode, hinataNode, you_winNode, game_overNode]
+    tex_scene.childs = [zombiesNode, infectedHumansNode, notInfectedHumansNode, storeNode, hinataNode, you_winNode, game_overNode]
 
-    # * Sirve para colision. Lista con todas las cargas
+    def win():
+        you_winNode.transform = tr.matmul([tr.scale(2, 2, 1)])
+        player.update(0, True)
+        entity_stop(zombies)
+        entity_stop(humans)
+
+    def lose():
+        game_overNode.transform = tr.matmul([tr.scale(2, 2, 1)])
+        player.update(0, True)
+        entity_stop(zombies)
+        entity_stop(humans)
 
     perfMonitor = pm.PerformanceMonitor(glfw.get_time(), 0.5)
     # glfw will swap buffers as soon as possible
     glfw.swap_interval(0)
     t0 = glfw.get_time()
-    
+
     # Enabling transparencies
     glEnable(GL_BLEND)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
+    t_spawn = 0
     # Application loop
     while not glfw.window_should_close(window):
         # Variables del tiempo
@@ -250,27 +289,37 @@ if __name__ == "__main__":
         # Clearing the screen
         glClear(GL_COLOR_BUFFER_BIT)
 
-        # Avanza zombie
-        zombie.t = t1
-        zombie.update()
-        
-        # Avanza humano
-        human.t = t1
-        human.update()
+        t_spawn += 0.001
+        if t_spawn >= T:
+            t_spawn = 0
 
-        # * Se llama al metodo del player para detectar colisiones
-
+        # Si llega a la tienda, gana
         if player.collision_store(store):
-            you_winNode.transform = tr.matmul([tr.scale(2, 2, 1)])
-            player.update(0, True)
+            win()
 
-        if player.collision_zombie([zombie]):
-            game_overNode.transform = tr.matmul([tr.scale(2, 2, 1)])
-            player.update(0, True)
-        
-        if player.collision_human([human]) and human.is_infected:
-            player.is_infected = True
-            infectedHumansNode.childs.append(hinataNode)
+        if t_spawn == 0:
+            # Spawnea humanos despues de T segundos
+            new_humans = spawn_humans(P, H, 0, infectedHumansNode, notInfectedHumansNode)
+            humans = np.append(humans, new_humans)
+
+            # Spawnea zombies despues de T segundos
+            new_zombies = spawn_zombies(P, H, 0, zombiesNode)
+            zombies = np.append(zombies, new_zombies)
+
+        for human in humans:
+            # Avanza humano
+            human.update()
+            # Ve si colisiona con humano infectado
+            player.infected(human)
+
+        for zombie in zombies:
+            # Avanza zombie
+            zombie.update()
+
+            # Si toca un zombie, pierde
+            if player.collision_zombie(zombie):
+                lose()
+
 
         # Se llama al metodo del player para actualizar su posicion
         player.update(delta)
@@ -280,17 +329,16 @@ if __name__ == "__main__":
         sg.drawSceneGraphNode(mainScene, pipeline, "transform")
 
         # Se dibuja el grafo de escena con texturas
+        glUseProgram(tex_pipeline.shaderProgram)
+        sg.drawSceneGraphNode(tex_scene, tex_pipeline, "transform")
+
         if controller.is_infected:
-
-            glUseProgram(tex_pipeline.shaderProgram)
-            sg.drawSceneGraphNode(tex_scene, tex_pipeline, "transform")
-
             glUseProgram(infected_pipeline.shaderProgram)
             sg.drawSceneGraphNode(infectedHumansNode, infected_pipeline, "transform")
 
-        else:
-            glUseProgram(tex_pipeline.shaderProgram)
-            sg.drawSceneGraphNode(tex_scene, tex_pipeline, "transform")
+            if player.is_infected:
+                glUseProgram(infected_pipeline.shaderProgram)
+                sg.drawSceneGraphNode(hinataNode, infected_pipeline, "transform")
 
         # Once the drawing is rendered, buffers are swap so an uncomplete drawing is never seen.
         glfw.swap_buffers(window)

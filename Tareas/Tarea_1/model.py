@@ -61,21 +61,24 @@ class Player():
         # si la distancia a la tienda es menor que la suma de los radios ha ocurrido en la colision
         return (self.radio+store.radio)**2 > ((self.pos[0] - store.pos[0])**2 + (self.pos[1]-store.pos[1])**2)
 
-    def collision_zombie(self, zombies):
+    def collision_zombie(self, zombie):
 
-        # Se recorren los zombies
-        for zombie in zombies:
-            # si la distancia al zombie es menor que la suma de los radios ha ocurrido en la colision
-            return (self.radio+zombie.radio)**2 > ((self.pos[0] - zombie.pos[0])**2 + (self.pos[1]-zombie.pos[1])**2)
+        # si la distancia al zombie es menor que la suma de los radios ha ocurrido en la colision
+        return (self.radio+zombie.radio)**2 > ((self.pos[0] - zombie.pos[0])**2 + (self.pos[1]-zombie.pos[1])**2)
     
-    def collision_human(self, humans):
-        for human in humans:
-            # si la distancia al humano es menor que la suma de los radios ha ocurrido en la colision
-            return (self.radio+human.radio)**2 > ((self.pos[0] - human.pos[0])**2 + (self.pos[1]-human.pos[1])**2)
+    def collision_human(self, human):
+        # si la distancia al humano es menor que la suma de los radios ha ocurrido en la colision
+        return (self.radio+human.radio)**2 > ((self.pos[0] - human.pos[0])**2 + (self.pos[1]-human.pos[1])**2)
 
     def infected(self, human):
         if self.collision_human(human) and human.is_infected:
-            self.infected = True
+            self.is_infected = True
+    
+    def prob_become_zombie(self, p):
+        if self.is_infected:
+            return np.random.binomial(1, p)==0
+
+        return False
 
 
 class Zombie():
@@ -84,10 +87,11 @@ class Zombie():
         self.t = 0
         self.x_ini = x_ini # x de partida
         self.y_ini = y_ini # y de partida
-        self.pos = [0, 0]
+        self.pos = [x_ini, y_ini]
         self.radio = 0.05
         self.size = size
         self.model = None
+        self.stop=False
     
     def set_model(self, new_model):
         self.model = new_model
@@ -98,21 +102,29 @@ class Zombie():
 
     def update(self):
         # Se posiciona el nodo referenciado
-        self.movement()
-        self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
+        if self.stop:
+            self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
+
+        else:
+            self.t += 0.001
+            self.movement()
+            self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
 
 
 class Human():
     # Clase para contener las caracteristicas de un objeto que representa un zombie 
-    def __init__(self, x_ini, y_ini, size, is_zombie=False):
+    def __init__(self, x_ini, y_ini, size, p, is_zombie=False):
         self.t = 0
         self.x_ini = x_ini
         self.y_ini = y_ini
-        self.pos = [0, 0]
+        self.pos = [x_ini, y_ini]
         self.radio = 0.05
         self.size = size
         self.model = None
+        self.stop=False
         self.is_infected = True
+        if np.random.binomial(1, p)==0:
+            self.is_infected = False
 
     def set_model(self, new_model):
         self.model = new_model
@@ -122,9 +134,14 @@ class Human():
         self.pos[1] = 1.2 * np.sin(0.7 *(self.t/4 - 1.5))
 
     def update(self):
-        # Se posiciona el nodo referenciado
-        self.movement()
-        self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
+        if self.stop:
+            self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
+
+        else:
+            # Se posiciona el nodo referenciado
+            self.t += 0.001
+            self.movement()
+            self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
 
     def collision_zombie(self, zombies):
 
@@ -132,7 +149,6 @@ class Human():
         for zombie in zombies:
             # si la distancia al zombie es menor que la suma de los radios ha ocurrido en la colision
             return (self.radio+zombie.radio)**2 > ((self.pos[0] - zombie.pos[0])**2 + (self.pos[1]-zombie.pos[1])**2)
-
 
 class Store():
     # Clase para contener las caracteristicas de un objeto que representa un zombie 
