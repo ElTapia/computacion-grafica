@@ -42,8 +42,8 @@ class Controller:
         self.is_s_pressed = False
         self.is_a_pressed = False
         self.is_d_pressed = False
-        self.stop = False
-        self.is_infected = False
+        self.stop = False  # Detiene el controlador al finalizar juego
+        self.detector_glasses = False  #  Gafas detectoras de contagiados
 
 # we will use the global controller as communication with the callback function
 controller = Controller()
@@ -90,7 +90,7 @@ def on_key(window, key, scancode, action, mods):
 
     # Caso de detecar la barra espaciadora, se cambia el metodo de dibujo
     if key == glfw.KEY_SPACE and action ==glfw.PRESS:
-        controller.is_infected = not controller.is_infected
+        controller.detector_glasses = not controller.detector_glasses
 
     # Caso en que se cierra la ventana
     elif key == glfw.KEY_ESCAPE and action ==glfw.PRESS:
@@ -289,9 +289,10 @@ if __name__ == "__main__":
         # Clearing the screen
         glClear(GL_COLOR_BUFFER_BIT)
 
-        t_spawn += 0.001
-        if t_spawn >= T:
-            t_spawn = 0
+        if t_spawn is not None:
+            t_spawn += 0.001
+            if t_spawn >= T:
+                t_spawn = 0
 
         # Si llega a la tienda, gana
         if player.collision_store(store):
@@ -318,6 +319,7 @@ if __name__ == "__main__":
 
             # Si toca un zombie, pierde
             if player.collision_zombie(zombie):
+                t_spawn = None
                 lose()
 
 
@@ -332,7 +334,7 @@ if __name__ == "__main__":
         glUseProgram(tex_pipeline.shaderProgram)
         sg.drawSceneGraphNode(tex_scene, tex_pipeline, "transform")
 
-        if controller.is_infected:
+        if controller.detector_glasses:
             glUseProgram(infected_pipeline.shaderProgram)
             sg.drawSceneGraphNode(infectedHumansNode, infected_pipeline, "transform")
 
