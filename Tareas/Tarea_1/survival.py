@@ -19,6 +19,7 @@ import grafica.performance_monitor as pm
 import grafica.scene_graph as sg
 from shapes import *
 from model import *
+import math
 
 # Initialize parameters
 
@@ -247,15 +248,26 @@ if __name__ == "__main__":
             entity.stop = True
 
     # Expands "you win" message
-    def win():
-        you_winNode.transform = tr.matmul([tr.scale(2, 2, 1)])
+    def win(t):
+        y_scale = t-0.2
+        x_scale = t
+
+        if 0 < t < 2.51:
+            you_winNode.transform = tr.matmul([tr.scale(x_scale, y_scale, 1), tr.rotationZ(-t*10)])
+
         player.update(0, True)
         entity_stop(zombies)
         entity_stop(humans)
 
     # Expands "game over" message
-    def lose():
-        game_overNode.transform = tr.matmul([tr.scale(2, 2, 1)])
+    def lose(t):
+
+        y_scale = t
+        x_scale = t+0.2
+
+        if 0 < t < 2.51:
+            game_overNode.transform = tr.matmul([tr.scale(x_scale, y_scale, 1), tr.rotationZ(-t*10)])
+
         player.update(0, True)
         entity_stop(zombies)
         entity_stop(humans)
@@ -300,6 +312,12 @@ if __name__ == "__main__":
     # Initialize spawn time for humans and zombies
     t_spawn = 0
 
+    # Initialize time for lose
+    t_lose = 0
+
+    # Initialize time for win
+    t_win = 0
+
     # Application loop
     while not glfw.window_should_close(window):
 
@@ -332,7 +350,10 @@ if __name__ == "__main__":
 
         # Reach store -> Win
         if player.collision_store(store):
-            win()
+            # Set time spawn to None to stop spawning entities
+            t_spawn = None
+            t_win += 0.005
+            win(t_win)
         
         # Check some interactions for all humans on screen
         for human in humans:
@@ -364,7 +385,8 @@ if __name__ == "__main__":
             if player.collision_zombie(zombie):
                 # Set time spawn to None to stop spawning entities
                 t_spawn = None
-                lose()
+                t_lose += 0.005
+                lose(t_lose)
 
         # Time to spawn entities
         if t_spawn == 0:
