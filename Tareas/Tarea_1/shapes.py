@@ -71,27 +71,35 @@ def createColorCircle(N, r, g, b):
     return bs.Shape(vertices, indices)
 
 
-def createTree(gpuGreenTriangle, gpuBrownQuad):
+def createTree(gpuGreenTriangle, gpuBrownQuad, i):
     # Función que crea un árbol
 
     # Nodo de copa de un árbol, triangulo verde escalado
-    treeTopNode = sg.SceneGraphNode("tree top")
+    treeTopNode = sg.SceneGraphNode("tree top {}".format(i))
     treeTopNode.transform = tr.matmul([tr.translate(0, 0.3, 0),tr.scale(0.2, 0.3, 1)])
     treeTopNode.childs = [gpuGreenTriangle]
 
     # Nodo de segunda copa de un árbol, triangulo verde escalado
-    treeTop2Node = sg.SceneGraphNode("tree top 2")
+    treeTop2Node = sg.SceneGraphNode("tree top 2 {}".format(i))
     treeTop2Node.transform = tr.matmul([tr.translate(0, 0.15, 0),tr.scale(0.2, 0.3, 1)])
     treeTop2Node.childs = [gpuGreenTriangle]
-    
+
+    # Nodo que contiene copas de los arboles
+    treeTopsNode = sg.SceneGraphNode("tree tops {}".format(i))
+    treeTopsNode.childs = [treeTop2Node, treeTopNode]
+
+    # Nodo que contiene movimiento copas de arboles
+    shearingTopsNode = sg.SceneGraphNode("tops shearing {}".format(i))
+    shearingTopsNode.childs = [treeTopsNode]
+
     # Nodo de tronco de un árbol, triangulo verde escalado
-    treeLogNode = sg.SceneGraphNode("tree log")
+    treeLogNode = sg.SceneGraphNode("tree log {}".format(i))
     treeLogNode.transform = tr.matmul([tr.scale(0.07, 0.2, 1)])
     treeLogNode.childs = [gpuBrownQuad]
 
     # Nodo de un arbol, con figuras creadas con anterioridad
-    treeNode = sg.SceneGraphNode("tree")
-    treeNode.childs = [treeLogNode, treeTop2Node, treeTopNode]
+    treeNode = sg.SceneGraphNode("tree {}".format(i))
+    treeNode.childs = [treeLogNode, shearingTopsNode]
     return treeNode
 
 
@@ -108,12 +116,12 @@ def createScene(pipeline):
     # Crea varios arboles y los agrupa
     treesList = []
     for i in range(3):
-        newTree = createTree(gpuGreenTriangle, gpuBrownQuad)
+        newTree = createTree(gpuGreenTriangle, gpuBrownQuad, i)
         newTree.transform = tr.matmul([tr.translate(0, i/2, 0), tr.translate(0.75, -0.32, 0), tr.scale(1, 0.7, 1)])
         treesList.append(newTree)
     
     for i in range(3):
-        newTree = createTree(gpuGreenTriangle, gpuBrownQuad)
+        newTree = createTree(gpuGreenTriangle, gpuBrownQuad, i+3)
         newTree.transform = tr.matmul([tr.translate(0, i/2, 0), tr.translate(-0.75, -0.82, 0), tr.scale(1, 0.7, 1)])
         treesList.append(newTree)
 

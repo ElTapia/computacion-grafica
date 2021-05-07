@@ -342,6 +342,11 @@ if __name__ == "__main__":
         # Clearing the screen
         glClear(GL_COLOR_BUFFER_BIT)
 
+        # Se crea el movimiento de giro del rotor
+        for i in range(6):
+            top = sg.findNode(mainScene, "tops shearing {}".format(i))
+            top.transform = tr.shearing(0.15*math.sin(t1*1.5), 0, 0, 0, 0, 0)
+
         # Resets time spawn when reach T
         if t_spawn is not None:
             t_spawn += 0.001
