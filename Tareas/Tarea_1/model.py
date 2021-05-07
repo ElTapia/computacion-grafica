@@ -1,4 +1,4 @@
-""" Clases y objetos correspondiente al modelo"""
+""" Models classes and objects"""
 
 import glfw
 import numpy as np
@@ -6,15 +6,12 @@ import grafica.transformations as tr
 import grafica.scene_graph as sg
 from shapes import *
 
-#// TODO: Definir player para hinata
-# // TODO: Definir modelo para zombie
-# // TODO: Definir modelo para humano
 
 class Player():
     # Clase que contiene al modelo del player
     def __init__(self, size):
         self.pos = [0.58, -0.75] # Posicion hinata
-        self.vel = [1,1] # Velocidad de desplazamiento
+        self.vel = [0.4,0.4] # Velocidad de desplazamiento
         self.model = None # Referencia al grafo de escena asociado
         self.controller = None # Referencia del controlador, para acceder a sus variables
         self.size = size # Escala a aplicar al nodo
@@ -88,27 +85,45 @@ class Zombie():
         self.x_ini = x_ini # x de partida
         self.y_ini = y_ini # y de partida
         self.pos = [x_ini, y_ini]
-        self.radio = 0.05
+        self.vel = np.random.uniform(0.1, 0.8, 2)
+        self.direction = np.random.choice([-1, 1], 1)
+        self.radio = 0.03
         self.size = size
         self.model = None
         self.stop=False
     
     def set_model(self, new_model):
         self.model = new_model
-    
-    def movement(self):
-        # self.pos[0] = 1.2 * np.sin(0.6 * self.t/4)
-        self.pos[1] = 1.2 * np.sin(-0.7 *(self.t/4 - 1.5))
 
     def update(self):
+        def pos_y():
+            return -np.sign(self.y_ini)*self.vel[1]*self.t + self.y_ini
+        
+        def pos_x():
+            return self.direction*self.vel[0]*np.sin(self.t) + self.x_ini
+
         # Se posiciona el nodo referenciado
         if self.stop:
             self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
 
         else:
             self.t += 0.001
-            self.movement()
-            self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
+            self.pos[0] = pos_x()
+
+            if self.pos[0] > 0.6:
+                self.pos[0]=0.6
+                self.pos[1] = pos_y()
+                self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
+
+            elif self.pos[0] < -0.6:
+                self.pos[0]=-0.6
+                self.pos[1] = pos_y()
+                self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
+
+            else:
+                self.pos[0] = pos_x()
+                self.pos[1] = pos_y()
+                self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
 
 
 class Human():
@@ -118,6 +133,8 @@ class Human():
         self.x_ini = x_ini
         self.y_ini = y_ini
         self.pos = [x_ini, y_ini]
+        self.vel = np.random.uniform(0.4, 0.5, 2)
+        self.direction = np.random.choice([-1, 1], 1)
         self.radio = 0.05
         self.size = size
         self.model = None
@@ -129,26 +146,49 @@ class Human():
     def set_model(self, new_model):
         self.model = new_model
 
-    def movement(self):
-        #self.pos[0] = 1.2 * np.sin(self.y_orientation * 0.6 * self.t/4)+self.y_ini
-        self.pos[1] = 1.2 * np.sin(0.7 *(self.t/4 - 1.5))
 
     def update(self):
+        def pos_y():
+            return -np.sign(self.y_ini)*self.vel[1]*self.t + self.y_ini
+    
+        def pos_x():
+            return self.direction*self.vel[0]*np.sin(self.t) + self.x_ini
+
         if self.stop:
             self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
 
         else:
             # Se posiciona el nodo referenciado
             self.t += 0.001
-            self.movement()
-            self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
+            self.pos[0]=pos_x()
 
-    def collision_zombie(self, zombies):
+            if self.pos[0] > 0.6:
+                self.pos[0]=0.6
+                self.pos[1]=pos_y()
+                self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
 
-        # Se recorren los zombies
-        for zombie in zombies:
-            # si la distancia al zombie es menor que la suma de los radios ha ocurrido en la colision
-            return (self.radio+zombie.radio)**2 > ((self.pos[0] - zombie.pos[0])**2 + (self.pos[1]-zombie.pos[1])**2)
+            elif self.pos[0] < -0.6:
+                self.pos[0]=-0.6
+                self.pos[1]=pos_y()
+                self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
+
+            else:
+                self.pos[0]=pos_x()
+                self.pos[1]=pos_y()
+                self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
+
+    def collision_zombie(self, zombie):
+
+        # si la distancia al zombie es menor que la suma de los radios ha ocurrido en la colision
+        return (self.radio+zombie.radio)**2 > ((self.pos[0] - zombie.pos[0])**2 + (self.pos[1]-zombie.pos[1])**2)
+
+    def collision_human(self, human):
+        # si la distancia al zombie es menor que la suma de los radios ha ocurrido en la colision
+        return (self.radio+human.radio)**2 > ((self.pos[0] - human.pos[0])**2 + (self.pos[1]-human.pos[1])**2)
+
+    def infected(self, human):
+        if self.collision_human(human) and human.is_infected:
+            self.is_infected = True
 
 class Store():
     # Clase para contener las caracteristicas de un objeto que representa un zombie 
