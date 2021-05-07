@@ -189,7 +189,6 @@ class SimpleTransformShaderProgram:
 
         vertex_shader = """
             #version 410
-            
             uniform mat4 transform;
 
             in vec3 position;

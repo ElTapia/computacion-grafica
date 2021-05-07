@@ -5,6 +5,7 @@ import numpy as np
 import grafica.transformations as tr
 import grafica.scene_graph as sg
 from shapes import *
+import math
 
 
 class Player():
@@ -71,12 +72,11 @@ class Player():
         if self.collision_human(human) and human.is_infected:
             self.is_infected = True
     
-    def prob_become_zombie(self, p):
+    def prob_become_zombie(self, p, lose=False):
         if self.is_infected:
             return np.random.binomial(1, p)==0
-
-        return False
-
+        else:
+            return False
 
 class Zombie():
     # Clase para contener las caracteristicas de un objeto que representa un zombie 
@@ -146,7 +146,6 @@ class Human():
     def set_model(self, new_model):
         self.model = new_model
 
-
     def update(self):
         def pos_y():
             return -np.sign(self.y_ini)*self.vel[1]*self.t + self.y_ini
@@ -204,4 +203,3 @@ class Store():
     def update(self):
         # Se posiciona el nodo referenciado
         self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1)])
-

@@ -317,6 +317,9 @@ if __name__ == "__main__":
 
     # Initialize time for win
     t_win = 0
+    
+    # Initialize time for infected player
+    t_infected = 0.0001
 
     # Application loop
     while not glfw.window_should_close(window):
@@ -349,7 +352,7 @@ if __name__ == "__main__":
 
         # Resets time spawn when reach T
         if t_spawn is not None:
-            t_spawn += 0.001
+            t_spawn += delta
             if t_spawn >= T:
                 t_spawn = 0
 
@@ -357,21 +360,21 @@ if __name__ == "__main__":
         if player.collision_store(store):
             # Set time spawn to None to stop spawning entities
             t_spawn = None
-            t_win += 0.005
+            t_win += delta
             win(t_win)
         
         # Check some interactions for all humans on screen
         for human in humans:
             # Move human
             human.update()
-        
-        for infected in infectedHumans:
-            # Check if player touch an infected human
-            player.infected(infected)
 
         for human in notInfectedHumans:
             for infected_human in infectedHumans:
+                # Check if human touch an infected human
                 human.infected(infected_human)
+
+                # Check if player touch an infected human
+                player.infected(infected_human)
 
         for human in notInfectedHumans:
             if human.is_infected:
@@ -380,6 +383,21 @@ if __name__ == "__main__":
                 infectedHumansNode.childs += [human.model]
 
                 humans = infectedHumans + notInfectedHumans
+
+        if player.is_infected and t_infected is not None:
+            t_infected += delta
+            if t_infected >= T:
+                t_infected = 0
+
+        if player.prob_become_zombie(P) and t_infected==0:
+            # Set time spawn to None to stop spawning entities
+            t_infected = None
+
+        if t_infected == None:
+            t_spawn = None
+            t_lose += delta
+            lose(t_lose)
+
 
         # Check some zombie interactions
         for zombie in zombies:
@@ -390,7 +408,7 @@ if __name__ == "__main__":
             if player.collision_zombie(zombie):
                 # Set time spawn to None to stop spawning entities
                 t_spawn = None
-                t_lose += 0.005
+                t_lose += delta
                 lose(t_lose)
 
         # Time to spawn entities
@@ -428,6 +446,11 @@ if __name__ == "__main__":
             if player.is_infected:
                 glUseProgram(infected_pipeline.shaderProgram)
                 sg.drawSceneGraphNode(hinataNode, infected_pipeline, "transform")
+
+        # Draw you win and game over
+        glUseProgram(tex_pipeline.shaderProgram)
+        sg.drawSceneGraphNode(you_winNode, tex_pipeline, "transform")
+        sg.drawSceneGraphNode(game_overNode, tex_pipeline, "transform")
 
         # Once the drawing is rendered, buffers are swap so an uncomplete drawing is never seen.
         glfw.swap_buffers(window)
