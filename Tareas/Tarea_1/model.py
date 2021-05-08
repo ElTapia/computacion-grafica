@@ -189,6 +189,10 @@ class Human():
         if self.collision_human(human) and human.is_infected:
             self.is_infected = True
 
+    def touch_zombie(self, zombie):
+        if self.collision_human(zombie):
+            self.is_infected = True
+
 class Store():
     # Clase para contener las caracteristicas de un objeto que representa un zombie 
     def __init__(self, posx, posy, size):

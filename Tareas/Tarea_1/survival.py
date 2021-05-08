@@ -277,8 +277,6 @@ if __name__ == "__main__":
     infectedHumansNode = sg.SceneGraphNode("infected humans")
     notInfectedHumansNode = sg.SceneGraphNode("not infected humans")
 
-    zombiesNode = sg.SceneGraphNode("zombies")
-
     # Store Position
     x_store, y_store = -0.78, 0.8
 
@@ -292,15 +290,19 @@ if __name__ == "__main__":
     infectedHumans, notInfectedHumans = spawn_humans(P, H, infectedHumansNode, notInfectedHumansNode)
     humans = infectedHumans + notInfectedHumans
 
-    humansNode = sg.SceneGraphNode("humans")
-    humansNode.childs = [infectedHumansNode, notInfectedHumansNode]
-
     # Crea First Z zombies
+    zombiesNode = sg.SceneGraphNode("zombies")
     zombies = spawn_zombies(Z, zombiesNode)
+
+    # Zombies are severe infected humans
+    infectedHumansNode.childs += [zombiesNode]
+
+    humansNode = sg.SceneGraphNode("humans")
+    humansNode.childs = [infectedHumansNode, notInfectedHumansNode, hinataNode]
 
     # Create scene graph with textures and add elements
     tex_scene = sg.SceneGraphNode("textureScene")
-    tex_scene.childs = [zombiesNode, humansNode, storeNode, hinataNode, you_winNode, game_overNode]
+    tex_scene.childs = [humansNode, storeNode, you_winNode, game_overNode]
 
 
     perfMonitor = pm.PerformanceMonitor(glfw.get_time(), 0.5)
@@ -320,7 +322,7 @@ if __name__ == "__main__":
 
     # Initialize time for win
     t_win = 0
-    
+
     # Initialize time for infected player
     t_infected = 0
 
@@ -379,6 +381,9 @@ if __name__ == "__main__":
 
                 # Check if player touch an infected human
                 player.infected(infected_human)
+
+            for zombie in zombies:
+                human.touch_zombie(zombie)
 
         for human in notInfectedHumans:
             if human.is_infected:
