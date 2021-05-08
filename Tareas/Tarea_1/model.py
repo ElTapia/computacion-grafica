@@ -74,7 +74,7 @@ class Player():
     
     def prob_become_zombie(self, p, lose=False):
         if self.is_infected:
-            return np.random.binomial(1, p)==0
+            return np.random.binomial(1, p)==1
         else:
             return False
 
@@ -91,7 +91,7 @@ class Zombie():
         self.size = size
         self.model = None
         self.stop=False
-    
+
     def set_model(self, new_model):
         self.model = new_model
 

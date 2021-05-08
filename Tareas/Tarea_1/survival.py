@@ -150,12 +150,12 @@ if __name__ == "__main__":
     mainScene = createScene(pipeline)
 
     # Shapes with textures
-    hinata_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/hinata.png")
-    zombie_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/zombie.png")
-    human_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/kageyama.png")
-    store_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/store.png")
-    you_win_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/you_win.png")
-    game_over_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/game_over.png")
+    hinata_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/hinata.png", GL_STREAM_DRAW)
+    zombie_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/zombie.png", GL_DYNAMIC_DRAW)
+    human_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/kageyama.png", GL_DYNAMIC_DRAW)
+    store_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/store.png", GL_STATIC_DRAW)
+    you_win_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/you_win.png", GL_DYNAMIC_DRAW)
+    game_over_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/game_over.png", GL_DYNAMIC_DRAW)
 
     # Nodes per shape
     hinataNode = sg.SceneGraphNode("hinata")
@@ -197,14 +197,13 @@ if __name__ == "__main__":
             if human.is_infected:
 
                 infectedHumanNode = sg.SceneGraphNode("infected human {}".format(i))
-
                 infectedHumanNode.childs = [human_png]
 
                 human.set_model(infectedHumanNode)
                 human.update()
 
                 infectedHumansList += [human]
-                infectedHumans.childs += [human.model]
+                infectedHumans.childs += [infectedHumanNode]
 
             else:
 
@@ -216,7 +215,7 @@ if __name__ == "__main__":
                 human.update()
 
                 notInfectedHumansList += [human]
-                notInfectedHumans.childs += [human.model]
+                notInfectedHumans.childs += [humanNode]
 
         return infectedHumansList, notInfectedHumansList
 
@@ -249,8 +248,8 @@ if __name__ == "__main__":
 
     # Expands "you win" message
     def win(t):
-        y_scale = t-0.2
-        x_scale = t
+        y_scale = t
+        x_scale = t+0.2
 
         if 0 < t < 2.51:
             you_winNode.transform = tr.matmul([tr.scale(x_scale, y_scale, 1), tr.rotationZ(-t*10)])
@@ -277,6 +276,7 @@ if __name__ == "__main__":
     # Set infected, not infected and zombies nodes
     infectedHumansNode = sg.SceneGraphNode("infected humans")
     notInfectedHumansNode = sg.SceneGraphNode("not infected humans")
+
     zombiesNode = sg.SceneGraphNode("zombies")
 
     # Store Position
@@ -292,12 +292,15 @@ if __name__ == "__main__":
     infectedHumans, notInfectedHumans = spawn_humans(P, H, infectedHumansNode, notInfectedHumansNode)
     humans = infectedHumans + notInfectedHumans
 
+    humansNode = sg.SceneGraphNode("humans")
+    humansNode.childs = [infectedHumansNode, notInfectedHumansNode]
+
     # Crea First Z zombies
     zombies = spawn_zombies(Z, zombiesNode)
 
     # Create scene graph with textures and add elements
     tex_scene = sg.SceneGraphNode("textureScene")
-    tex_scene.childs = [zombiesNode, infectedHumansNode, notInfectedHumansNode, storeNode, hinataNode, you_winNode, game_overNode]
+    tex_scene.childs = [zombiesNode, humansNode, storeNode, hinataNode, you_winNode, game_overNode]
 
 
     perfMonitor = pm.PerformanceMonitor(glfw.get_time(), 0.5)
@@ -319,7 +322,7 @@ if __name__ == "__main__":
     t_win = 0
     
     # Initialize time for infected player
-    t_infected = 0.0001
+    t_infected = 0
 
     # Application loop
     while not glfw.window_should_close(window):
@@ -359,10 +362,11 @@ if __name__ == "__main__":
         # Reach store -> Win
         if player.collision_store(store):
             # Set time spawn to None to stop spawning entities
+            t_infected = False
             t_spawn = None
             t_win += delta
             win(t_win)
-        
+
         # Check some interactions for all humans on screen
         for human in humans:
             # Move human
@@ -440,12 +444,12 @@ if __name__ == "__main__":
 
             # Change color to green to infected humans
             glUseProgram(infected_pipeline.shaderProgram)
-            sg.drawSceneGraphNode(infectedHumansNode, infected_pipeline, "transform")
+            sg.drawSceneGraphNode(sg.findNode(tex_scene, "infected humans"), infected_pipeline, "transform")
 
             # Change color to player if is infected
             if player.is_infected:
                 glUseProgram(infected_pipeline.shaderProgram)
-                sg.drawSceneGraphNode(hinataNode, infected_pipeline, "transform")
+                sg.drawSceneGraphNode(sg.findNode(tex_scene, "hinata"), infected_pipeline, "transform")
 
         # Draw you win and game over
         glUseProgram(tex_pipeline.shaderProgram)
