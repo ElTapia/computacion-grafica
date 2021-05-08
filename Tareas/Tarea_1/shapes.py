@@ -9,19 +9,19 @@ import grafica.transformations as tr
 import grafica.ex_curves as cv
 import grafica.scene_graph as sg
 
-def createGPUShape(shape, pipeline):
+def createGPUShape(shape, pipeline, usage=GL_STATIC_DRAW):
     # Funcion Conveniente para facilitar la inicializacion de un GPUShape
     gpuShape = es.GPUShape().initBuffers()
     pipeline.setupVAO(gpuShape)
-    gpuShape.fillBuffers(shape.vertices, shape.indices, GL_STATIC_DRAW)
+    gpuShape.fillBuffers(shape.vertices, shape.indices, usage)
     return gpuShape
 
-def createTextureGPUShape(shape, pipeline, path):
+def createTextureGPUShape(shape, pipeline, path, usage):
     # Funcion Conveniente para facilitar la inicializacion de un GPUShape con texturas
 
     gpuShape = es.GPUShape().initBuffers()
     pipeline.setupVAO(gpuShape)
-    gpuShape.fillBuffers(shape.vertices, shape.indices, GL_STATIC_DRAW)
+    gpuShape.fillBuffers(shape.vertices, shape.indices, usage)
     gpuShape.texture = es.textureSimpleSetup(
         path, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST)
     return gpuShape
@@ -107,7 +107,7 @@ def createScene(pipeline):
     # Funcion que crea la escena de la pregunta 2
 
     # Se crean las shapes en GPU
-    gpuGreenTriangle = createGPUShape(createColorTriangle(0.125, 0.705, 0.094), pipeline) # Shape del triangulo verde
+    gpuGreenTriangle = createGPUShape(createColorTriangle(0.125, 0.705, 0.094), pipeline, GL_DYNAMIC_DRAW) # Shape del triangulo verde
     gpuGrayQuad = createGPUShape(bs.createColorQuad(0.4, 0.4, 0.4), pipeline) # Shape del quad gris
     gpuWhiteQuad = createGPUShape(bs.createColorQuad(1,1,1), pipeline) # Shape del quad blanco
     gpuBrownQuad = createGPUShape(bs.createColorQuad(0.43,0.31,0.18), pipeline) # Shape del quad café
