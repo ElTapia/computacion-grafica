@@ -1,13 +1,6 @@
 
 # * Tarea 1 Beauchefville
 
-#TODO: Añadir derrota por probabilidad de contagio
-#TODO: Añadir humanos se transforman en zombies
-#TODO: Modificar movimiento de zombies y humanos
-#TODO: Borrar zombies y humanos que salgan de la pantalla
-#TODO: Realizar ajustes de escala
-#TODO: Velocidades aleatorias para cada zombie y humano
-
 import sys
 import glfw
 import OpenGL.GL.shaders
@@ -241,10 +234,12 @@ if __name__ == "__main__":
 
         return zombies
 
+
     # Stop all the entities that receive
     def entity_stop(entities):
         for entity in entities:
             entity.stop = True
+
 
     # Expands "you win" message
     def win(t):
@@ -257,6 +252,7 @@ if __name__ == "__main__":
         player.update(0, True)
         entity_stop(zombies)
         entity_stop(humans)
+
 
     # Expands "game over" message
     def lose(t):
@@ -281,10 +277,9 @@ if __name__ == "__main__":
     x_store, y_store = -0.78, 0.8
 
     # Set store model with init position
-    store = Store(x_store, y_store, 0.5)
+    store = Store(x_store, y_store, 0.55)
     store.set_model(storeNode)
     store.update()
-
 
     # Create first H humans
     infectedHumans, notInfectedHumans = spawn_humans(P, H, infectedHumansNode, notInfectedHumansNode)
@@ -302,7 +297,7 @@ if __name__ == "__main__":
 
     # Create scene graph with textures and add elements
     tex_scene = sg.SceneGraphNode("textureScene")
-    tex_scene.childs = [humansNode, storeNode, you_winNode, game_overNode]
+    tex_scene.childs = [storeNode, humansNode]
 
 
     perfMonitor = pm.PerformanceMonitor(glfw.get_time(), 0.5)
@@ -449,9 +444,9 @@ if __name__ == "__main__":
 
             # Change color to green to infected humans
             glUseProgram(infected_pipeline.shaderProgram)
-            sg.drawSceneGraphNode(sg.findNode(tex_scene, "infected humans"), infected_pipeline, "transform")
+            sg.drawSceneGraphNode(infectedHumansNode, infected_pipeline, "transform")
 
-            # Change color to player if is infected
+            # Change player´s color if is infected
             if player.is_infected:
                 glUseProgram(infected_pipeline.shaderProgram)
                 sg.drawSceneGraphNode(sg.findNode(tex_scene, "hinata"), infected_pipeline, "transform")

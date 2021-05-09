@@ -397,36 +397,6 @@ class InfectedTextureTransformShaderProgram:
         glBindVertexArray(0)
 
 
-    def setupVAO(self, gpuShape):
-
-        glBindVertexArray(gpuShape.vao)
-
-        glBindBuffer(GL_ARRAY_BUFFER, gpuShape.vbo)
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gpuShape.ebo)
-
-        # 3d vertices + 2d texture coordinates => 3*4 + 2*4 = 20 bytes
-        position = glGetAttribLocation(self.shaderProgram, "position")
-        glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 20, ctypes.c_void_p(0))
-        glEnableVertexAttribArray(position)
-        
-        texCoords = glGetAttribLocation(self.shaderProgram, "texCoords")
-        glVertexAttribPointer(texCoords, 2, GL_FLOAT, GL_FALSE, 20, ctypes.c_void_p(3 * SIZE_IN_BYTES))
-        glEnableVertexAttribArray(texCoords)
-
-        # Unbinding current vao
-        glBindVertexArray(0)
-
-
-    def drawCall(self, gpuShape, mode=GL_TRIANGLES):
-        assert isinstance(gpuShape, GPUShape)
-
-        glBindVertexArray(gpuShape.vao)
-        glBindTexture(GL_TEXTURE_2D, gpuShape.texture)
-        glDrawElements(mode, gpuShape.size, GL_UNSIGNED_INT, None)
-
-        # Unbind the current VAO
-        glBindVertexArray(0)
-
 
 class SimpleModelViewProjectionShaderProgram:
 

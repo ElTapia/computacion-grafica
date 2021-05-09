@@ -6,7 +6,6 @@ from OpenGL.GL import *
 import grafica.basic_shapes as bs
 import grafica.easy_shaders as es
 import grafica.transformations as tr
-import grafica.ex_curves as cv
 import grafica.scene_graph as sg
 
 def createGPUShape(shape, pipeline, usage=GL_STATIC_DRAW):
@@ -42,22 +41,22 @@ def createColorTriangle(r, g, b):
 
     return bs.Shape(vertices, indices)
 
-def createColorCircle(N, r, g, b):
-    # Funcion para crear un circulo con un color personalizado
-    # Poligono de N lados 
+def createColorTreeTop(N, r, g, b):
+    # Funcion para crear la copa de un arbol
+    # Poligono de N lados
 
     # First vertex at the center, white color
     vertices = [0, 0, 0, r, g, b]
     indices = []
 
-    dtheta = 2 * math.pi / N
+    dtheta =  2*math.pi / N
 
     for i in range(N):
         theta = i * dtheta
 
         vertices += [
             # vertex coordinates
-            0.5 * math.cos(theta), 0.5 * math.sin(theta), 0,
+            0.3 * math.cos(theta), 0.3 * math.sin(theta)+0.5, 0,
 
             # color generates varying between 0 and 1
                   r, g, b]
@@ -68,29 +67,57 @@ def createColorCircle(N, r, g, b):
     # The final triangle connects back to the second vertex
     indices += [0, N, 1]
 
+
     return bs.Shape(vertices, indices)
 
 
-def createTree(gpuGreenTriangle, gpuBrownQuad, i):
+def createTree(gpuGreenTop, gpuBrownQuad, i):
     # Función que crea un árbol
-
+    top_scale = 0.2
+    top_translate = 0.2
     # Nodo de copa de un árbol, triangulo verde escalado
     treeTopNode = sg.SceneGraphNode("tree top {}".format(i))
-    treeTopNode.transform = tr.matmul([tr.translate(0, 0.3, 0),tr.scale(0.2, 0.3, 1)])
-    treeTopNode.childs = [gpuGreenTriangle]
+    treeTopNode.transform = tr.matmul([tr.translate(0, top_translate, 0),tr.scale(top_scale, top_scale, 1)])
+    treeTopNode.childs = [gpuGreenTop]
 
-    # Nodo de segunda copa de un árbol, triangulo verde escalado
+    # Nodo de copa de un árbol, triangulo verde escalado
     treeTop2Node = sg.SceneGraphNode("tree top 2 {}".format(i))
-    treeTop2Node.transform = tr.matmul([tr.translate(0, 0.15, 0),tr.scale(0.2, 0.3, 1)])
-    treeTop2Node.childs = [gpuGreenTriangle]
+    treeTop2Node.transform = tr.matmul([tr.translate(0, top_translate, 0), tr.rotationZ(math.pi/4),tr.scale(top_scale, top_scale, 1)])
+    treeTop2Node.childs = [gpuGreenTop]
 
-    # Nodo que contiene copas de los arboles
-    treeTopsNode = sg.SceneGraphNode("tree tops {}".format(i))
-    treeTopsNode.childs = [treeTop2Node, treeTopNode]
+    # Nodo de copa de un árbol, triangulo verde escalado
+    treeTop3Node = sg.SceneGraphNode("tree top 3 {}".format(i))
+    treeTop3Node.transform = tr.matmul([tr.translate(0, top_translate, 0), tr.rotationZ(math.pi/2),tr.scale(top_scale, top_scale, 1)])
+    treeTop3Node.childs = [gpuGreenTop]
+
+    # Nodo de copa de un árbol, triangulo verde escalado
+    treeTop4Node = sg.SceneGraphNode("tree top 4 {}".format(i))
+    treeTop4Node.transform = tr.matmul([tr.translate(0, top_translate, 0), tr.rotationZ(3*math.pi/4),tr.scale(top_scale, top_scale, 1)])
+    treeTop4Node.childs = [gpuGreenTop]
+
+    # Nodo de copa de un árbol, triangulo verde escalado
+    treeTop5Node = sg.SceneGraphNode("tree top 5 {}".format(i))
+    treeTop5Node.transform = tr.matmul([tr.translate(0, top_translate, 0), tr.rotationZ(-math.pi),tr.scale(top_scale, top_scale, 1)])
+    treeTop5Node.childs = [gpuGreenTop]
+
+    # Nodo de copa de un árbol, triangulo verde escalado
+    treeTop6Node = sg.SceneGraphNode("tree top 5 {}".format(i))
+    treeTop6Node.transform = tr.matmul([tr.translate(0, top_translate, 0), tr.rotationZ(-math.pi/4),tr.scale(top_scale, top_scale, 1)])
+    treeTop6Node.childs = [gpuGreenTop]
+
+    # Nodo de copa de un árbol, triangulo verde escalado
+    treeTop7Node = sg.SceneGraphNode("tree top 5 {}".format(i))
+    treeTop7Node.transform = tr.matmul([tr.translate(0, top_translate, 0), tr.rotationZ(-math.pi/2),tr.scale(top_scale, top_scale, 1)])
+    treeTop7Node.childs = [gpuGreenTop]
+
+    # Nodo de copa de un árbol, triangulo verde escalado
+    treeTop8Node = sg.SceneGraphNode("tree top 5 {}".format(i))
+    treeTop8Node.transform = tr.matmul([tr.translate(0, top_translate, 0), tr.rotationZ(-3*math.pi/4),tr.scale(top_scale, top_scale, 1)])
+    treeTop8Node.childs = [gpuGreenTop]
 
     # Nodo que contiene movimiento copas de arboles
     shearingTopsNode = sg.SceneGraphNode("tops shearing {}".format(i))
-    shearingTopsNode.childs = [treeTopsNode]
+    shearingTopsNode.childs = [treeTopNode, treeTop2Node, treeTop3Node, treeTop4Node, treeTop5Node, treeTop6Node, treeTop7Node, treeTop8Node]
 
     # Nodo de tronco de un árbol, triangulo verde escalado
     treeLogNode = sg.SceneGraphNode("tree log {}".format(i))
@@ -107,7 +134,7 @@ def createScene(pipeline):
     # Funcion que crea la escena de la pregunta 2
 
     # Se crean las shapes en GPU
-    gpuGreenTriangle = createGPUShape(createColorTriangle(0.125, 0.705, 0.094), pipeline, GL_DYNAMIC_DRAW) # Shape del triangulo verde
+    gpuGreenTop = createGPUShape(createColorTreeTop(15, 0.125, 0.705, 0.094), pipeline, GL_DYNAMIC_DRAW) # Shape de la copa verde
     gpuGrayQuad = createGPUShape(bs.createColorQuad(0.4, 0.4, 0.4), pipeline) # Shape del quad gris
     gpuWhiteQuad = createGPUShape(bs.createColorQuad(1,1,1), pipeline) # Shape del quad blanco
     gpuBrownQuad = createGPUShape(bs.createColorQuad(0.43,0.31,0.18), pipeline) # Shape del quad café
@@ -116,12 +143,12 @@ def createScene(pipeline):
     # Crea varios arboles y los agrupa
     treesList = []
     for i in range(3):
-        newTree = createTree(gpuGreenTriangle, gpuBrownQuad, i)
+        newTree = createTree(gpuGreenTop, gpuBrownQuad, i)
         newTree.transform = tr.matmul([tr.translate(0, i/2, 0), tr.translate(0.75, -0.32, 0), tr.scale(1, 0.7, 1)])
         treesList.append(newTree)
     
     for i in range(3):
-        newTree = createTree(gpuGreenTriangle, gpuBrownQuad, i+3)
+        newTree = createTree(gpuGreenTop, gpuBrownQuad, i+3)
         newTree.transform = tr.matmul([tr.translate(0, i/2, 0), tr.translate(-0.75, -0.82, 0), tr.scale(1, 0.7, 1)])
         treesList.append(newTree)
 
