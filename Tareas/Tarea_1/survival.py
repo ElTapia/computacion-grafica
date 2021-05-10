@@ -356,7 +356,6 @@ if __name__ == "__main__":
         for i in range(7):
             top = sg.findNode(gameNode, "tops shearing {}".format(i))
             top.transform = tr.shearing(0.15*math.sin(t1*1.5), 0, 0, 0, 0, 0)
-
         # Resets time spawn when reach T
         if t_spawn is not None:
             t_spawn += delta

@@ -170,7 +170,6 @@ def createTree(gpuGreenTop, gpuBrownQuad, i):
 
     # Node that contains the movement of the tops
     shearingTopsNode = sg.SceneGraphNode("tops shearing {}".format(i))
-    shearingTopsNode.transform = tr.matmul([tr.translate(0, top_translate, 0), tr.scale(top_scale, top_scale, 1)])
     shearingTopsNode.childs = [topsNode]
 
     # Log tree node, brown quad scalated
