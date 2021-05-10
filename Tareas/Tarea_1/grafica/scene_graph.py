@@ -83,7 +83,7 @@ def findPosition(node, name, parentTransform=tr.identity()):
     return None
 
 
-def drawSceneGraphNode(node, pipeline, transformName, parentTransform=tr.identity()):
+def drawSceneGraphNode(node, pipeline, transformName, parentTransform=tr.identity(), mode=GL_TRIANGLES):
     assert(isinstance(node, SceneGraphNode))
 
     # Composing the transformations through this path
@@ -94,7 +94,7 @@ def drawSceneGraphNode(node, pipeline, transformName, parentTransform=tr.identit
     if len(node.childs) == 1 and isinstance(node.childs[0], gs.GPUShape):
         leaf = node.childs[0]
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, transformName), 1, GL_TRUE, newTransform)
-        pipeline.drawCall(leaf)
+        pipeline.drawCall(leaf, mode)
 
     # If the child node is not a leaf, it MUST be a SceneGraphNode,
     # so this draw function is called recursively

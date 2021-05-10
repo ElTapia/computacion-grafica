@@ -126,47 +126,52 @@ def createTree(gpuGreenTop, gpuBrownQuad, i):
 
     # Top of the tree node, deformed circle scalated
     treeTopNode = sg.SceneGraphNode("tree top {}".format(i))
-    treeTopNode.transform = tr.matmul([tr.translate(0, top_translate, 0),tr.scale(top_scale, top_scale, 1)])
     treeTopNode.childs = [gpuGreenTop]
 
     # Top of the tree node, deformed circle scalated
     treeTop2Node = sg.SceneGraphNode("tree top 2 {}".format(i))
-    treeTop2Node.transform = tr.matmul([tr.translate(0, top_translate, 0), tr.rotationZ(math.pi/4),tr.scale(top_scale, top_scale, 1)])
+    treeTop2Node.transform = tr.matmul([tr.rotationZ(math.pi/4)])
     treeTop2Node.childs = [gpuGreenTop]
 
     # Top of the tree node, deformed circle scalated
     treeTop3Node = sg.SceneGraphNode("tree top 3 {}".format(i))
-    treeTop3Node.transform = tr.matmul([tr.translate(0, top_translate, 0), tr.rotationZ(math.pi/2),tr.scale(top_scale, top_scale, 1)])
+    treeTop3Node.transform = tr.matmul([tr.rotationZ(math.pi/2)])
     treeTop3Node.childs = [gpuGreenTop]
 
     # Top of the tree node, deformed circle scalated
     treeTop4Node = sg.SceneGraphNode("tree top 4 {}".format(i))
-    treeTop4Node.transform = tr.matmul([tr.translate(0, top_translate, 0), tr.rotationZ(3*math.pi/4),tr.scale(top_scale, top_scale, 1)])
+    treeTop4Node.transform = tr.matmul([tr.rotationZ(3*math.pi/4)])
     treeTop4Node.childs = [gpuGreenTop]
 
     # Top of the tree node, deformed circle scalated
     treeTop5Node = sg.SceneGraphNode("tree top 5 {}".format(i))
-    treeTop5Node.transform = tr.matmul([tr.translate(0, top_translate, 0), tr.rotationZ(-math.pi),tr.scale(top_scale, top_scale, 1)])
+    treeTop5Node.transform = tr.matmul([tr.rotationZ(-math.pi)])
     treeTop5Node.childs = [gpuGreenTop]
 
     # Top of the tree node, deformed circle scalated
-    treeTop6Node = sg.SceneGraphNode("tree top 5 {}".format(i))
-    treeTop6Node.transform = tr.matmul([tr.translate(0, top_translate, 0), tr.rotationZ(-math.pi/4),tr.scale(top_scale, top_scale, 1)])
+    treeTop6Node = sg.SceneGraphNode("tree top 6 {}".format(i))
+    treeTop6Node.transform = tr.matmul([tr.rotationZ(-math.pi/4)])
     treeTop6Node.childs = [gpuGreenTop]
 
     # Top of the tree node, deformed circle scalated
-    treeTop7Node = sg.SceneGraphNode("tree top 5 {}".format(i))
-    treeTop7Node.transform = tr.matmul([tr.translate(0, top_translate, 0), tr.rotationZ(-math.pi/2),tr.scale(top_scale, top_scale, 1)])
+    treeTop7Node = sg.SceneGraphNode("tree top 7 {}".format(i))
+    treeTop7Node.transform = tr.matmul([tr.rotationZ(-math.pi/2)])
     treeTop7Node.childs = [gpuGreenTop]
 
     # Top of the tree node, deformed circle scalated
-    treeTop8Node = sg.SceneGraphNode("tree top 5 {}".format(i))
-    treeTop8Node.transform = tr.matmul([tr.translate(0, top_translate, 0), tr.rotationZ(-3*math.pi/4),tr.scale(top_scale, top_scale, 1)])
+    treeTop8Node = sg.SceneGraphNode("tree top 8 {}".format(i))
+    treeTop8Node.transform = tr.matmul([tr.rotationZ(-3*math.pi/4)])
     treeTop8Node.childs = [gpuGreenTop]
+
+    # Tops node
+    topsNode = sg.SceneGraphNode("tree tops {}".format(i))
+    topsNode.transform = tr.matmul([tr.translate(0, top_translate, 0), tr.scale(top_scale, top_scale, 1)])
+    topsNode.childs = [treeTopNode, treeTop2Node, treeTop3Node, treeTop4Node, treeTop5Node, treeTop6Node, treeTop7Node, treeTop8Node]
 
     # Node that contains the movement of the tops
     shearingTopsNode = sg.SceneGraphNode("tops shearing {}".format(i))
-    shearingTopsNode.childs = [treeTopNode, treeTop2Node, treeTop3Node, treeTop4Node, treeTop5Node, treeTop6Node, treeTop7Node, treeTop8Node]
+    shearingTopsNode.transform = tr.matmul([tr.translate(0, top_translate, 0), tr.scale(top_scale, top_scale, 1)])
+    shearingTopsNode.childs = [topsNode]
 
     # Log tree node, brown quad scalated
     treeLogNode = sg.SceneGraphNode("tree log {}".format(i))
@@ -242,9 +247,13 @@ def createScene(pipeline):
     borderLinesNode = sg.SceneGraphNode("border lines")
     borderLinesNode.childs = [borderLine2Node, borderLineNode]
 
+    # Highway with lines
+    completeHighwayNode = sg.SceneGraphNode("highway with lines")
+    completeHighwayNode.childs = [highwayNode, linesNode, borderLinesNode]
+
     # Central background node with all the created nodes
     backGroundNode = sg.SceneGraphNode("background")
-    backGroundNode.childs = [grassNode, highwayNode, linesNode, borderLinesNode, treesNode]
+    backGroundNode.childs = [grassNode, completeHighwayNode, treesNode]
 
     # Father node of the scene
     sceneNode = sg.SceneGraphNode("world")
