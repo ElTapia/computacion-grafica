@@ -134,6 +134,7 @@ if __name__ == "__main__":
     pipeline = es.SimpleTransformShaderProgram()
     tex_pipeline = es.SimpleTextureTransformShaderProgram()
     infected_pipeline = es.InfectedTextureTransformShaderProgram()
+    terminate_pipeline = es.terminateShaderProgram()
 
     # Setting up the clear screen color
     glClearColor(0.15, 0.15, 0.15, 1.0)
@@ -349,7 +350,7 @@ if __name__ == "__main__":
         glClear(GL_COLOR_BUFFER_BIT)
 
         # Se crea el movimiento de giro del rotor
-        for i in range(6):
+        for i in range(7):
             top = sg.findNode(mainScene, "tops shearing {}".format(i))
             top.transform = tr.shearing(0.15*math.sin(t1*1.5), 0, 0, 0, 0, 0)
 
@@ -455,6 +456,11 @@ if __name__ == "__main__":
             if player.is_infected:
                 glUseProgram(infected_pipeline.shaderProgram)
                 sg.drawSceneGraphNode(sg.findNode(tex_scene, "hinata"), infected_pipeline, "transform")
+
+        # Change background if game end up
+        if t_lose > 0 or t_win > 0:
+            glUseProgram(terminate_pipeline.shaderProgram)
+            sg.drawSceneGraphNode(mainScene, terminate_pipeline, "transform")
 
         # Draw you win and game over
         glUseProgram(tex_pipeline.shaderProgram)
