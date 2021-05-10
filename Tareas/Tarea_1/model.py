@@ -88,17 +88,21 @@ class Player():
             return False
 
 def entity_movement(entity):
+    # General function for entities (zombies or humans) move
     def pos_y():
+        # Function to y coordinate
             return -np.sign(entity.y_ini)*entity.vel[1]*entity.t + entity.y_ini
         
     def pos_x():
+        # Function to x coordinate
         return entity.direction*entity.vel[0]*np.sin(entity.t) + entity.x_ini
 
-    # Se posiciona el nodo referenciado
+    # Stop the entities movement
     if entity.stop:
         entity.model.transform = tr.matmul([tr.translate(entity.pos[0], entity.pos[1], 0), tr.scale(entity.size, entity.size, 1)])
 
     else:
+        # Update self time from entity and positions while is on screen
         entity.t += 0.001
         entity.pos[0] = pos_x()
 
@@ -118,77 +122,88 @@ def entity_movement(entity):
             entity.model.transform = tr.matmul([tr.translate(entity.pos[0], entity.pos[1], 0), tr.scale(entity.size, entity.size, 1)])
 
 class Zombie():
-    # Clase para contener las caracteristicas de un objeto que representa un zombie 
+    # Class that contains zombies features
     def __init__(self, x_ini, y_ini, size):
-        self.t = 0
-        self.x_ini = x_ini # x de partida
-        self.y_ini = y_ini # y de partida
-        self.pos = [x_ini, y_ini]
-        self.vel = np.random.uniform(0.4, 0.6, 2)
-        self.direction = np.random.choice([-1, 1], 1)
-        self.radio = 0.03
-        self.size = size
-        self.model = None
-        self.stop=False
+        self.t = 0 # Self time controller for movement
+        self.x_ini = x_ini # Init x coordinate position
+        self.y_ini = y_ini # Init y coordinate position
+        self.pos = [x_ini, y_ini] # Position on screen
+        self.vel = np.random.uniform(0.4, 0.6, 2) # Random generated speed 
+        self.direction = np.random.choice([-1, 1], 1) # Direction could be upwards or downwards
+        self.radio = 0.03 # Ratio of collition
+        self.size = size # Size of the model
+        self.model = None # Scene graph reference
+        self.stop = False # Entity could stop
 
     def set_model(self, new_model):
+        # Model node reference
         self.model = new_model
 
     def update(self):
+        # Update zombie position
         entity_movement(self)
 
 
 class Human():
-    # Clase para contener las caracteristicas de un objeto que representa un zombie 
-    def __init__(self, x_ini, y_ini, size, p, is_zombie=False):
-        self.t = 0
-        self.x_ini = x_ini
-        self.y_ini = y_ini
-        self.pos = [x_ini, y_ini]
-        self.vel = np.random.uniform(0.4, 0.6, 2)
-        self.direction = np.random.choice([-1, 1], 1)
-        self.radio = 0.05
-        self.size = size
-        self.model = None
-        self.stop=False
-        self.is_infected = True
+    # Class that contains humans features
+    def __init__(self, x_ini, y_ini, size, p):
+        self.t = 0 # Self time controller for movement
+        self.x_ini = x_ini # Init x coordinate position
+        self.y_ini = y_ini # Init y coordinate position
+        self.pos = [x_ini, y_ini] # Position on screen
+        self.vel = np.random.uniform(0.4, 0.6, 2) # Random generated speed 
+        self.direction = np.random.choice([-1, 1], 1) # Direction could be upwards or downwards
+        self.radio = 0.05 # Ratio of collition
+        self.size = size # Size of the model
+        self.model = None # Scene graph reference
+        self.stop = False # Entity could stop
+        self.is_infected = True # Human could be infected
         if np.random.binomial(1, p)==0:
+            # Infection is random with probability p
             self.is_infected = False
 
     def set_model(self, new_model):
+        # Model node reference
         self.model = new_model
 
     def update(self):
+        # Update human position
         entity_movement(self)
 
     def collision_zombie(self, zombie):
-
-        # si la distancia al zombie es menor que la suma de los radios ha ocurrido en la colision
+        # Function that detects collision with a zombie
+        # Distance from zombie is less than sum or ratios => collision
         return (self.radio+zombie.radio)**2 > ((self.pos[0] - zombie.pos[0])**2 + (self.pos[1]-zombie.pos[1])**2)
 
     def collision_human(self, human):
-        # si la distancia al zombie es menor que la suma de los radios ha ocurrido en la colision
+        # Function that detects collision with other human
+        # Distance from human is less than sum or ratios => collision
         return (self.radio+human.radio)**2 > ((self.pos[0] - human.pos[0])**2 + (self.pos[1]-human.pos[1])**2)
 
     def infected(self, human):
+        # Detect if a human touch and infected human
         if self.collision_human(human) and human.is_infected:
+            # Update infection state
             self.is_infected = True
 
     def touch_zombie(self, zombie):
+        # Detect if a human touch and infected human
         if self.collision_human(zombie):
+            # Update infection state
             self.is_infected = True
 
 class Store():
-    # Clase para contener las caracteristicas de un objeto que representa un zombie 
+    # Class that contains store features
     def __init__(self, posx, posy, size):
-        self.pos = [posx, posy]
-        self.radio = 0.13
-        self.size = size
-        self.model = None
+        self.pos = [posx, posy]  # Position on screen
+        self.radio = 0.13 # Ratio of collition
+        self.size = size # Size of the model
+        self.model = None # Scene graph reference
 
     def set_model(self, new_model):
+        # Model node reference
         self.model = new_model
 
     def update(self):
-        # Se posiciona el nodo referenciado
+        # Update store position
         self.model.transform = tr.matmul([tr.translate(self.pos[0], self.pos[1], 0), tr.scale(self.size, self.size, 1), tr.rotationZ(math.pi/2)])

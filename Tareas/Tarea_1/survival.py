@@ -5,8 +5,7 @@ import sys
 import glfw
 import OpenGL.GL.shaders
 import numpy as np
-import grafica.basic_shapes as bs
-import grafica.easy_shaders as es
+import grafica.shaders as es
 import grafica.transformations as tr
 import grafica.performance_monitor as pm
 import grafica.scene_graph as sg
@@ -143,12 +142,12 @@ if __name__ == "__main__":
     mainScene = createScene(pipeline)
 
     # Shapes with textures
-    hinata_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/hinata.png", GL_STREAM_DRAW)
-    zombie_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/zombie.png", GL_DYNAMIC_DRAW)
-    human_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/kageyama.png", GL_DYNAMIC_DRAW)
-    store_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/store.png", GL_STATIC_DRAW)
-    you_win_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/you_win.png", GL_DYNAMIC_DRAW)
-    game_over_png = createTextureGPUShape(bs.createTextureQuad(1,1), tex_pipeline, "Sprites/game_over.png", GL_DYNAMIC_DRAW)
+    hinata_png = createTextureGPUShape(createTextureQuad(1,1), tex_pipeline, "Sprites/hinata.png", GL_STREAM_DRAW)
+    zombie_png = createTextureGPUShape(createTextureQuad(1,1), tex_pipeline, "Sprites/zombie.png", GL_DYNAMIC_DRAW)
+    human_png = createTextureGPUShape(createTextureQuad(1,1), tex_pipeline, "Sprites/kageyama.png", GL_DYNAMIC_DRAW)
+    store_png = createTextureGPUShape(createTextureQuad(1,1), tex_pipeline, "Sprites/store.png", GL_STATIC_DRAW)
+    you_win_png = createTextureGPUShape(createTextureQuad(1,1), tex_pipeline, "Sprites/you_win.png", GL_DYNAMIC_DRAW)
+    game_over_png = createTextureGPUShape(createTextureQuad(1,1), tex_pipeline, "Sprites/game_over.png", GL_DYNAMIC_DRAW)
 
     # Nodes per shape
     hinataNode = sg.SceneGraphNode("hinata")
@@ -176,7 +175,7 @@ if __name__ == "__main__":
     # Let define some auxiliar functions
 
     # Spawn N humans on screen and divide infected with not infected humans
-    def spawn_humans(P, N, infectedHumans, notInfectedHumans):
+    def spawn_humans(P, N, infectedHumans, notInfectedHumans, humanCount):
 
         x_human = np.random.uniform(-0.58, 0.58, N)
         y_human = np.random.choice([-1.2, 1.2], N)
@@ -184,8 +183,8 @@ if __name__ == "__main__":
         infectedHumansList = []
         notInfectedHumansList = []
 
-        for i in range(N):
-            human = Human(x_human[i], y_human[i], 0.15, P)
+        for i in range(humanCount, N+humanCount):
+            human = Human(x_human[i-humanCount], y_human[i-humanCount], 0.15, P)
 
             if human.is_infected:
 
@@ -213,23 +212,23 @@ if __name__ == "__main__":
         return infectedHumansList, notInfectedHumansList
 
     # Spawn N zombies on screen
-    def spawn_zombies(N, zombiesNode):
+    def spawn_zombies(N, zombiesNode, zombieCount):
 
         x_zombie = np.random.uniform(-0.58, 0.58, N)
         y_zombie = np.random.choice([-1.2, 1.2], N)
 
-        zombies = np.empty(N, dtype=object)
+        zombies = []
 
-        for i in range(N):
+        for i in range(zombieCount, N+zombieCount):
             zombieNode = sg.SceneGraphNode("zombie {}".format(i))
             zombieNode.childs = [zombie_png]
 
             # Se crean los modelos de zombie, se indican su nodo y se actualiza
-            zombie = Zombie(x_zombie[i], y_zombie[i], 0.25)
+            zombie = Zombie(x_zombie[i-zombieCount], y_zombie[i-zombieCount], 0.25)
             zombie.set_model(zombieNode)
             zombie.update()
 
-            zombies[i] = zombie
+            zombies += [zombie]
             zombiesNode.childs += [zombieNode]
 
         return zombies
@@ -282,12 +281,16 @@ if __name__ == "__main__":
     store.update()
 
     # Create first H humans
-    infectedHumans, notInfectedHumans = spawn_humans(P, H, infectedHumansNode, notInfectedHumansNode)
+    humanCount = 0
+    infectedHumans, notInfectedHumans = spawn_humans(P, H, infectedHumansNode, notInfectedHumansNode, humanCount)
     humans = infectedHumans + notInfectedHumans
+    humanCount += H
 
     # Crea First Z zombies
+    zombieCount = 0
     zombiesNode = sg.SceneGraphNode("zombies")
-    zombies = spawn_zombies(Z, zombiesNode)
+    zombies = spawn_zombies(Z, zombiesNode, zombieCount)
+    zombieCount += Z
 
     # Zombies are severe infected humans
     infectedHumansNode.childs += [zombiesNode]
@@ -419,14 +422,16 @@ if __name__ == "__main__":
         if t_spawn == 0:
 
             # Spawn humans after T seconds
-            newInfectedHumans, newNotInfectedHumans = spawn_humans(P, H, infectedHumansNode, notInfectedHumansNode)
+            newInfectedHumans, newNotInfectedHumans = spawn_humans(P, H, infectedHumansNode, notInfectedHumansNode, humanCount)
             infectedHumans += newInfectedHumans
             notInfectedHumans +=  newNotInfectedHumans
             humans = infectedHumans + notInfectedHumans
+            humanCount += H
 
             # Spawn zombies after T seconds
-            new_zombies = spawn_zombies(Z, zombiesNode)
-            zombies = np.append(zombies, new_zombies)
+            new_zombies = spawn_zombies(Z, zombiesNode, zombieCount)
+            zombies += new_zombies
+            zombieCount += Z
 
         # Update player position
         player.update(delta)
@@ -455,6 +460,37 @@ if __name__ == "__main__":
         glUseProgram(tex_pipeline.shaderProgram)
         sg.drawSceneGraphNode(you_winNode, tex_pipeline, "transform")
         sg.drawSceneGraphNode(game_overNode, tex_pipeline, "transform")
+
+        # Delete humans that are out of the screen
+        for human in humans:
+            if human.pos[1] > 1.3 or human.pos[1] < -1.3:
+                name = human.model.name
+                if sg.findNode(infectedHumansNode, name) is not None and human.is_infected:
+                    humanNode = sg.findNode(infectedHumansNode, name)
+                    infectedHumansNode.childs.remove(humanNode)
+
+                elif sg.findNode(notInfectedHumansNode, name) is not None and not human.is_infected:
+                    humanNode = sg.findNode(notInfectedHumansNode, name)
+                    notInfectedHumansNode.childs.remove(humanNode)
+
+                else:
+                    pass
+
+                humans.remove(human)
+
+        # Delete zombies that are out of the screen
+        for zombie in zombies:
+            if zombie.pos[1] > 1.3 or zombie.pos[1] < -1.3:
+                name = zombie.model.name
+                zombieNode = sg.findNode(zombiesNode, name)
+
+                if zombieNode is not None:
+                    zombiesNode.childs.remove(zombieNode)
+
+                else:
+                    pass
+
+                zombies.remove(zombie)
 
         # Once the drawing is rendered, buffers are swap so an uncomplete drawing is never seen.
         glfw.swap_buffers(window)
