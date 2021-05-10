@@ -300,9 +300,12 @@ if __name__ == "__main__":
     humansNode.childs = [infectedHumansNode, notInfectedHumansNode, hinataNode]
 
     # Create scene graph with textures and add elements
-    tex_scene = sg.SceneGraphNode("textureScene")
+    tex_scene = sg.SceneGraphNode("texture scene")
     tex_scene.childs = [storeNode, humansNode]
 
+    # Create complete game scene graph
+    gameNode = sg.SceneGraphNode("complete game")
+    gameNode.childs = [tex_scene, mainScene, you_winNode, game_overNode]
 
     perfMonitor = pm.PerformanceMonitor(glfw.get_time(), 0.5)
     # glfw will swap buffers as soon as possible
@@ -439,45 +442,51 @@ if __name__ == "__main__":
 
         # Draw background scenegraph
         glUseProgram(pipeline.shaderProgram)
-        sg.drawSceneGraphNode(mainScene, pipeline, "transform")
+        sg.drawSceneGraphNode(sg.findNode(gameNode, "world"), pipeline, "transform")
 
         # Draw texture scene graph
         glUseProgram(tex_pipeline.shaderProgram)
-        sg.drawSceneGraphNode(tex_scene, tex_pipeline, "transform")
+        sg.drawSceneGraphNode(sg.findNode(gameNode, "texture scene"), tex_pipeline, "transform")
 
         # Activates detector glasses
         if controller.detector_glasses:
 
             # Change color to green to infected humans
             glUseProgram(infected_pipeline.shaderProgram)
-            sg.drawSceneGraphNode(infectedHumansNode, infected_pipeline, "transform")
+            sg.drawSceneGraphNode(sg.findNode(gameNode, "infected humans"), infected_pipeline, "transform")
 
             # Change player´s color if is infected
             if player.is_infected:
                 glUseProgram(infected_pipeline.shaderProgram)
-                sg.drawSceneGraphNode(sg.findNode(tex_scene, "hinata"), infected_pipeline, "transform")
+                sg.drawSceneGraphNode(sg.findNode(gameNode, "hinata"), infected_pipeline, "transform")
 
         # Change background if game end up
         if t_lose > 0 or t_win > 0:
             glUseProgram(terminate_pipeline.shaderProgram)
-            sg.drawSceneGraphNode(mainScene, terminate_pipeline, "transform")
+            sg.drawSceneGraphNode(sg.findNode(gameNode, "world"), terminate_pipeline, "transform")
+
 
         # Draw you win and game over
         glUseProgram(tex_pipeline.shaderProgram)
-        sg.drawSceneGraphNode(you_winNode, tex_pipeline, "transform")
-        sg.drawSceneGraphNode(game_overNode, tex_pipeline, "transform")
+        sg.drawSceneGraphNode(sg.findNode(gameNode, "win"), tex_pipeline, "transform")
+        sg.drawSceneGraphNode(sg.findNode(gameNode, "lose"), tex_pipeline, "transform")
 
         # Delete humans that are out of the screen
         for human in humans:
             if human.pos[1] > 1.3 or human.pos[1] < -1.3:
                 name = human.model.name
-                if sg.findNode(infectedHumansNode, name) is not None and human.is_infected:
-                    humanNode = sg.findNode(infectedHumansNode, name)
-                    infectedHumansNode.childs.remove(humanNode)
+                infectedNode = sg.findNode(gameNode, "infected humans")
+                notInfectedNode = sg.findNode(gameNode, "not infected humans")
 
-                elif sg.findNode(notInfectedHumansNode, name) is not None and not human.is_infected:
-                    humanNode = sg.findNode(notInfectedHumansNode, name)
-                    notInfectedHumansNode.childs.remove(humanNode)
+                if sg.findNode(infectedNode, name) is not None and human.is_infected:
+                    humanNode = sg.findNode(infectedNode, name)
+                    infectedNode.childs.remove(humanNode)
+                    infectedHumansNode = infectedNode
+
+                elif sg.findNode(notInfectedNode, name) is not None and not human.is_infected:
+                    humanNode = sg.findNode(notInfectedNode, name)
+                    notInfectedNode.childs.remove(humanNode)
+                    notInfectedHumansNode = notInfectedNode
 
                 else:
                     pass
@@ -488,10 +497,12 @@ if __name__ == "__main__":
         for zombie in zombies:
             if zombie.pos[1] > 1.3 or zombie.pos[1] < -1.3:
                 name = zombie.model.name
-                zombieNode = sg.findNode(zombiesNode, name)
+                allZombiesNode = sg.findNode(gameNode, "zombies")
+                zombieNode = sg.findNode(allZombiesNode, name)
 
                 if zombieNode is not None:
-                    zombiesNode.childs.remove(zombieNode)
+                    allZombiesNode.childs.remove(zombieNode)
+                    zombiesNode = allZombiesNode
 
                 else:
                     pass
