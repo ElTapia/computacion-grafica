@@ -375,13 +375,14 @@ if __name__ == "__main__":
             # Move human
             human.update()
 
+            # Check if player touch an infected human
+            player.infected(human)
+
+
         for human in notInfectedHumans:
             for infected_human in infectedHumans:
                 # Check if human touch an infected human
                 human.infected(infected_human)
-
-                # Check if player touch an infected human
-                player.infected(infected_human)
 
             for zombie in zombies:
                 human.touch_zombie(zombie)
