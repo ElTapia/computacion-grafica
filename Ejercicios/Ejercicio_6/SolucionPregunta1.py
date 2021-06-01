@@ -152,7 +152,7 @@ def create_river(pipeline, w):
         vertices += [r_1[0], r_1[1], 0, 0, 0, 0.7]
         indices += [counter + 0, counter + 1, counter + 2]
         indices += [counter + 2, counter + 3, counter + 1]
-        counter += 2
+        counter += 4
 
     riverShape = bs.Shape(vertices, indices)
     gpuRiver = createGPUShape(riverShape, pipeline)
@@ -376,10 +376,10 @@ if __name__ == "__main__":
 
 ###########################################################################
 
-        if controller.boat_index < N_boat/2:
+        if controller.boat_index < N_boat:
             sg.findNode(decorations, "bote move").transform = tr.matmul([tr.translate(boat_curve[controller.boat_index][0], boat_curve[controller.boat_index][1], 0)])
 
-        if controller.boat_index == N_boat/2:
+        if controller.boat_index == N_boat:
             controller.boat_index = 0
 
 ###########################################################################
@@ -390,7 +390,7 @@ if __name__ == "__main__":
         glUniformMatrix4fv(glGetUniformLocation(colorShaderProgram.shaderProgram, "view"), 1, GL_TRUE, view)
         glUniformMatrix4fv(glGetUniformLocation(colorShaderProgram.shaderProgram, "model"), 1, GL_TRUE, tr.identity())
 
-        sg.drawSceneGraphNode(decorations, colorShaderProgram, "model")
+        sg.drawSceneGraphNode(decorations, colorShaderProgram, "model", mode=GL_TRIANGLE_STRIP)
 
         # Drawing dice (with texture, another shader program)
         glUseProgram(textureShaderProgram.shaderProgram)
