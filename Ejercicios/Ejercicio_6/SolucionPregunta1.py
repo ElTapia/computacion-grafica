@@ -51,6 +51,32 @@ def createColorPyramid(r, g ,b):
 
     return bs.Shape(vertices, indices)
 
+def createColorTriangularPrism(r, g ,b):
+
+    # Defining the location and colors of each vertex  of the shape
+    vertices = [
+    #    positions         colors
+        -0.5, 0.5,  0,  r, g, b,
+         0.5, -0.5, 0,  r+0.2, g+0.2, b+0.2,
+         0.5, 0.5,  0,  r, g, b,
+        -0.5, -0.5, 0,  r+0.2, g+0.2, b+0.2,
+         0.5, 0,  -0.5,  r, g, b,
+         -0.5, 0,  -0.5,  r+0.2, g+0.2, b+0.2]
+
+    # Defining connections among vertices
+    # We have a triangle every 3 indices specified
+    indices = [
+         0, 1, 2,
+         0, 1, 3, # base
+         0, 5, 3, # lateral 1
+         2, 4, 1, # lateral 2
+         3, 4, 5,
+         3, 4, 1, # cuadrado inclinado 1
+         2, 5, 4,
+         2, 5, 0] # cuadrado inclinado 2
+
+    return bs.Shape(vertices, indices)
+
 def create_tree(pipeline):
     # Piramide verde
     green_pyramid = createColorPyramid(0, 1, 0)
@@ -84,7 +110,7 @@ def create_tree(pipeline):
 
 def create_house(pipeline):
     # Piramide cafe
-    brown_pyramid = createColorPyramid(166/255, 112/255, 49/255)
+    brown_pyramid = createColorPyramid(150/255, 100/255, 30/255)
     gpuBrownPyramid = es.GPUShape().initBuffers()
     pipeline.setupVAO(gpuBrownPyramid)
     gpuBrownPyramid.fillBuffers(brown_pyramid.vertices, brown_pyramid.indices, GL_STATIC_DRAW)
@@ -123,28 +149,20 @@ def create_house(pipeline):
 
     return casa
 
-def create_river(pipeline, w):
-    N = 50
+def create_river(pipeline, w, curve, N):
 
-    P0 = np.array([[4, 4, 0]]).T
-    P1 = np.array([[-0.5, 1, 0]]).T
-    P2 = np.array([[1.5, -3, 0]]).T
-    P3 = np.array([[-4, -4, 0]]).T
-
-    GMcr = cv.catmullRomMatrix(P0, P1, P2, P3)
-    curve = cv.evalCurve(GMcr, N)
-
-    translated_curve = curve + np.array([w, 0, 0])
+    curve1 = curve - np.array([w/2, 0, 0])
+    curve2 = curve + np.array([w/2, 0, 0])
 
     vertices = []
     indices = []
     counter = 0 # Contador de vertices, para indicar los indices
 
     for i in range(len(curve) - 1):
-        c_0 = curve[i] # punto i de la curva
-        r_0 = translated_curve[i] # punto i de la curva trasladada
-        c_1 = curve[i + 1] # punto i + 1 de la curva
-        r_1 = translated_curve[i] # punto i + 1 de la curva trasladada
+        c_0 = curve1[i] # punto i de la curva
+        r_0 = curve2[i] # punto i de la curva trasladada
+        c_1 = curve1[i + 1] # punto i + 1 de la curva
+        r_1 = curve2[i + 1] # punto i + 1 de la curva trasladada
 
         vertices += [c_0[0], c_0[1], 0, 0.3, 0.3, 1.0]
         vertices += [r_0[0], r_0[1], 0, 0, 0, 0.7]
@@ -163,16 +181,16 @@ def create_river(pipeline, w):
     return river
 
 def create_boat(pipeline):
-    # Cubo cafe
-    brown_quad = bs.createColorCube(139/255, 69/255, 19/255)
-    gpuBrownQuad = es.GPUShape().initBuffers()
-    pipeline.setupVAO(gpuBrownQuad)
-    gpuBrownQuad.fillBuffers(brown_quad.vertices, brown_quad.indices, GL_DYNAMIC_DRAW)
+    # Prisma triangular cafe
+    brown_prism = createColorTriangularPrism(139/255, 69/255, 19/255)
+    gpuBrownPrism = es.GPUShape().initBuffers()
+    pipeline.setupVAO(gpuBrownPrism)
+    gpuBrownPrism.fillBuffers(brown_prism.vertices, brown_prism.indices, GL_DYNAMIC_DRAW)
 
     # Bote
     bote = sg.SceneGraphNode("bote")
-    bote.transform = tr.matmul([tr.scale(0.1, 0.1, 0.1)])
-    bote.childs += [gpuBrownQuad]
+    bote.transform = tr.matmul([tr.translate(0, 0, 0.03), tr.rotationZ(np.pi/2), tr.scale(0.1, 0.1, 0.1)])
+    bote.childs += [gpuBrownPrism]
     
     bote_move = sg.SceneGraphNode("bote move")
     bote_move.transform = tr.matmul([tr.translate(0, 0, 0)])
@@ -209,7 +227,7 @@ def create_floor(pipeline):
 
     return floor
 
-def create_decorations(pipeline):
+def create_decorations(pipeline, curve, N):
     tree1 = create_tree(pipeline)
     tree1.transform = tr.translate(0.5, 0, 0)
 
@@ -228,7 +246,7 @@ def create_decorations(pipeline):
     house = create_house(pipeline)
     house.transform = tr.translate(0, 0.5, 0)
 
-    river = create_river(pipeline, 0.25)
+    river = create_river(pipeline, 0.25, curve, N)
 
     boat = create_boat(pipeline)
 
@@ -240,13 +258,13 @@ def create_decorations(pipeline):
 
 ############################################################################
 
-N_boat = 100
-P0_boat = np.array([[4, 4, 0]]).T
-P1_boat = np.array([[-0.35, 1, 0]]).T
-P2_boat = np.array([[1.5, -3, 0]]).T
-P3_boat = np.array([[-4, -4, 0]]).T
-GMcrBoat = cv.catmullRomMatrix(P0_boat, P1_boat, P2_boat, P3_boat)
-boat_curve = cv.evalCurve(GMcrBoat, N_boat)
+N = 100
+P0 = np.array([[4, 4, 0]]).T
+P1 = np.array([[-0.35, 1, 0]]).T
+P2 = np.array([[0, -1, 0]]).T
+P3 = np.array([[-4.5, -4.5, 0]]).T
+GMcr = cv.catmullRomMatrix(P0, P1, P2, P3)
+curve = cv.evalCurve(GMcr, N)
 
 # A class to store the application control
 class Controller:
@@ -344,7 +362,7 @@ if __name__ == "__main__":
 ###########################################################################################
     # Creating shapes on GPU memory
 
-    decorations = create_decorations(colorShaderProgram)
+    decorations = create_decorations(colorShaderProgram, curve, N)
     skybox = create_skybox(textureShaderProgram)
     floor = create_floor(textureShaderProgram)
 
@@ -376,10 +394,10 @@ if __name__ == "__main__":
 
 ###########################################################################
 
-        if controller.boat_index < N_boat:
-            sg.findNode(decorations, "bote move").transform = tr.matmul([tr.translate(boat_curve[controller.boat_index][0], boat_curve[controller.boat_index][1], 0)])
+        if controller.boat_index < N:
+            sg.findNode(decorations, "bote move").transform = tr.matmul([tr.translate(curve[controller.boat_index][0], curve[controller.boat_index][1], 0)])
 
-        if controller.boat_index == N_boat:
+        if controller.boat_index == N:
             controller.boat_index = 0
 
 ###########################################################################
@@ -390,7 +408,7 @@ if __name__ == "__main__":
         glUniformMatrix4fv(glGetUniformLocation(colorShaderProgram.shaderProgram, "view"), 1, GL_TRUE, view)
         glUniformMatrix4fv(glGetUniformLocation(colorShaderProgram.shaderProgram, "model"), 1, GL_TRUE, tr.identity())
 
-        sg.drawSceneGraphNode(decorations, colorShaderProgram, "model", mode=GL_TRIANGLE_STRIP)
+        sg.drawSceneGraphNode(decorations, colorShaderProgram, "model")
 
         # Drawing dice (with texture, another shader program)
         glUseProgram(textureShaderProgram.shaderProgram)
