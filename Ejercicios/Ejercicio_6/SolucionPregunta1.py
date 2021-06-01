@@ -195,14 +195,25 @@ def create_boat(pipeline):
     pipeline.setupVAO(gpuBrownPrism)
     gpuBrownPrism.fillBuffers(brown_prism.vertices, brown_prism.indices, GL_DYNAMIC_DRAW)
 
-    # Bote
+    white_triangle = bs.createColorTriangle(0.8, 0.8, 0.8)
+    gpuWhiteTriangle = es.GPUShape().initBuffers()
+    pipeline.setupVAO(gpuWhiteTriangle)
+    gpuWhiteTriangle.fillBuffers(white_triangle.vertices, white_triangle.indices, GL_DYNAMIC_DRAW)
+
+    # Vela
+    vela = sg.SceneGraphNode("vela")
+    vela.transform = tr.matmul([tr.translate(0, 0, 0.05), tr.rotationZ(np.pi/2),tr.rotationX(np.pi/2), tr.scale(0.15, 0.08, 1)])
+    vela.childs += [gpuWhiteTriangle]
+
+    # Base bote
     bote = sg.SceneGraphNode("bote")
     bote.transform = tr.matmul([tr.translate(0, 0, 0.03), tr.rotationZ(np.pi/2), tr.scale(0.1, 0.1, 0.1)])
     bote.childs += [gpuBrownPrism]
-    
+
+    # Movimiento bote
     bote_move = sg.SceneGraphNode("bote move")
     bote_move.transform = tr.matmul([tr.translate(0, 0, 0)])
-    bote_move.childs += [bote]
+    bote_move.childs += [bote, vela]
 
     return bote_move
 
