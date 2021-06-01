@@ -126,15 +126,15 @@ def create_house(pipeline):
 def create_river(pipeline, w):
     N = 50
 
-    P0 = np.array([[2, 2, 0]]).T
-    P1 = np.array([[-0.5, 0.5, 0]]).T
-    P2 = np.array([[0, -0.5, 0]]).T
-    P3 = np.array([[-2, -2, 0]]).T
+    P0 = np.array([[4, 4, 0]]).T
+    P1 = np.array([[-0.5, 1, 0]]).T
+    P2 = np.array([[1.5, -3, 0]]).T
+    P3 = np.array([[-4, -4, 0]]).T
 
     GMcr = cv.catmullRomMatrix(P0, P1, P2, P3)
     curve = cv.evalCurve(GMcr, N)
 
-    translated_curve = curve + np.array([-w, 0, 0])
+    translated_curve = curve + np.array([w, 0, 0])
 
     vertices = []
     indices = []
@@ -158,7 +158,7 @@ def create_river(pipeline, w):
     gpuRiver = createGPUShape(riverShape, pipeline)
 
     river = sg.SceneGraphNode("rio")
-    river.transform = tr.matmul([tr.translate(0, -1.05, 0.001), tr.scale(1, 4.1, 1)])
+    river.transform = tr.matmul([tr.translate(0, 0, 0.001)])
     river.childs += [gpuRiver]
     return river
 
@@ -171,10 +171,14 @@ def create_boat(pipeline):
 
     # Bote
     bote = sg.SceneGraphNode("bote")
-    bote.transform = tr.scale(0.01, 0.01, 0.01)
+    bote.transform = tr.matmul([tr.scale(0.1, 0.1, 0.1)])
     bote.childs += [gpuBrownQuad]
+    
+    bote_move = sg.SceneGraphNode("bote move")
+    bote_move.transform = tr.matmul([tr.translate(0, 0, 0)])
+    bote_move.childs += [bote]
 
-    return bote
+    return bote_move
 
 
 def create_skybox(pipeline):
@@ -224,10 +228,9 @@ def create_decorations(pipeline):
     house = create_house(pipeline)
     house.transform = tr.translate(0, 0.5, 0)
 
-    river = create_river(pipeline, 0.3)
+    river = create_river(pipeline, 0.25)
 
     boat = create_boat(pipeline)
-    boat.transform = tr.translate(-0.5, 0.5, 0)
 
     decorations = sg.SceneGraphNode("decorations")
     decorations.transform = tr.identity()
@@ -236,6 +239,14 @@ def create_decorations(pipeline):
     return decorations
 
 ############################################################################
+
+N_boat = 100
+P0_boat = np.array([[4, 4, 0]]).T
+P1_boat = np.array([[-0.35, 1, 0]]).T
+P2_boat = np.array([[1.5, -3, 0]]).T
+P3_boat = np.array([[-4, -4, 0]]).T
+GMcrBoat = cv.catmullRomMatrix(P0_boat, P1_boat, P2_boat, P3_boat)
+boat_curve = cv.evalCurve(GMcrBoat, N_boat)
 
 # A class to store the application control
 class Controller:
@@ -246,7 +257,7 @@ class Controller:
         self.eye = [0, 0, 0.1]
         self.at = [0, 1, 0.1]
         self.up = [0, 0, 1]
-        self.is_h_pressed = False
+        self.boat_index = 0
 ###########################################################
 
 
@@ -282,13 +293,12 @@ def on_key(window, key, scancode, action, mods):
         controller.theta += np.pi*0.05
 
     elif key == glfw.KEY_H:
-        controller.is_h_pressed = True
+        controller.boat_index += 1
 
 ###########################################################
     else:
         print('Unknown key')
 
-boat_pos = [-2, 2]
 
 if __name__ == "__main__":
 
@@ -363,6 +373,14 @@ if __name__ == "__main__":
         controller.at = np.array([at_x, at_y, controller.at[2]])
 
         view = tr.lookAt(controller.eye, controller.at, controller.up)
+
+###########################################################################
+
+        if controller.boat_index < N_boat/2:
+            sg.findNode(decorations, "bote move").transform = tr.matmul([tr.translate(boat_curve[controller.boat_index][0], boat_curve[controller.boat_index][1], 0)])
+
+        if controller.boat_index == N_boat/2:
+            controller.boat_index = 0
 
 ###########################################################################
 
