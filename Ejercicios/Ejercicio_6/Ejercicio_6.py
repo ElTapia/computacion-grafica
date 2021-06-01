@@ -352,7 +352,7 @@ if __name__ == "__main__":
     glfw.window_hint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
 
 
-    window = glfw.create_window(width, height, "Aux 1 solución", None, None)
+    window = glfw.create_window(width, height, "Ejercicio 6: Rio y bote", None, None)
 
     if not window:
         glfw.terminate()
