@@ -159,7 +159,8 @@ def create_house(pipeline):
 
 def create_river(pipeline, w, curve, N):
 
-    curve1 = curve - np.array([w/2, 0, 0])
+    # Se ingresa una curva
+    curve1 = curve - np.array([w/2, 0, 0]) # Traslada la curva para rellenar entremedio
     curve2 = curve + np.array([w/2, 0, 0])
 
     vertices = []
@@ -188,6 +189,7 @@ def create_river(pipeline, w, curve, N):
     river.childs += [gpuRiver]
     return river
 
+
 def create_boat(pipeline):
     # Prisma triangular cafe
     brown_prism = createColorTriangularPrism(139/255, 69/255, 19/255)
@@ -195,6 +197,7 @@ def create_boat(pipeline):
     pipeline.setupVAO(gpuBrownPrism)
     gpuBrownPrism.fillBuffers(brown_prism.vertices, brown_prism.indices, GL_DYNAMIC_DRAW)
 
+    # Triangulo casi blanco
     white_triangle = bs.createColorTriangle(0.8, 0.8, 0.8)
     gpuWhiteTriangle = es.GPUShape().initBuffers()
     pipeline.setupVAO(gpuWhiteTriangle)
@@ -266,7 +269,6 @@ def create_decorations(pipeline, curve, N):
     house.transform = tr.translate(0, 0.5, 0)
 
     river = create_river(pipeline, 0.25, curve, N)
-
     boat = create_boat(pipeline)
 
     decorations = sg.SceneGraphNode("decorations")
@@ -277,13 +279,18 @@ def create_decorations(pipeline, curve, N):
 
 ############################################################################
 
+# Puntos para generar una curva de Catmull-Rom
 N = 100
 P0 = np.array([[4, 4, 0]]).T
 P1 = np.array([[-0.35, 1, 0]]).T
 P2 = np.array([[0, -1, 0]]).T
 P3 = np.array([[-4.5, -4.5, 0]]).T
+
+# Genera curva
 GMcr = cv.catmullRomMatrix(P0, P1, P2, P3)
 curve = cv.evalCurve(GMcr, N)
+
+###########################################################
 
 # A class to store the application control
 class Controller:
@@ -294,9 +301,8 @@ class Controller:
         self.eye = [0, 0, 0.1]
         self.at = [0, 1, 0.1]
         self.up = [0, 0, 1]
-        self.boat_index = 0
+        self.boat_index = 0 # Da el movimiento del bote a traves de la curva
 ###########################################################
-
 
 # global controller as communication with the callback function
 controller = Controller()
@@ -330,12 +336,11 @@ def on_key(window, key, scancode, action, mods):
         controller.theta += np.pi*0.05
 
     elif key == glfw.KEY_H:
-        controller.boat_index += 1
+        controller.boat_index += 1 # Avanza bote
 
 ###########################################################
     else:
         print('Unknown key')
-
 
 if __name__ == "__main__":
 
@@ -413,9 +418,11 @@ if __name__ == "__main__":
 
 ###########################################################################
 
+        # Movimiento del bote sobre la curva
         if controller.boat_index < N:
             sg.findNode(decorations, "bote move").transform = tr.matmul([tr.translate(curve[controller.boat_index][0], curve[controller.boat_index][1], 0)])
 
+        # Si llega al final de la curva, se reinicia
         if controller.boat_index == N:
             controller.boat_index = 0
 
