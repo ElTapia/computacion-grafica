@@ -61,7 +61,9 @@ def createColorTriangularPrism(r, g ,b):
          0.5, 0.5,  0,  r, g, b,
         -0.5, -0.5, 0,  r+0.2, g+0.2, b+0.2,
          0.5, 0,  -0.5,  r, g, b,
-         -0.5, 0,  -0.5,  r+0.2, g+0.2, b+0.2]
+         -0.5, 0,  -0.5,  r+0.2, g+0.2, b+0.2,
+         -1, 0,  0,  r, g, b,
+         1, 0,  0,  r+0.2, g+0.2, b+0.2]
 
     # Defining connections among vertices
     # We have a triangle every 3 indices specified
@@ -73,7 +75,13 @@ def createColorTriangularPrism(r, g ,b):
          3, 4, 5,
          3, 4, 1, # cuadrado inclinado 1
          2, 5, 4,
-         2, 5, 0] # cuadrado inclinado 2
+         2, 5, 0, # cuadrado inclinado 2
+         0, 6, 3,
+         6, 5, 3, # saliente triangular 1
+         6, 0, 5,
+         1, 2, 7,
+         1, 7, 4,
+         2, 7, 4] # saliente triangular 2
 
     return bs.Shape(vertices, indices)
 
