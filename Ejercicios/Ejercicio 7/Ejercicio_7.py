@@ -263,7 +263,7 @@ if __name__ == "__main__":
         t1 = glfw.get_time()
         delta = t1 -t0
         t0 = t1
-        
+
         impl.process_inputs()
         # Using GLFW to check for input events
         glfw.poll_events()
@@ -298,11 +298,25 @@ if __name__ == "__main__":
 
         lightingPipeline = phongPipeline
         # Setting all uniform shader variables
+
+        # valores de los coeficientes de iluminacion que varian con el tiempo
+        #r = np.abs(((0.5*t1+0.00) % 2)-1)
+        #g = np.abs(((0.5*t1+0.33) % 2)-1)
+        #b = np.abs(((0.5*t1+0.66) % 2)-1)
         
+        if int(t1%3) == 0:
+            r, g, b = 0.8, 0.3, 0.3
+
+        elif int(t1%3) == 1:
+            r, g, b = 0.8, 0.8, 0.5
+
+        elif int(t1%3) == 2:
+            r, g, b = 0.3, 0.7, 0.7
+
         glUseProgram(lightingPipeline.shaderProgram)
-        glUniform3f(glGetUniformLocation(lightingPipeline.shaderProgram, "La"), 0.25, 0.25, 0.25)
-        glUniform3f(glGetUniformLocation(lightingPipeline.shaderProgram, "Ld"), 0.5, 0.5, 0.5)
-        glUniform3f(glGetUniformLocation(lightingPipeline.shaderProgram, "Ls"), 1.0, 1.0, 1.0)
+        glUniform3f(glGetUniformLocation(lightingPipeline.shaderProgram, "La"), r, g, b)
+        glUniform3f(glGetUniformLocation(lightingPipeline.shaderProgram, "Ld"), r, g, b)
+        glUniform3f(glGetUniformLocation(lightingPipeline.shaderProgram, "Ls"), r, g, b)
 
         glUniform3f(glGetUniformLocation(lightingPipeline.shaderProgram, "Ka"), 0.2, 0.2, 0.2)
         glUniform3f(glGetUniformLocation(lightingPipeline.shaderProgram, "Kd"), 0.5, 0.5, 0.5)
@@ -326,18 +340,13 @@ if __name__ == "__main__":
         glUniform3f(glGetUniformLocation(lightingPipeline.shaderProgram, "Ka"), ka[0], ka[1], ka[2])
         glUniform3f(glGetUniformLocation(lightingPipeline.shaderProgram, "Kd"), kd[0], kd[1], kd[2])
         glUniform3f(glGetUniformLocation(lightingPipeline.shaderProgram, "Ks"), ks[0], ks[1], ks[2])
-        
-        # Se dibuja la esfera normal
-        #sg.drawSceneGraphNode(torus1, lightingPipeline, "model")
-        #sg.drawSceneGraphNode(cube2, lightingPipeline, "model")
-        #sg.drawSceneGraphNode(sphere, lightingPipeline, "model")
-        
+
         # Pipeline para dibujar texturas
         glUseProgram(phongTexPipeline.shaderProgram)
         # White light in all components: ambient, diffuse and specular.
-        glUniform3f(glGetUniformLocation(phongTexPipeline.shaderProgram, "La"), 0.25, 0.25, 0.25)
-        glUniform3f(glGetUniformLocation(phongTexPipeline.shaderProgram, "Ld"), 0.5, 0.5, 0.5)
-        glUniform3f(glGetUniformLocation(phongTexPipeline.shaderProgram, "Ls"), 1.0, 1.0, 1.0)
+        glUniform3f(glGetUniformLocation(phongTexPipeline.shaderProgram, "La"), r, g, b)
+        glUniform3f(glGetUniformLocation(phongTexPipeline.shaderProgram, "Ld"), r, g, b)
+        glUniform3f(glGetUniformLocation(phongTexPipeline.shaderProgram, "Ls"), r, g, b)
 
         glUniform3f(glGetUniformLocation(phongTexPipeline.shaderProgram, "lightPosition"), lightPos[0], lightPos[1], lightPos[2])
         glUniform3f(glGetUniformLocation(phongTexPipeline.shaderProgram, "viewPosition"), camera.eye[0], camera.eye[1], camera.eye[2])
