@@ -317,7 +317,7 @@ def createTextureNormalSphere(N):
     return bs.Shape(vertices, indices)
 
 
-def createColorTorus(N, R, r):
+def createTextureNormalsTorus(N, R, r):
     # Funcion para crear un toroide con normales y texturizada
 
     vertices = []           # lista para almacenar los verices
@@ -402,10 +402,10 @@ def createTexSphereNode(pipeline):
 
 
 def createTexTorusNode1(pipeline, R, r):
-    # Funcion para crear Grafo de una esfera texturizada de la escena, se separa en otro grafo, por si se quiere dibujar con otro material
-    torus = createTextureGPUShape(createColorTorus(40, R, r), pipeline, "sprites/stone.png") # Shape de la esfera texturizada
+    # Funcion para crear Grafo de un toro texturizado de la escena, se separa en otro grafo, por si se quiere dibujar con otro material
+    torus = createTextureGPUShape(createTextureNormalsTorus(40, R, r), pipeline, "sprites/stone.png") # Shape del toro texturizada
 
-    # Nodo de la esfera trasladado y escalado
+    # Nodo del toro trasladado y escalado
     torusNode = sg.SceneGraphNode("torus 1")
     torusNode.transform =tr.matmul([
         tr.translate(-0.25,0.1,-0.5),
@@ -422,10 +422,10 @@ def createTexTorusNode1(pipeline, R, r):
 
 
 def createTexTorusNode2(pipeline, R, r):
-    # Funcion para crear Grafo de una esfera texturizada de la escena, se separa en otro grafo, por si se quiere dibujar con otro material
-    torus = createTextureGPUShape(createColorTorus(40, R, r), pipeline, "sprites/wood.jpeg") # Shape de la esfera texturizada
+    # Funcion para crear Grafo de un toro texturizado de la escena, se separa en otro grafo, por si se quiere dibujar con otro material
+    torus = createTextureGPUShape(createTextureNormalsTorus(40, R, r), pipeline, "sprites/wood.jpeg") # Shape del toro texturizado
 
-    # Nodo de la esfera trasladado y escalado
+    # Nodo del toro trasladado, escalado y rotado
     torusNode = sg.SceneGraphNode("torus 2")
     torusNode.transform =tr.matmul([
         tr.translate(0.25,-0.5,-0.3),

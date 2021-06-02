@@ -228,10 +228,12 @@ if __name__ == "__main__":
 
     scene = createScene(phongPipeline)
 
+    # Crea toro texturizado de piedra
     R1 = 0.8         # Radio mayor 1
     r1 = 0.2         # Radio menor 1
     torus1 = createTexTorusNode1(phongTexPipeline, R1, r1)
 
+    # Crea toro texturizado de madera
     R2 = 0.6         # Radio mayor 2
     r2 = 0.3         # Radio menor 2
     torus2 = createTexTorusNode2(phongTexPipeline, R2, r2)
@@ -299,11 +301,7 @@ if __name__ == "__main__":
         lightingPipeline = phongPipeline
         # Setting all uniform shader variables
 
-        # valores de los coeficientes de iluminacion que varian con el tiempo
-        #r = np.abs(((0.5*t1+0.00) % 2)-1)
-        #g = np.abs(((0.5*t1+0.33) % 2)-1)
-        #b = np.abs(((0.5*t1+0.66) % 2)-1)
-        
+        # Setea luces de distinto color que se alternan cada 1 segundo
         if int(t1%3) == 0:
             r, g, b = 0.8, 0.3, 0.3
 
@@ -363,9 +361,10 @@ if __name__ == "__main__":
         glUniformMatrix4fv(glGetUniformLocation(phongTexPipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
         glUniformMatrix4fv(glGetUniformLocation(phongTexPipeline.shaderProgram, "view"), 1, GL_TRUE, viewMatrix)
 
+        # Dibuja toros texturizados
         sg.drawSceneGraphNode(torus1, phongTexPipeline, "model")
         sg.drawSceneGraphNode(torus2, phongTexPipeline, "model")
-        
+
         # Drawing the imgui texture over our drawing
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
         impl.render(imgui.get_draw_data())
@@ -376,9 +375,7 @@ if __name__ == "__main__":
     gpuAxis.clear()
     impl.shutdown()
     scene.clear()
-    #cube1.clear()
-    #cube2.clear()
-    #sphere.clear()
     torus1.clear()
+    torus2.clear()
 
     glfw.terminate()
