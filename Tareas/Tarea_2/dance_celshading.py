@@ -1,5 +1,5 @@
 # coding=utf-8
-"""Rendering a OBJ file simplified"""
+"""Tarea 2b: Bailando con cel shading"""
 
 import glfw
 from OpenGL.GL import *
@@ -13,8 +13,10 @@ import grafica.basic_shapes as bs
 import grafica.easy_shaders as es
 import grafica.lighting_shaders as ls
 import grafica.performance_monitor as pm
+import grafica.scene_graph as sg
 from grafica.assets_path import getAssetPath
 from obj_reader import *
+from model_3D import *
 
 __author__ = "Daniel Calderon"
 __license__ = "MIT"
@@ -74,7 +76,7 @@ if __name__ == "__main__":
     glBindVertexArray(VAO)
 
     # Defining shader programs
-    pipeline = ls.SimpleGouraudShaderProgram()
+    pipeline = ls.SimplePhongShaderProgram()
     mvpPipeline = es.SimpleModelViewProjectionShaderProgram()
 
     # Telling OpenGL to use our shader program
@@ -87,21 +89,9 @@ if __name__ == "__main__":
     # and which one is at the back
     glEnable(GL_DEPTH_TEST)
 
-    # Convenience function to ease initialization
-    def createGPUShape(pipeline, shape):
-        gpuShape = es.GPUShape().initBuffers()
-        pipeline.setupVAO(gpuShape)
-        gpuShape.fillBuffers(shape.vertices, shape.indices, GL_STATIC_DRAW)
-        return gpuShape
-
     # Creating shapes on GPU memory
     gpuAxis = createGPUShape(mvpPipeline, bs.createAxis(7))
-
-    shapeSuzanne = readOBJ(getAssetPath('head.obj'), (0.9, 0.6, 0.2))
-    gpuSuzanne = createGPUShape(pipeline, shapeSuzanne)
-
-    shapeCarrot = readOBJ(getAssetPath('brazo_y_mano.obj'), (0.6, 0.9, 0.5))
-    gpuCarrot = createGPUShape(pipeline, shapeCarrot)
+    model_3D = create3DModel(pipeline)
 
     # Setting uniforms that will NOT change on each iteration
     glUseProgram(pipeline.shaderProgram)
@@ -157,7 +147,7 @@ if __name__ == "__main__":
             camera_theta += 2* dt
 
         # Setting up the view transform
-        R = 12
+        R = 20
         camX = R * np.sin(camera_theta)
         camY = R * np.cos(camera_theta)
         viewPos = np.array([camX, camY, 7])
@@ -181,16 +171,9 @@ if __name__ == "__main__":
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "viewPosition"), viewPos[0], viewPos[1], viewPos[2])
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "view"), 1, GL_TRUE, view)
 
-        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "model"), 1, GL_TRUE, tr.uniformScale(3))
-        pipeline.drawCall(gpuSuzanne)
+        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "model"), 1, GL_TRUE, tr.identity())
 
-        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "model"), 1, GL_TRUE,
-            tr.matmul([
-                tr.uniformScale(3),
-                tr.rotationX(np.pi/2),
-                tr.translate(1.5,-0.25,0)])
-        )
-        pipeline.drawCall(gpuCarrot)
+        sg.drawSceneGraphNode(model_3D, pipeline, "model")
         
         glUseProgram(mvpPipeline.shaderProgram)
         glUniformMatrix4fv(glGetUniformLocation(mvpPipeline.shaderProgram, "view"), 1, GL_TRUE, view)
@@ -201,7 +184,6 @@ if __name__ == "__main__":
 
     # freeing GPU memory
     gpuAxis.clear()
-    gpuSuzanne.clear()
-    gpuCarrot.clear()
+    model_3D.clear()
 
     glfw.terminate()

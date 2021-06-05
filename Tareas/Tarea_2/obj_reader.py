@@ -1,7 +1,7 @@
 
 import grafica.basic_shapes as bs
 
-
+# Create functions to read obj files
 def readFaceVertex(faceDescription):
 
     aux = faceDescription.split('/')
