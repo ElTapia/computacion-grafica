@@ -227,7 +227,7 @@ def create_skybox(pipeline):
     pipeline.setupVAO(gpuSky)
     gpuSky.fillBuffers(shapeSky.vertices, shapeSky.indices, GL_STATIC_DRAW)
     gpuSky.texture = es.textureSimpleSetup(
-        getAssetPath("paisaje2.jfif"), GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR)
+        getAssetPath("paisaje.jfif"), GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR)
     
     skybox = sg.SceneGraphNode("skybox")
     skybox.transform = tr.matmul([tr.translate(0, 0, 0.3), tr.uniformScale(2)])

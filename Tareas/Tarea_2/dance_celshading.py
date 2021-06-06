@@ -77,7 +77,7 @@ if __name__ == "__main__":
 
     # Defining shader programs
     pipeline = ls.SimplePhongShaderProgram()
-    mvpPipeline = es.SimpleModelViewProjectionShaderProgram()
+    mvpPipeline = es.SimpleTextureModelViewProjectionShaderProgram()
 
     # Telling OpenGL to use our shader program
     glUseProgram(pipeline.shaderProgram)
@@ -90,13 +90,13 @@ if __name__ == "__main__":
     glEnable(GL_DEPTH_TEST)
 
     # Creating shapes on GPU memory
-    gpuAxis = createGPUShape(mvpPipeline, bs.createAxis(7))
     model_3D = create3DModel(pipeline)
-
+    skybox = createSceneSkybox(mvpPipeline)
+    floor = createFloor(mvpPipeline)
 
     t0 = glfw.get_time()
     camera_theta = -3*np.pi/4
-    camZ = 7
+    camZ = 10
     moveLightTheta = -3*np.pi/4
     moveLightZ = 8
 
@@ -147,10 +147,11 @@ if __name__ == "__main__":
         R = 25
         camX = R * np.sin(camera_theta)
         camY = R * np.cos(camera_theta)
+
         viewPos = np.array([camX, camY, camZ])
         view = tr.lookAt(
             viewPos,
-            np.array([0,0,2]),
+            np.array([0,0,7]),
             np.array([0,0,1])
         )
 
@@ -173,7 +174,7 @@ if __name__ == "__main__":
         glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "quadraticAttenuation"), 0.01)
 
         # Setting up the projection transform
-        projection = tr.perspective(60, float(width)/float(height), 0.1, 100)
+        projection = tr.perspective(60, float(width)/float(height), 0.1, 300)
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
 
         glUseProgram(mvpPipeline.shaderProgram)
@@ -200,13 +201,15 @@ if __name__ == "__main__":
         
         glUseProgram(mvpPipeline.shaderProgram)
         glUniformMatrix4fv(glGetUniformLocation(mvpPipeline.shaderProgram, "view"), 1, GL_TRUE, view)
-        mvpPipeline.drawCall(gpuAxis, GL_LINES)
+        sg.drawSceneGraphNode(skybox, mvpPipeline, "model")
+        sg.drawSceneGraphNode(floor, mvpPipeline, "model")
 
         # Once the drawing is rendered, buffers are swap so an uncomplete drawing is never seen.
         glfw.swap_buffers(window)
 
     # freeing GPU memory
-    gpuAxis.clear()
     model_3D.clear()
+    skybox.clear()
+    floor.clear()
 
     glfw.terminate()

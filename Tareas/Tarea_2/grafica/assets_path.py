@@ -7,12 +7,20 @@ __author__ = "Daniel Calderon"
 __license__ = "MIT"
 
 
-def getAssetPath(filename):
+def getObjPath(filename):
     """Convenience function to access assets files regardless from where you run the example script."""
 
     thisFilePath = os.path.abspath(__file__)
     thisFolderPath = os.path.dirname(thisFilePath)
     parentFolderPath = os.path.dirname(thisFolderPath)
     assetsDirectory = os.path.join(parentFolderPath, "Obj_files")
+    requestedPath = os.path.join(assetsDirectory, filename)
+    return requestedPath
+
+def getAssetPath(filename):
+    thisFilePath = os.path.abspath(__file__)
+    thisFolderPath = os.path.dirname(thisFilePath)
+    parentFolderPath = os.path.dirname(thisFolderPath)
+    assetsDirectory = os.path.join(parentFolderPath, "assets")
     requestedPath = os.path.join(assetsDirectory, filename)
     return requestedPath
