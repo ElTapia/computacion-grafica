@@ -25,6 +25,8 @@ def createGPUShape(pipeline, shape):
 # Create every model part from obj files
 def create3DModel(pipeline):
 
+# Create Shapes
+###########################################################################
     # Create head obj and shape
     headShape = readOBJ(getAssetPath('head.obj'), (0.4, 0.3, 0.2))
     gpuHead = createGPUShape(pipeline, headShape)
@@ -49,111 +51,118 @@ def create3DModel(pipeline):
     bodyShape = readOBJ(getAssetPath('torso.obj'), (0.8, 0.2, 0.2))
     gpuBody = createGPUShape(pipeline, bodyShape)
 
+# Model scene graph
+###########################################################################
 
     headNode = sg.SceneGraphNode("head")
     headNode.transform = tr.matmul([tr.translate(0, -0.3, 9.4), tr.rotationX(np.pi/2), tr.uniformScale(1.4)])
     headNode.childs = [gpuHead]
 
-    x_arms = 3.6
     z_arms = -2.6
-    leftArmNode = sg.SceneGraphNode("left arm")
-    leftArmNode.transform = tr.matmul([tr.translate(0, 0, z_arms), tr.rotationX(np.pi/2),  tr.rotationY(np.pi/2), tr.scale(1, 1, -1)])
-    leftArmNode.childs = [gpuArmHand]
-
-    #TODO: Insertar curva theta aca
-    rotateLeftArmNode = sg.SceneGraphNode("rotate left arm")
-    rotateLeftArmNode.transform = tr.matmul([tr.translate(-x_arms, 0, 0), tr.rotationY(np.pi/8), tr.rotationX(0)])
-    rotateLeftArmNode.childs = [leftArmNode]
-
     rightArmNode = sg.SceneGraphNode("right arm")
-    rightArmNode.transform = tr.matmul([tr.translate(0, 0, z_arms), tr.rotationX(np.pi/2), tr.rotationY(np.pi/2)])
+    rightArmNode.transform = tr.matmul([tr.translate(-0.1, -0.1, z_arms), tr.rotationX(np.pi/2),  tr.rotationY(np.pi/2), tr.scale(1, 1, -1)])
     rightArmNode.childs = [gpuArmHand]
 
     #TODO: Insertar curva theta aca
     rotateRightArmNode = sg.SceneGraphNode("rotate right arm")
-    rotateRightArmNode.transform = tr.matmul([tr.translate(x_arms, 0, 0), tr.rotationY(-np.pi/8), tr.rotationX(0)])
+    rotateRightArmNode.transform = tr.matmul([tr.rotationY(0), tr.rotationX(0)])
     rotateRightArmNode.childs = [rightArmNode]
 
-    x_forearms = 3.5
-    leftForearmNode = sg.SceneGraphNode("left forearm")
-    leftForearmNode.transform = tr.matmul([tr.rotationX(np.pi/2), tr.uniformScale(0.8)])
-    leftForearmNode.childs = [gpuForearm]
+    leftArmNode = sg.SceneGraphNode("left arm")
+    leftArmNode.transform = tr.matmul([tr.translate(-0.1, -0.1, z_arms), tr.rotationX(np.pi/2), tr.rotationY(np.pi/2)])
+    leftArmNode.childs = [gpuArmHand]
 
     #TODO: Insertar curva theta aca
-    rotateLeftForearmNode = sg.SceneGraphNode("rotate left forearm")
-    rotateLeftForearmNode.transform = tr.matmul([tr.translate(-x_forearms, 0, 0), tr.rotationY(np.pi/5)])
-    rotateLeftForearmNode.childs = [leftForearmNode]
+    rotateLeftArmNode = sg.SceneGraphNode("rotate left arm")
+    rotateLeftArmNode.transform = tr.matmul([tr.rotationY(0), tr.rotationX(0)])
+    rotateLeftArmNode.childs = [leftArmNode]
 
+    x_forearms = 2.2
     rightForearmNode = sg.SceneGraphNode("right forearm")
     rightForearmNode.transform = tr.matmul([tr.rotationX(np.pi/2), tr.uniformScale(0.8)])
     rightForearmNode.childs = [gpuForearm]
 
+    completeRightArmNode = sg.SceneGraphNode("complete right arm")
+    completeRightArmNode.transform = tr.matmul([tr.translate(0, 0, -2.4)])
+    completeRightArmNode.childs = [rightForearmNode, rotateRightArmNode]
+
     #TODO: Insertar curva theta aca
-    rotateRightForearmNode = sg.SceneGraphNode("rotate right forearm")
-    rotateRightForearmNode.transform = tr.matmul([tr.translate(x_forearms, 0, 0), tr.rotationY(-np.pi/5)])
-    rotateRightForearmNode.childs = [rightForearmNode]
+    rotateCompleteRightArmNode = sg.SceneGraphNode("rotate complete right arm")
+    rotateCompleteRightArmNode.transform = tr.matmul([tr.translate(-x_forearms, 0, 2.2), tr.rotationX(-np.pi/2), tr.rotationY(np.pi/2)])
+    rotateCompleteRightArmNode.childs = [completeRightArmNode]
+
+    leftForearmNode = sg.SceneGraphNode("left forearm")
+    leftForearmNode.transform = tr.matmul([tr.rotationX(np.pi/2), tr.uniformScale(0.8)])
+    leftForearmNode.childs = [gpuForearm]
+
+    completeLeftArmNode = sg.SceneGraphNode("complete left arm")
+    completeLeftArmNode.transform = tr.matmul([tr.translate(0, 0, -2.4)])
+    completeLeftArmNode.childs = [leftForearmNode, rotateLeftArmNode]
+
+    #TODO: Insertar curva theta aca
+    rotateCompleteLeftArmNode = sg.SceneGraphNode("rotate complete left arm")
+    rotateCompleteLeftArmNode.transform = tr.matmul([tr.translate(x_forearms, 0, 2.2), tr.rotationX(-np.pi/2), tr.rotationY(-np.pi/2)])
+    rotateCompleteLeftArmNode.childs = [completeLeftArmNode]
 
     bodyNode = sg.SceneGraphNode("body")
     bodyNode.transform = tr.matmul([tr.translate(0, 0, 2), tr.rotationX(np.pi/2)])
     bodyNode.childs = [gpuBody]
 
     footNode = sg.SceneGraphNode("foot")
-    footNode.transform = tr.matmul([tr.translate(0, -0.5, -4.3), tr.scale(1, 0.8, 1), tr.rotationX(np.pi/2)])
+    footNode.transform = tr.matmul([tr.translate(0.05, -0.4, -4.3), tr.scale(1, 0.8, 1), tr.rotationX(np.pi/2)])
     footNode.childs = [gpuFoot]
+
+    thighNode = sg.SceneGraphNode("thigh")
+    thighNode.transform = tr.matmul([tr.rotationY(-0.02), tr.translate(0, 0, -3.2), tr.rotationX(np.pi/2)])
+    thighNode.childs = [gpuThigh]
 
     #TODO: Insertar curva theta aca
     rotateLeftFootNode = sg.SceneGraphNode("rotate left foot")
-    rotateLeftFootNode.transform = tr.matmul([tr.translate(1.8, 0, 4.3), tr.rotationX(0)])
+    rotateLeftFootNode.transform = tr.matmul([tr.translate(0, 0, -3.4), tr.rotationY(np.pi/8)])
     rotateLeftFootNode.childs = [footNode]
+
+    x_leg = 0.8
+    z_leg = 7.5
+
+    leftThighNode = sg.SceneGraphNode("left thigh")
+    leftThighNode.childs = [thighNode]
+
+    completeLeftLegNode = sg.SceneGraphNode("complete left leg")
+    completeLeftLegNode.childs = [leftThighNode, rotateLeftFootNode]
+
+    #TODO: Insertar curva theta aca
+    rotateCompleteLeftLegNode = sg.SceneGraphNode("rotate complete left leg")
+    rotateCompleteLeftLegNode.transform = tr.matmul([tr.translate(x_leg, 0, z_leg), tr.rotationY(-np.pi/8)])
+    rotateCompleteLeftLegNode.childs = [completeLeftLegNode]
 
     #TODO: Insertar curva theta aca
     rotateRightFootNode = sg.SceneGraphNode("rotate right foot")
-    rotateRightFootNode.transform = tr.matmul([tr.translate(-1.8, 0, 4.3), tr.rotationX(0)])
+    rotateRightFootNode.transform = tr.matmul([tr.translate(0, 0, -3.4), tr.rotationY(-np.pi/8)])
     rotateRightFootNode.childs = [footNode]
 
-    thighNode = sg.SceneGraphNode("thigh")
-    thighNode.transform = tr.matmul([tr.translate(0, 0, -3.2), tr.rotationX(np.pi/2)])
-    thighNode.childs = [gpuThigh]
-
-    x_thigh = 0.8
-    z_thigh = 7.5
-    leftThighNode = sg.SceneGraphNode("left thigh")
-    leftThighNode.transform = tr.matmul([tr.rotationY(-np.pi/10)])
-    leftThighNode.childs = [thighNode]
-
-    #TODO: Insertar curva theta aca
-    rotateLeftThighNode = sg.SceneGraphNode("rotate left thigh")
-    rotateLeftThighNode.transform = tr.matmul([tr.translate(x_thigh, 0, z_thigh), tr.rotationX(0)])
-    rotateLeftThighNode.childs = [leftThighNode]
-
     rightThighNode = sg.SceneGraphNode("right thigh")
-    rightThighNode.transform = tr.matmul([tr.rotationY(np.pi/10)])
     rightThighNode.childs = [thighNode]
 
-    #TODO: Insertar curva theta aca
-    rotateRightThighNode = sg.SceneGraphNode("rotate right thigh")
-    rotateRightThighNode.transform = tr.matmul([tr.translate(-x_thigh, 0, z_thigh), tr.rotationX(0)])
-    rotateRightThighNode.childs = [rightThighNode]
+    completeRightLegNode = sg.SceneGraphNode("complete right leg")
+    completeRightLegNode.childs = [rightThighNode, rotateRightFootNode]
 
-    forearmsNode = sg.SceneGraphNode("forearms")
-    forearmsNode.transform = tr.matmul([tr.translate(0, 0, 4.8)])
-    forearmsNode.childs = [rotateLeftForearmNode, rotateRightForearmNode]
+    #TODO: Insertar curva theta aca
+    rotateCompleteRightLegNode = sg.SceneGraphNode("rotate complete right leg")
+    rotateCompleteRightLegNode.transform = tr.matmul([tr.translate(-x_leg, 0, z_leg), tr.rotationY(np.pi/8)])
+    rotateCompleteRightLegNode.childs = [completeRightLegNode]
 
     armsNode = sg.SceneGraphNode("arms")
     armsNode.transform = tr.matmul([tr.translate(0, 0, 4.8)])
-    armsNode.childs = [rotateLeftArmNode, rotateRightArmNode]
+    armsNode.childs = [rotateCompleteLeftArmNode, rotateCompleteRightArmNode]
 
     upperBodyNode = sg.SceneGraphNode("upper body")
     upperBodyNode.transform = tr.matmul([tr.translate(0, 0, 6)])
-    upperBodyNode.childs = [headNode, bodyNode, forearmsNode, armsNode]
+    upperBodyNode.childs = [headNode, bodyNode, armsNode]
 
-    thighsNode = sg.SceneGraphNode("thighs")
-    thighsNode.childs = [rotateLeftThighNode, rotateRightThighNode]
-
-    feetNode = sg.SceneGraphNode("feet")
-    feetNode.childs = [rotateLeftFootNode, rotateRightFootNode]
+    legsNode = sg.SceneGraphNode("legs")
+    legsNode.childs = [rotateCompleteLeftLegNode, rotateCompleteRightLegNode]
 
     modelNode = sg.SceneGraphNode("model")
-    modelNode.childs = [upperBodyNode, thighsNode, feetNode]
+    modelNode.childs = [upperBodyNode, legsNode]
 
     return modelNode
