@@ -52,8 +52,8 @@ if __name__ == "__main__":
     if not glfw.init():
         glfw.set_window_should_close(window, True)
 
-    width = 600
-    height = 600
+    width = 1000
+    height = 1000
     title = "Reading a *.obj file"
 
     glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 4)
@@ -93,33 +93,12 @@ if __name__ == "__main__":
     gpuAxis = createGPUShape(mvpPipeline, bs.createAxis(7))
     model_3D = create3DModel(pipeline)
 
-    # Setting uniforms that will NOT change on each iteration
-    glUseProgram(pipeline.shaderProgram)
-    glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "La"), 1.0, 1.0, 1.0)
-    glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ld"), 1.0, 1.0, 1.0)
-    glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ls"), 1.0, 1.0, 1.0)
-
-    glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ka"), 0.2, 0.2, 0.2)
-    glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Kd"), 0.9, 0.9, 0.9)
-    glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ks"), 1.0, 1.0, 1.0)
-
-    glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightPosition"), -3, 0, 3)
-    
-    glUniform1ui(glGetUniformLocation(pipeline.shaderProgram, "shininess"), 100)
-    glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "constantAttenuation"), 0.001)
-    glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "linearAttenuation"), 0.1)
-    glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "quadraticAttenuation"), 0.01)
-
-    # Setting up the projection transform
-    projection = tr.perspective(60, float(width)/float(height), 0.1, 100)
-    glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
-
-    glUseProgram(mvpPipeline.shaderProgram)
-    glUniformMatrix4fv(glGetUniformLocation(mvpPipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
-    glUniformMatrix4fv(glGetUniformLocation(mvpPipeline.shaderProgram, "model"), 1, GL_TRUE, tr.identity())
 
     t0 = glfw.get_time()
     camera_theta = -3*np.pi/4
+    camZ = 7
+    moveLightTheta = -3*np.pi/4
+    moveLightZ = 8
 
     perfMonitor = pm.PerformanceMonitor(glfw.get_time(), 0.5)
 
@@ -146,16 +125,60 @@ if __name__ == "__main__":
         if (glfw.get_key(window, glfw.KEY_RIGHT) == glfw.PRESS):
             camera_theta += 2* dt
 
+        if (glfw.get_key(window, glfw.KEY_UP) == glfw.PRESS):
+            camZ += 8* dt
+
+        if (glfw.get_key(window, glfw.KEY_DOWN) == glfw.PRESS):
+            camZ -= 8* dt
+
+        if glfw.get_key(window, glfw.KEY_D) == glfw.PRESS:
+            moveLightTheta += 2* dt
+
+        if glfw.get_key(window, glfw.KEY_A) == glfw.PRESS:
+            moveLightTheta -= 2* dt
+
+        if glfw.get_key(window, glfw.KEY_W) == glfw.PRESS:
+            moveLightZ += 8 * dt
+
+        if glfw.get_key(window, glfw.KEY_S) == glfw.PRESS:
+            moveLightZ -= 8 * dt
+
         # Setting up the view transform
-        R = 20
+        R = 25
         camX = R * np.sin(camera_theta)
         camY = R * np.cos(camera_theta)
-        viewPos = np.array([camX, camY, 7])
+        viewPos = np.array([camX, camY, camZ])
         view = tr.lookAt(
             viewPos,
-            np.array([0,0,1]),
+            np.array([0,0,2]),
             np.array([0,0,1])
         )
+
+        # Setting uniforms that will NOT change on each iteration
+        glUseProgram(pipeline.shaderProgram)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "La"), 1.0, 1.0, 1.0)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ld"), 1.0, 1.0, 1.0)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ls"), 1.0, 1.0, 1.0)
+
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ka"), 0.2, 0.2, 0.2)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Kd"), 0.9, 0.9, 0.9)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ks"), 0.6, 0.6, 0.6)
+
+        lightposition = [7*np.cos(moveLightTheta), 7*np.sin(moveLightTheta), moveLightZ]
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightPosition"), lightposition[0], lightposition[1], lightposition[2])
+        
+        glUniform1ui(glGetUniformLocation(pipeline.shaderProgram, "shininess"), 500)
+        glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "constantAttenuation"), 0.001)
+        glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "linearAttenuation"), 0.1)
+        glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "quadraticAttenuation"), 0.01)
+
+        # Setting up the projection transform
+        projection = tr.perspective(60, float(width)/float(height), 0.1, 100)
+        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
+
+        glUseProgram(mvpPipeline.shaderProgram)
+        glUniformMatrix4fv(glGetUniformLocation(mvpPipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
+        glUniformMatrix4fv(glGetUniformLocation(mvpPipeline.shaderProgram, "model"), 1, GL_TRUE, tr.identity())
 
         # Clearing the screen in both, color and depth
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
