@@ -26,27 +26,27 @@ def createGPUShape(pipeline, shape):
 def create3DModel(pipeline):
 
     # Create head obj and shape
-    headShape = readOBJ(getAssetPath('head.obj'), (0.6, 0.9, 0.5))
+    headShape = readOBJ(getAssetPath('head.obj'), (0.4, 0.3, 0.2))
     gpuHead = createGPUShape(pipeline, headShape)
 
     # Create right arm and hand obj and shape
-    armHandShape = readOBJ(getAssetPath('brazo_y_mano.obj'), (0.6, 0.9, 0.5))
+    armHandShape = readOBJ(getAssetPath('brazo_y_mano.obj'), (0.9, 0.8, 0.7))
     gpuArmHand = createGPUShape(pipeline, armHandShape)
 
     # Create right forearm and hand obj and shape
-    forearmShape = readOBJ(getAssetPath('antebrazo.obj'), (0.6, 0.9, 0.5))
+    forearmShape = readOBJ(getAssetPath('antebrazo.obj'), (1, 1, 1))
     gpuForearm = createGPUShape(pipeline, forearmShape)
 
     # Create right foot and hand obj and shape
-    footShape = readOBJ(getAssetPath('pie.obj'), (0.6, 0.9, 0.5))
+    footShape = readOBJ(getAssetPath('pie.obj'), (0.1, 0.1, 0.1))
     gpuFoot = createGPUShape(pipeline, footShape)
 
     # Create right thigh and hand obj and shape
-    thighShape = readOBJ(getAssetPath('muslo.obj'), (0.6, 0.9, 0.5))
+    thighShape = readOBJ(getAssetPath('muslo.obj'), (0.3, 0.3, 0.8))
     gpuThigh = createGPUShape(pipeline, thighShape)
 
     # Create body obj and shape
-    bodyShape = readOBJ(getAssetPath('torso.obj'), (0.6, 0.9, 0.5))
+    bodyShape = readOBJ(getAssetPath('torso.obj'), (0.8, 0.2, 0.2))
     gpuBody = createGPUShape(pipeline, bodyShape)
 
 

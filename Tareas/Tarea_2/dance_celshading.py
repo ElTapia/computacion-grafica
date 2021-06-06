@@ -164,7 +164,7 @@ if __name__ == "__main__":
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Kd"), 0.9, 0.9, 0.9)
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ks"), 0.6, 0.6, 0.6)
 
-        lightposition = [7*np.cos(moveLightTheta), 7*np.sin(moveLightTheta), moveLightZ]
+        lightposition = [5*np.cos(moveLightTheta), 5*np.sin(moveLightTheta), moveLightZ]
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightPosition"), lightposition[0], lightposition[1], lightposition[2])
         
         glUniform1ui(glGetUniformLocation(pipeline.shaderProgram, "shininess"), 500)
