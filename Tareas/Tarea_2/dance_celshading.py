@@ -18,6 +18,7 @@ import grafica.ex_curves as cv
 from grafica.assets_path import getAssetPath
 from obj_reader import *
 from model_3D import *
+from model_curves import *
 
 __author__ = "Daniel Calderon"
 __license__ = "MIT"
@@ -96,25 +97,15 @@ if __name__ == "__main__":
     floor = createFloor(mvpPipeline)
 
     t0 = glfw.get_time()
+
+    # inicializa variables
     camera_theta = -3*np.pi/4
     camZ = 10
     moveLightTheta = -3*np.pi/4
     moveLightZ = 8
 
-    # puntos mov brazo derecho
-    P0_prima = np.array([[-1, 0, 0]]).T
-    P0 = np.array([[0, 0, 0]]).T
-    P1 = np.array([[1, -np.pi/1.5, 0]]).T
-    P2 = np.array([[1.5, 0, 0]]).T
-    P3 = np.array([[2, -np.pi/1.5, 0]]).T
-    P4 = np.array([[2.5, 0, 0]]).T
-    P5 = np.array([[3, -np.pi/1.5, 0]]).T
-    P6 = np.array([[3.5, 0, 0]]).T
-    P7 = np.array([[4, -np.pi/1.5, 0]]).T
-    P8 = np.array([[4.5, 0, 0]]).T
-    P9 = np.array([[5, 0, 0]]).T
-    points = [P0_prima, P0, P1, P2, P3, P4, P5, P6, P7, P8, P9]
-    times = [0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5]
+    # inicializa modelo controlador de movimiento
+    model_movement = ModelMovement()
 
     perfMonitor = pm.PerformanceMonitor(glfw.get_time(), 0.5)
 
@@ -128,28 +119,36 @@ if __name__ == "__main__":
         dt = t1 - t0
         t0 = t1
 
+        t = t1%4.5
+
         # Measuring performance
         perfMonitor.update(glfw.get_time())
-        glfw.set_window_title(window, title + str(perfMonitor) + str(int(t1%4.5)))
+        glfw.set_window_title(window, title + str(perfMonitor) + str(int(t)))
 
         # Using GLFW to check for input events
         glfw.poll_events()
 
         # Agrega movimiento a partes moviles
+        model_movement.update(t)
+
 
         # * mano y brazo derechos
-        theta_y = cv.evalCRCurveTime(t1%4.5, points, times)[1]
 
+        rightArm = model_movement.rightArm
         rightArmRotation = sg.findNode(model_3D, "rotate right arm")
-        rightArmRotation.transform = tr.matmul([tr.rotationY(theta_y), tr.rotationZ(np.pi/2)])
+        rightArmRotation.transform = tr.matmul([tr.rotationX(rightArm.theta_x) ,tr.rotationY(rightArm.theta_y), tr.rotationZ(rightArm.theta_z)])
+
 
         # * brazo completo derecho
         completeRightArmRotation = sg.findNode(model_3D, "rotate complete right arm")
         completeRightArmRotation.transform = tr.matmul([tr.rotationY(np.pi/2)])
 
+
         # * mano y brazo izquierdos
+        leftArm = model_movement.leftArm
         leftArmRotation = sg.findNode(model_3D, "rotate left arm")
-        leftArmRotation.transform = tr.matmul([tr.rotationY(np.pi/2.2), tr.rotationY(-np.pi/4), tr.rotationY(np.pi/2), tr.rotationZ(-np.pi/2)])
+        leftArmRotation.transform = tr.matmul([tr.rotationX(leftArm.theta_x), tr.rotationY(leftArm.theta_y), tr.rotationZ(leftArm.theta_z)])
+
 
         # * brazo completo izquierdo
         completeLeftArmRotation = sg.findNode(model_3D, "rotate complete left arm")
