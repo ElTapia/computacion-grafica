@@ -14,6 +14,7 @@ import grafica.easy_shaders as es
 import grafica.lighting_shaders as ls
 import grafica.performance_monitor as pm
 import grafica.scene_graph as sg
+import grafica.ex_curves as cv
 from grafica.assets_path import getAssetPath
 from obj_reader import *
 from model_3D import *
@@ -100,6 +101,21 @@ if __name__ == "__main__":
     moveLightTheta = -3*np.pi/4
     moveLightZ = 8
 
+    # puntos mov brazo derecho
+    P0_prima = np.array([[-1, 0, 0]]).T
+    P0 = np.array([[0, 0, 0]]).T
+    P1 = np.array([[1, -np.pi/1.5, 0]]).T
+    P2 = np.array([[1.5, 0, 0]]).T
+    P3 = np.array([[2, -np.pi/1.5, 0]]).T
+    P4 = np.array([[2.5, 0, 0]]).T
+    P5 = np.array([[3, -np.pi/1.5, 0]]).T
+    P6 = np.array([[3.5, 0, 0]]).T
+    P7 = np.array([[4, -np.pi/1.5, 0]]).T
+    P8 = np.array([[4.5, 0, 0]]).T
+    P9 = np.array([[5, 0, 0]]).T
+    points = [P0_prima, P0, P1, P2, P3, P4, P5, P6, P7, P8, P9]
+    times = [0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5]
+
     perfMonitor = pm.PerformanceMonitor(glfw.get_time(), 0.5)
 
     # glfw will swap buffers as soon as possible
@@ -107,17 +123,54 @@ if __name__ == "__main__":
 
     while not glfw.window_should_close(window):
 
-        # Measuring performance
-        perfMonitor.update(glfw.get_time())
-        glfw.set_window_title(window, title + str(perfMonitor))
-
-        # Using GLFW to check for input events
-        glfw.poll_events()
-
         # Getting the time difference from the previous iteration
         t1 = glfw.get_time()
         dt = t1 - t0
         t0 = t1
+
+        # Measuring performance
+        perfMonitor.update(glfw.get_time())
+        glfw.set_window_title(window, title + str(perfMonitor) + str(int(t1%4.5)))
+
+        # Using GLFW to check for input events
+        glfw.poll_events()
+
+        # Agrega movimiento a partes moviles
+
+        # * mano y brazo derechos
+        theta_y = cv.evalCRCurveTime(t1%4.5, points, times)[1]
+
+        rightArmRotation = sg.findNode(model_3D, "rotate right arm")
+        rightArmRotation.transform = tr.matmul([tr.rotationY(theta_y), tr.rotationZ(np.pi/2)])
+
+        # * brazo completo derecho
+        completeRightArmRotation = sg.findNode(model_3D, "rotate complete right arm")
+        completeRightArmRotation.transform = tr.matmul([tr.rotationY(np.pi/2)])
+
+        # * mano y brazo izquierdos
+        leftArmRotation = sg.findNode(model_3D, "rotate left arm")
+        leftArmRotation.transform = tr.matmul([tr.rotationY(np.pi/2.2), tr.rotationY(-np.pi/4), tr.rotationY(np.pi/2), tr.rotationZ(-np.pi/2)])
+
+        # * brazo completo izquierdo
+        completeLeftArmRotation = sg.findNode(model_3D, "rotate complete left arm")
+        completeLeftArmRotation.transform = tr.matmul([tr.rotationY(-np.pi/2)])
+
+        # * pierna y pie derechos
+        rightLegRotation = sg.findNode(model_3D, "rotate right foot")
+        rightLegRotation.transform = tr.matmul([tr.rotationY(0), tr.rotationZ(0)])
+
+        # * pierna completa derecha
+        completeRightLegRotation = sg.findNode(model_3D, "rotate complete right leg")
+        completeRightLegRotation.transform = tr.matmul([tr.rotationY(0), tr.rotationZ(0)])
+
+        # * pierna y pie izquierdos
+        leftLegRotation = sg.findNode(model_3D, "rotate left foot")
+        leftLegRotation.transform = tr.matmul([tr.rotationY(0), tr.rotationZ(0)])
+
+        # * pierna completa izquierda
+        completeLeftLegRotation = sg.findNode(model_3D, "rotate complete left leg")
+        completeLeftLegRotation.transform = tr.matmul([tr.rotationY(0), tr.rotationZ(0)])
+
 
         if (glfw.get_key(window, glfw.KEY_LEFT) == glfw.PRESS):
             camera_theta -= 2 * dt
