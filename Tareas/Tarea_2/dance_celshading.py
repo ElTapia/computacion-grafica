@@ -160,11 +160,12 @@ if __name__ == "__main__":
 
         # * pierna y pie derechos
         rightLegRotation = sg.findNode(model_3D, "rotate right foot")
-        rightLegRotation.transform = tr.matmul([tr.rotationY(0), tr.rotationZ(0)])
+        rightLegRotation.transform = tr.matmul([tr.rotationX(0), tr.rotationY(0), tr.rotationZ(0)])
 
         # * pierna completa derecha
+        rightLeg = model_movement.rightLeg
         completeRightLegRotation = sg.findNode(model_3D, "rotate complete right leg")
-        completeRightLegRotation.transform = tr.matmul([tr.rotationY(0), tr.rotationZ(0)])
+        completeRightLegRotation.transform = tr.matmul([tr.rotationY(rightLeg.theta_y), tr.rotationX(rightLeg.theta_x), tr.rotationZ(rightLeg.theta_z)])
 
         # * pierna y pie izquierdos
         leftLegRotation = sg.findNode(model_3D, "rotate left foot")
