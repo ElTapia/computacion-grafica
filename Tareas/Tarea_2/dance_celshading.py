@@ -140,8 +140,10 @@ if __name__ == "__main__":
 
 
         # * brazo completo derecho
+        completeRightArm = model_movement.completeRightArm
         completeRightArmRotation = sg.findNode(model_3D, "rotate complete right arm")
-        completeRightArmRotation.transform = tr.matmul([tr.rotationY(np.pi/2)])
+        completeRightArmRotation.transform = tr.matmul([tr.rotationX(completeRightArm.theta_x), tr.rotationY(completeRightArm.theta_y), 
+                                                        tr.rotationZ(completeRightArm.theta_z)])
 
 
         # * mano y brazo izquierdos
@@ -151,8 +153,10 @@ if __name__ == "__main__":
 
 
         # * brazo completo izquierdo
+        completeLeftArm = model_movement.completeLeftArm
         completeLeftArmRotation = sg.findNode(model_3D, "rotate complete left arm")
-        completeLeftArmRotation.transform = tr.matmul([tr.rotationY(-np.pi/2)])
+        completeLeftArmRotation.transform = tr.matmul([tr.rotationX(completeLeftArm.theta_x), tr.rotationY(completeLeftArm.theta_y),
+                                                       tr.rotationZ(completeLeftArm.theta_z)])
 
         # * pierna y pie derechos
         rightLegRotation = sg.findNode(model_3D, "rotate right foot")
