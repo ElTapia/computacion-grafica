@@ -53,7 +53,7 @@ def create3DModel(pipeline):
 # Create Shapes
 ###########################################################################
     # Create head obj and shape
-    headShape = readOBJ(getObjPath('head.obj'), (0.4, 0.3, 0.2))
+    headShape = readOBJ(getObjPath('head_mejor_calidad.obj'), (0.4, 0.3, 0.2))
     gpuHead = createGPUShape(pipeline, headShape)
 
     # Create right arm and hand obj and shape
@@ -73,7 +73,7 @@ def create3DModel(pipeline):
     gpuThigh = createGPUShape(pipeline, thighShape)
 
     # Create body obj and shape
-    bodyShape = readOBJ(getObjPath('torso.obj'), (0.8, 0.2, 0.2))
+    bodyShape = readOBJ(getObjPath('torso_mejor_calidad.obj'), (0.8, 0.2, 0.2))
     gpuBody = createGPUShape(pipeline, bodyShape)
 
 # Model scene graph
@@ -215,3 +215,4 @@ def create3DModel(pipeline):
     modelNode.childs = [upperBodyNode, legsNode]
 
     return modelNode
+

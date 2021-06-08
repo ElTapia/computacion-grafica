@@ -28,6 +28,7 @@ __license__ = "MIT"
 class Controller:
     def __init__(self):
         self.fillPolygon = True
+        self.celShading = False
 
 
 # We will use the global controller as communication with the callback function
@@ -47,6 +48,9 @@ def on_key(window, key, scancode, action, mods):
     elif key == glfw.KEY_ESCAPE:
         glfw.set_window_should_close(window, True)
 
+    elif key == glfw.KEY_TAB:
+        controller.celShading = not controller.celShading
+
 
 if __name__ == "__main__":
 
@@ -56,7 +60,7 @@ if __name__ == "__main__":
 
     width = 1000
     height = 1000
-    title = "Reading a *.obj file"
+    title = "Monito vidal cel shading"
 
     glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 4)
     glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 1)
@@ -77,12 +81,10 @@ if __name__ == "__main__":
     VAO = glGenVertexArrays(1)
     glBindVertexArray(VAO)
 
-    # Defining shader programs
-    pipeline = ls.SimplePhongShaderProgram()
+    # Defining shader program
+    celShadingPipeline = ls.CelShadingShaderProgram()
+    phongPipeline = ls.SimplePhongShaderProgram()
     mvpPipeline = es.SimpleTextureModelViewProjectionShaderProgram()
-
-    # Telling OpenGL to use our shader program
-    glUseProgram(pipeline.shaderProgram)
 
     # Setting up the clear screen color
     glClearColor(0.85, 0.85, 0.85, 1.0)
@@ -92,7 +94,7 @@ if __name__ == "__main__":
     glEnable(GL_DEPTH_TEST)
 
     # Creating shapes on GPU memory
-    model_3D = create3DModel(pipeline)
+    model_3D = create3DModel(phongPipeline)
     skybox = createSceneSkybox(mvpPipeline)
     floor = createFloor(mvpPipeline)
 
@@ -123,12 +125,17 @@ if __name__ == "__main__":
 
         # Measuring performance
         perfMonitor.update(glfw.get_time())
-        glfw.set_window_title(window, title + str(perfMonitor) + str(int(t)))
+        glfw.set_window_title(window, title + str(perfMonitor) + " Dance time: " + str(int(t)))
 
         # Using GLFW to check for input events
         glfw.poll_events()
 
-        # Agrega movimiento a partes moviles
+        if controller.celShading:
+            pipeline = celShadingPipeline
+        else:
+            pipeline = phongPipeline
+
+        # Dibuja y agrega movimiento a partes moviles
         model_movement.update(t)
 
         # * Cuerpo completo
@@ -217,31 +224,8 @@ if __name__ == "__main__":
             np.array([0,0,1])
         )
 
-        # Setting uniforms that will NOT change on each iteration
-        glUseProgram(pipeline.shaderProgram)
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "La"), 1.0, 1.0, 1.0)
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ld"), 1.0, 1.0, 1.0)
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ls"), 1.0, 1.0, 1.0)
-
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ka"), 0.2, 0.2, 0.2)
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Kd"), 0.9, 0.9, 0.9)
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ks"), 0.6, 0.6, 0.6)
-
-        lightposition = [5*np.cos(moveLightTheta), 5*np.sin(moveLightTheta), moveLightZ]
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightPosition"), lightposition[0], lightposition[1], lightposition[2])
-        
-        glUniform1ui(glGetUniformLocation(pipeline.shaderProgram, "shininess"), 500)
-        glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "constantAttenuation"), 0.001)
-        glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "linearAttenuation"), 0.1)
-        glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "quadraticAttenuation"), 0.01)
-
         # Setting up the projection transform
         projection = tr.perspective(60, float(width)/float(height), 0.1, 300)
-        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
-
-        glUseProgram(mvpPipeline.shaderProgram)
-        glUniformMatrix4fv(glGetUniformLocation(mvpPipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
-        glUniformMatrix4fv(glGetUniformLocation(mvpPipeline.shaderProgram, "model"), 1, GL_TRUE, tr.identity())
 
         # Clearing the screen in both, color and depth
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -252,14 +236,35 @@ if __name__ == "__main__":
         else:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
-        # Drawing shapes
+        # Setting uniforms that will NOT change on each iteration
         glUseProgram(pipeline.shaderProgram)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "La"), 1.0, 1.0, 1.0)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ld"), 1.0, 1.0, 1.0)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ls"), 0, 0, 0)
+
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ka"), 0.2, 0.2, 0.2)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Kd"), 0.5, 0.5, 0.5)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ks"), 0, 0, 0)
+
+        lightposition = [5*np.cos(moveLightTheta), 5*np.sin(moveLightTheta), moveLightZ]
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightPosition"), lightposition[0], lightposition[1], lightposition[2])
+        
+        glUniform1ui(glGetUniformLocation(pipeline.shaderProgram, "shininess"), 100)
+        glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "constantAttenuation"), 0.001)
+        glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "linearAttenuation"), 0.03)
+        glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "quadraticAttenuation"), 0.01)
+
+        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "viewPosition"), viewPos[0], viewPos[1], viewPos[2])
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "view"), 1, GL_TRUE, view)
 
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "model"), 1, GL_TRUE, tr.identity())
 
         sg.drawSceneGraphNode(model_3D, pipeline, "model")
+
+        glUseProgram(mvpPipeline.shaderProgram)
+        glUniformMatrix4fv(glGetUniformLocation(mvpPipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
+        glUniformMatrix4fv(glGetUniformLocation(mvpPipeline.shaderProgram, "model"), 1, GL_TRUE, tr.identity())
         
         glUseProgram(mvpPipeline.shaderProgram)
         glUniformMatrix4fv(glGetUniformLocation(mvpPipeline.shaderProgram, "view"), 1, GL_TRUE, view)

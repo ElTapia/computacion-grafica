@@ -184,8 +184,8 @@ class CompleteRightArmMovement(AbstractPart):
         P0 = np.array([[-1,     0,           0]]).T
         P1 = np.array([[ 0,     0,           0]]).T
         P2 = np.array([[ 1,     np.pi/2,     0]]).T
-        P3 = np.array([[ 2,     np.pi/2,     0]]).T
-        P4 = np.array([[ 3,     np.pi/2,     0]]).T
+        P3 = np.array([[ 2,     np.pi/2.2,     0]]).T
+        P4 = np.array([[ 3,     np.pi/2.2,     0]]).T
         P5 = np.array([[ 4,     np.pi/2,     0]]).T
         P6 = np.array([[ 4.5,   0,           0]]).T
         P7 = np.array([[5,      0,           0]]).T
@@ -283,8 +283,8 @@ class CompleteLeftArmMovement(AbstractPart):
         P0 = np.array([[-1,     0,           0]]).T
         P1 = np.array([[ 0,     0,           0]]).T
         P2 = np.array([[ 1,     -np.pi/2,     0]]).T
-        P3 = np.array([[ 2,     -np.pi/2,     0]]).T
-        P4 = np.array([[ 3,     -np.pi/2,     0]]).T
+        P3 = np.array([[ 2,     -np.pi/2.2,     0]]).T
+        P4 = np.array([[ 3,     -np.pi/2.2,     0]]).T
         P5 = np.array([[ 4,     -np.pi/2,     0]]).T
         P6 = np.array([[ 4.5,   0,           0]]).T
         P7 = np.array([[5,      0,           0]]).T
