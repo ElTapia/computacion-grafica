@@ -131,9 +131,11 @@ if __name__ == "__main__":
         # Agrega movimiento a partes moviles
         model_movement.update(t)
 
+        # * Cuerpo completo
+        body = model_movement.body
+        model_3D.transform = tr.matmul([tr.translate(0, 0, body.height)])
 
-        # * mano y brazo derechos
-
+        # * mano y antebrazo derecho
         rightArm = model_movement.rightArm
         rightArmRotation = sg.findNode(model_3D, "rotate right arm")
         rightArmRotation.transform = tr.matmul([tr.rotationX(rightArm.theta_x) ,tr.rotationY(rightArm.theta_y), tr.rotationZ(rightArm.theta_z)])
@@ -146,7 +148,7 @@ if __name__ == "__main__":
                                                         tr.rotationZ(completeRightArm.theta_z)])
 
 
-        # * mano y brazo izquierdos
+        # * mano y antebrazo izquierdo
         leftArm = model_movement.leftArm
         leftArmRotation = sg.findNode(model_3D, "rotate left arm")
         leftArmRotation.transform = tr.matmul([tr.rotationX(leftArm.theta_x), tr.rotationY(leftArm.theta_y), tr.rotationZ(leftArm.theta_z)])
@@ -158,22 +160,25 @@ if __name__ == "__main__":
         completeLeftArmRotation.transform = tr.matmul([tr.rotationX(completeLeftArm.theta_x), tr.rotationY(completeLeftArm.theta_y),
                                                        tr.rotationZ(completeLeftArm.theta_z)])
 
-        # * pierna y pie derechos
+        # * pierna y pie derecho
+        rightFoot = model_movement.rightFoot
         rightLegRotation = sg.findNode(model_3D, "rotate right foot")
-        rightLegRotation.transform = tr.matmul([tr.rotationX(0), tr.rotationY(0), tr.rotationZ(0)])
+        rightLegRotation.transform = tr.matmul([tr.rotationX(rightFoot.theta_x), tr.rotationY(rightFoot.theta_y), tr.rotationZ(rightFoot.theta_z)])
 
         # * pierna completa derecha
         rightLeg = model_movement.rightLeg
         completeRightLegRotation = sg.findNode(model_3D, "rotate complete right leg")
         completeRightLegRotation.transform = tr.matmul([tr.rotationY(rightLeg.theta_y), tr.rotationX(rightLeg.theta_x), tr.rotationZ(rightLeg.theta_z)])
 
-        # * pierna y pie izquierdos
+        # * pierna y pie izquierdo
+        leftFoot = model_movement.leftFoot
         leftLegRotation = sg.findNode(model_3D, "rotate left foot")
-        leftLegRotation.transform = tr.matmul([tr.rotationY(0), tr.rotationZ(0)])
+        leftLegRotation.transform = tr.matmul([tr.rotationY(leftFoot.theta_y), tr.rotationX(leftFoot.theta_x), tr.rotationZ(leftFoot.theta_z)])
 
         # * pierna completa izquierda
+        leftLeg = model_movement.leftLeg
         completeLeftLegRotation = sg.findNode(model_3D, "rotate complete left leg")
-        completeLeftLegRotation.transform = tr.matmul([tr.rotationY(0), tr.rotationZ(0)])
+        completeLeftLegRotation.transform = tr.matmul([tr.rotationY(leftLeg.theta_y), tr.rotationX(leftLeg.theta_x), tr.rotationZ(leftLeg.theta_z)])
 
 
         if (glfw.get_key(window, glfw.KEY_LEFT) == glfw.PRESS):
