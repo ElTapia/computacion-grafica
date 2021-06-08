@@ -671,6 +671,9 @@ class CelShadingShaderProgram:
                 vec3 viewDir = normalize(viewPosition - fragPosition);
                 vec3 reflectDir = reflect(-lightDir, normalizedNormal);  
                 float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+                level = floor(spec * levels);
+
+                spec = level / levels;
                 vec3 specular = Ks * Ls * spec;
 
                 // attenuation

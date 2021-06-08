@@ -240,16 +240,16 @@ if __name__ == "__main__":
         glUseProgram(pipeline.shaderProgram)
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "La"), 1.0, 1.0, 1.0)
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ld"), 1.0, 1.0, 1.0)
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ls"), 0, 0, 0)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ls"), 1.0, 1.0, 1.0)
 
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ka"), 0.2, 0.2, 0.2)
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Kd"), 0.5, 0.5, 0.5)
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ks"), 0, 0, 0)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ka"), 0.3, 0.3, 0.3)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Kd"), 0.8, 0.8, 0.8)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ks"), 0.5, 0.5, 0.5)
 
-        lightposition = [5*np.cos(moveLightTheta), 5*np.sin(moveLightTheta), moveLightZ]
+        lightposition = [10*np.cos(moveLightTheta), 10*np.sin(moveLightTheta), moveLightZ]
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightPosition"), lightposition[0], lightposition[1], lightposition[2])
         
-        glUniform1ui(glGetUniformLocation(pipeline.shaderProgram, "shininess"), 100)
+        glUniform1ui(glGetUniformLocation(pipeline.shaderProgram, "shininess"), 1000)
         glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "constantAttenuation"), 0.001)
         glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "linearAttenuation"), 0.03)
         glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "quadraticAttenuation"), 0.01)
