@@ -142,6 +142,25 @@ def createTextureQuad(nx, ny):
     return Shape(vertices, indices)
 
 
+def createTextureNormalsQuad(nx, ny):
+
+    # Defining locations and texture coordinates for each vertex of the shape    
+    vertices = [
+    #   positions        texture    normals
+        -0.5, -0.5, 0.0,  0, ny,    0,0,1, 
+         0.5, -0.5, 0.0, nx, ny,    0,0,1,
+         0.5,  0.5, 0.0, nx, 0,     0,0,1,
+        -0.5,  0.5, 0.0,  0, 0,     0,0,1]
+
+    # Defining connections among vertices
+    # We have a triangle every 3 indices specified
+    indices = [
+         0, 1, 2,
+         2, 3, 0]
+
+    return Shape(vertices, indices)
+
+
 def createRainbowCircle(N):
 
     # First vertex at the center, white color
@@ -225,7 +244,7 @@ def createColorCube(r, g, b):
     return Shape(vertices, indices)
 
 
-def createTextureCube(image_filename):
+def createTextureCube():
 
     # Defining locations and texture coordinates for each vertex of the shape  
     vertices = [
@@ -278,7 +297,7 @@ def createTextureCube(image_filename):
          19,18,17,17,16,19, # Y+
          20,21,22,22,23,20] # Y-
 
-    return Shape(vertices, indices, image_filename)
+    return Shape(vertices, indices)
 
 
 def createRainbowNormalsCube():

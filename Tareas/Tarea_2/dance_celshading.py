@@ -19,7 +19,6 @@ from grafica.assets_path import getAssetPath
 from obj_reader import *
 from model_3D import *
 from model_curves import *
-
 __author__ = "Daniel Calderon"
 __license__ = "MIT"
 
@@ -88,7 +87,7 @@ if __name__ == "__main__":
     # Defining shader program
     celShadingPipeline = ls.CelShadingShaderProgram()
     phongPipeline = ls.SimplePhongShaderProgram()
-    mvpPipeline = es.SimpleTextureModelViewProjectionShaderProgram()
+    textPhongPipeline = ls.SimpleTexturePhongShaderProgram()
 
     # Setting up the clear screen color
     glClearColor(0.85, 0.85, 0.85, 1.0)
@@ -100,8 +99,8 @@ if __name__ == "__main__":
     #TODO: Cambiar shader a phong con texturas
     # Creating shapes on GPU memory
     model_3D = create3DModel(phongPipeline)
-    skybox = createSceneSkybox(mvpPipeline)
-    floor = createFloor(mvpPipeline)
+    skybox = createSceneSkybox(textPhongPipeline)
+    floor = createFloor(textPhongPipeline)
 
     t0 = glfw.get_time()
 
@@ -263,14 +262,31 @@ if __name__ == "__main__":
 
         sg.drawSceneGraphNode(model_3D, pipeline, "model")
 
-        glUseProgram(mvpPipeline.shaderProgram)
-        glUniformMatrix4fv(glGetUniformLocation(mvpPipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
-        glUniformMatrix4fv(glGetUniformLocation(mvpPipeline.shaderProgram, "model"), 1, GL_TRUE, tr.identity())
-        
-        glUseProgram(mvpPipeline.shaderProgram)
-        glUniformMatrix4fv(glGetUniformLocation(mvpPipeline.shaderProgram, "view"), 1, GL_TRUE, view)
-        sg.drawSceneGraphNode(skybox, mvpPipeline, "model")
-        sg.drawSceneGraphNode(floor, mvpPipeline, "model")
+        glUseProgram(textPhongPipeline.shaderProgram)
+
+        glUniform3f(glGetUniformLocation(textPhongPipeline.shaderProgram, "La"), 1.0, 1.0, 1.0)
+        glUniform3f(glGetUniformLocation(textPhongPipeline.shaderProgram, "Ld"), 1.0, 1.0, 1.0)
+        glUniform3f(glGetUniformLocation(textPhongPipeline.shaderProgram, "Ls"), 1.0, 1.0, 1.0)
+
+        glUniform3f(glGetUniformLocation(textPhongPipeline.shaderProgram, "Ka"), 0.3, 0.3, 0.3)
+        glUniform3f(glGetUniformLocation(textPhongPipeline.shaderProgram, "Kd"), 0.8, 0.8, 0.8)
+        glUniform3f(glGetUniformLocation(textPhongPipeline.shaderProgram, "Ks"), 0.5, 0.5, 0.5)
+
+        glUniform3f(glGetUniformLocation(textPhongPipeline.shaderProgram, "lightPosition"), lightposition[0], lightposition[1], lightposition[2])
+
+        glUniform1ui(glGetUniformLocation(textPhongPipeline.shaderProgram, "shininess"), 1000)
+        glUniform1f(glGetUniformLocation(textPhongPipeline.shaderProgram, "constantAttenuation"), 0.001)
+        glUniform1f(glGetUniformLocation(textPhongPipeline.shaderProgram, "linearAttenuation"), 0.03)
+        glUniform1f(glGetUniformLocation(textPhongPipeline.shaderProgram, "quadraticAttenuation"), 0.01)
+
+        glUniformMatrix4fv(glGetUniformLocation(textPhongPipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
+        glUniform3f(glGetUniformLocation(textPhongPipeline.shaderProgram, "viewPosition"), cam_movement.pos[0], cam_movement.pos[1], cam_movement.pos[2])
+        glUniformMatrix4fv(glGetUniformLocation(textPhongPipeline.shaderProgram, "view"), 1, GL_TRUE, view)
+
+        glUniformMatrix4fv(glGetUniformLocation(textPhongPipeline.shaderProgram, "model"), 1, GL_TRUE, tr.identity())
+
+        sg.drawSceneGraphNode(skybox, textPhongPipeline, "model")
+        sg.drawSceneGraphNode(floor, textPhongPipeline, "model")
 
         # Once the drawing is rendered, buffers are swap so an uncomplete drawing is never seen.
         glfw.swap_buffers(window)

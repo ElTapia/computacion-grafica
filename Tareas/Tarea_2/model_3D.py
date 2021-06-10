@@ -22,8 +22,18 @@ def createGPUShape(pipeline, shape, draw = GL_DYNAMIC_DRAW):
     return gpuShape
 
 
+def createTextureGPUShape(shape, pipeline, path):
+    # Funcion Conveniente para facilitar la inicializacion de un GPUShape con texturas
+    gpuShape = es.GPUShape().initBuffers()
+    pipeline.setupVAO(gpuShape)
+    gpuShape.fillBuffers(shape.vertices, shape.indices, GL_STATIC_DRAW)
+    gpuShape.texture = es.textureSimpleSetup(
+        path, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST)
+    return gpuShape
+
+
 def createSceneSkybox(pipeline):
-    shapeStadium = bs.createTextureCube('estadio.jpg')
+    shapeStadium = bs.createTextureNormalsCube('estadio.jpg')
     gpuStadium = createGPUShape(pipeline, shapeStadium, GL_STATIC_DRAW)
     gpuStadium.texture = es.textureSimpleSetup(
         getAssetPath("estadio.jpg"), GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR)
@@ -35,7 +45,7 @@ def createSceneSkybox(pipeline):
 
 
 def createFloor(pipeline):
-    shapeFloor = bs.createTextureQuad(1,1)
+    shapeFloor = bs.createTextureNormalsQuad(1,1)
     gpuFloor = createGPUShape(pipeline, shapeFloor, GL_STATIC_DRAW)
     gpuFloor.texture = es.textureSimpleSetup(
         getAssetPath("cancha.jpg"), GL_REPEAT, GL_REPEAT, GL_LINEAR, GL_LINEAR)

@@ -766,7 +766,7 @@ class SimpleTexturePhongShaderProgram:
     def __init__(self):
         vertex_shader = """
             #version 330 core
-            
+
             in vec3 position;
             in vec2 texCoords;
             in vec3 normal;
