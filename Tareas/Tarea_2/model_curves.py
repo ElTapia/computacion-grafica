@@ -64,6 +64,10 @@ class AbstractPart(ABC):
         self.times_theta_y = []
         self.times_theta_z = []
 
+        self.matrices_x = []
+        self.matrices_y = []
+        self.matrices_z = []
+
         self.curve = cv.evalCRCurveTime
 
 
@@ -90,15 +94,15 @@ class AbstractPart(ABC):
 
 
     def update_theta_x(self, t):
-        self.theta_x = self.curve(t, self.points_theta_x, self.times_theta_x)[1]
+        self.theta_x = self.curve(t, self.matrices_x, self.times_theta_x)[1]
 
 
     def update_theta_y(self, t):
-        self.theta_y = self.curve(t, self.points_theta_y, self.times_theta_y)[1]
+        self.theta_y = self.curve(t, self.matrices_y, self.times_theta_y)[1]
 
 
     def update_theta_z(self, t):
-        self.theta_z = self.curve(t, self.points_theta_z, self.times_theta_z)[1]
+        self.theta_z = self.curve(t, self.matrices_z, self.times_theta_z)[1]
 
 
     def update(self, t):
@@ -123,6 +127,7 @@ class RightArmMovement(AbstractPart):
         P3 = np.array([[5,     0,   0]]).T
 
         self.points_theta_x = [P0, P1, P2, P3]
+        self.matrices_x = cv.matricesCRCurve(self.points_theta_x)
         self.times_theta_x  = [0, 4.5]
 
 
@@ -142,6 +147,7 @@ class RightArmMovement(AbstractPart):
         P10 = np.array([[5,     0,            0]]).T
 
         self.points_theta_y = [P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10]
+        self.matrices_y = cv.matricesCRCurve(self.points_theta_y)
         self.times_theta_y  = [0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5]
 
 
@@ -156,6 +162,7 @@ class RightArmMovement(AbstractPart):
         P5 = np.array([[5,      0,         0]]).T
 
         self.points_theta_z = [P0, P1, P2, P3, P4, P5]
+        self.matrices_z = cv.matricesCRCurve(self.points_theta_z)
         self.times_theta_z  = [0, 1, 3.5, 4.5]
 
 
@@ -175,6 +182,7 @@ class CompleteRightArmMovement(AbstractPart):
         P3 = np.array([[5,     0,   0]]).T
 
         self.points_theta_x = [P0, P1, P2, P3]
+        self.matrices_x = cv.matricesCRCurve(self.points_theta_x)
         self.times_theta_x  = [0, 4.5]
 
 
@@ -191,6 +199,7 @@ class CompleteRightArmMovement(AbstractPart):
         P7 = np.array([[5,      0,           0]]).T
 
         self.points_theta_y = [P0, P1, P2, P3, P4, P5, P6, P7]
+        self.matrices_y = cv.matricesCRCurve(self.points_theta_y)
         self.times_theta_y  = [0, 1, 2, 3, 4, 4.5]
 
 
@@ -203,6 +212,7 @@ class CompleteRightArmMovement(AbstractPart):
         P3 = np.array([[ 5,     0,   0]]).T
 
         self.points_theta_z = [P0, P1, P2, P3]
+        self.matrices_z = cv.matricesCRCurve(self.points_theta_z)
         self.times_theta_z  = [0, 4.5]
 
 
@@ -222,6 +232,7 @@ class LeftArmMovement(AbstractPart):
         P3 = np.array([[5,      0,   0]]).T
 
         self.points_theta_x = [P0, P1, P2, P3]
+        self.matrices_x = cv.matricesCRCurve(self.points_theta_x)
         self.times_theta_x  = [0, 4.5]
 
 
@@ -241,6 +252,7 @@ class LeftArmMovement(AbstractPart):
         P10 = np.array([[5,     0,          0]]).T
 
         self.points_theta_y = [P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10]
+        self.matrices_y = cv.matricesCRCurve(self.points_theta_y)
         self.times_theta_y  = [0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5]
 
 
@@ -255,6 +267,7 @@ class LeftArmMovement(AbstractPart):
         P5 = np.array([[ 5,     0,         0]]).T
 
         self.points_theta_z = [P0, P1, P2, P3, P4, P5]
+        self.matrices_z = cv.matricesCRCurve(self.points_theta_z)
         self.times_theta_z  = [0, 1, 3.5, 4.5]
 
 
@@ -274,6 +287,7 @@ class CompleteLeftArmMovement(AbstractPart):
         P3 = np.array([[5,     0,   0]]).T
 
         self.points_theta_x = [P0, P1, P2, P3]
+        self.matrices_x = cv.matricesCRCurve(self.points_theta_x)
         self.times_theta_x  = [0, 4.5]
 
 
@@ -290,6 +304,7 @@ class CompleteLeftArmMovement(AbstractPart):
         P7 = np.array([[5,      0,           0]]).T
 
         self.points_theta_y = [P0, P1, P2, P3, P4, P5, P6, P7]
+        self.matrices_y = cv.matricesCRCurve(self.points_theta_y)
         self.times_theta_y  = [0, 1, 2, 3, 4, 4.5]
 
 
@@ -302,6 +317,7 @@ class CompleteLeftArmMovement(AbstractPart):
         P3 = np.array([[ 5,     0,   0]]).T
 
         self.points_theta_z = [P0, P1, P2, P3]
+        self.matrices_z = cv.matricesCRCurve(self.points_theta_z)
         self.times_theta_z  = [0, 4.5]
 
 
@@ -329,6 +345,7 @@ class RightLegMovement(AbstractPart):
         P10 = np.array([[5,     0,            0]]).T
 
         self.points_theta_x = [P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10]
+        self.matrices_x = cv.matricesCRCurve(self.points_theta_x)
         self.times_theta_x  = [0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5]
 
 
@@ -348,6 +365,7 @@ class RightLegMovement(AbstractPart):
         P10 = np.array([[5,     0,            0]]).T
 
         self.points_theta_y = [P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10]
+        self.matrices_y = cv.matricesCRCurve(self.points_theta_y)
         self.times_theta_y  = [0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5]
 
     def set_points_theta_z(self):
@@ -359,6 +377,7 @@ class RightLegMovement(AbstractPart):
         P3 = np.array([[ 5,     0,   0]]).T
 
         self.points_theta_z = [P0, P1, P2, P3]
+        self.matrices_z = cv.matricesCRCurve(self.points_theta_z)
         self.times_theta_z  = [0, 4.5]
 
 
@@ -379,6 +398,7 @@ class RightFootMovement(AbstractPart):
         P3 = np.array([[ 5,     0,   0]]).T
 
         self.points_theta_x = [P0, P1, P2, P3]
+        self.matrices_x = cv.matricesCRCurve(self.points_theta_x)
         self.times_theta_x  = [0, 4.5]
 
 
@@ -398,6 +418,7 @@ class RightFootMovement(AbstractPart):
         P10 = np.array([[5,     0,            0]]).T
 
         self.points_theta_y = [P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10]
+        self.matrices_y = cv.matricesCRCurve(self.points_theta_y)
         self.times_theta_y  = [0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5]
 
 
@@ -417,6 +438,7 @@ class RightFootMovement(AbstractPart):
         P10 = np.array([[5,     0,            0]]).T
 
         self.points_theta_z = [P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10]
+        self.matrices_z = cv.matricesCRCurve(self.points_theta_z)
         self.times_theta_z  = [0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5]
 
 
@@ -444,6 +466,7 @@ class LeftLegMovement(AbstractPart):
         P10 = np.array([[10,     0,            0]]).T
 
         self.points_theta_x = [P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10]
+        self.matrices_x = cv.matricesCRCurve(self.points_theta_x)
         self.times_theta_x  = [0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5]
 
 
@@ -463,6 +486,7 @@ class LeftLegMovement(AbstractPart):
         P10 = np.array([[5,     0,            0]]).T
 
         self.points_theta_y = [P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10]
+        self.matrices_y = cv.matricesCRCurve(self.points_theta_y)
         self.times_theta_y  = [0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5]
 
 
@@ -475,6 +499,7 @@ class LeftLegMovement(AbstractPart):
         P3 = np.array([[ 5,     0,   0]]).T
 
         self.points_theta_z = [P0, P1, P2, P3]
+        self.matrices_z = cv.matricesCRCurve(self.points_theta_z)
         self.times_theta_z  = [0, 4.5]
 
 
@@ -495,6 +520,7 @@ class LeftFootMovement(AbstractPart):
         P3 = np.array([[ 5,     0,   0]]).T
 
         self.points_theta_x = [P0, P1, P2, P3]
+        self.matrices_x = cv.matricesCRCurve(self.points_theta_x)
         self.times_theta_x  = [0, 4.5]
 
 
@@ -514,6 +540,7 @@ class LeftFootMovement(AbstractPart):
         P10 = np.array([[5,     0,            0]]).T
 
         self.points_theta_y = [P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10]
+        self.matrices_y = cv.matricesCRCurve(self.points_theta_y)
         self.times_theta_y  = [0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5]
 
 
@@ -533,6 +560,7 @@ class LeftFootMovement(AbstractPart):
         P10 = np.array([[10,    0,            0]]).T
 
         self.points_theta_z = [P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10]
+        self.matrices_z = cv.matricesCRCurve(self.points_theta_z)
         self.times_theta_z  = [0, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5]
 
 
@@ -541,6 +569,7 @@ class CompleteModel():
 
         self.height = 0
         self.points = []
+        self.matrices = []
         self.times = []
         self.curve = cv.evalCRCurveTime
 
@@ -568,8 +597,43 @@ class CompleteModel():
         P17 = np.array([[5,     0,            0]]).T
 
         self.points = [P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13, P14, P15, P16, P17]
+        self.matrices = cv.matricesCRCurve(self.points)
         self.times  = [0, 1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 3.25, 3.5, 3.75, 4, 4.25, 4.5]
 
 
     def update(self, t):
-        self.height = self.curve(t, self.points, self.times)[1]
+        self.height = self.curve(t, self.matrices, self.times)[1]
+
+
+class CamMovement():
+    def __init__(self):
+        self.points = []
+
+        self.pos = []
+
+        self.times = []
+        self.matrices = []
+        self.curve = cv.evalCRCurveTime
+
+    def set_points(self):
+        P0 = np.array([[-20.3, -20.25, 20]]).T
+        P1 = np.array([[-20.5, 20.25, 20.15]]).T
+        P2 = np.array([[-20.15, 20.15, 20]]).T
+        P3 = np.array([[20, 20.5, 5.15]]).T
+        P4 = np.array([[20.15, 20.15, 20]]).T
+        P5 = np.array([[20.4, 20.25, 20.15]]).T
+        P6 = np.array([[20.15, -20.15, 20]]).T
+        P7 = np.array([[20.4, -20.5, 5.15]]).T
+        P8 = np.array([[20, -20.25, 20]]).T
+        P9 = np.array([[-20.4, -20.5, 20.15]]).T
+        P10 = np.array([[-20.25, -20.15, 20]]).T
+        P11 = np.array([[-20.5, 20.25, 20.15]]).T
+        P12 = np.array([[-20.15, 20.25, 0]]).T
+
+        self.points = [P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12]
+        self.matrices = cv.matricesCRCurve(self.points)
+        self.times = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+
+    def update(self, t):
+        self.pos = self.curve(t, self.matrices, self.times).T[0]

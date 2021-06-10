@@ -29,6 +29,7 @@ class Controller:
     def __init__(self):
         self.fillPolygon = True
         self.celShading = False
+        self.slowMotion = False
 
 
 # We will use the global controller as communication with the callback function
@@ -50,6 +51,9 @@ def on_key(window, key, scancode, action, mods):
 
     elif key == glfw.KEY_TAB:
         controller.celShading = not controller.celShading
+    
+    elif key == glfw.KEY_1:
+        controller.slowMotion = not controller.slowMotion
 
 
 if __name__ == "__main__":
@@ -93,6 +97,7 @@ if __name__ == "__main__":
     # and which one is at the back
     glEnable(GL_DEPTH_TEST)
 
+    #TODO: Cambiar shader a phong con texturas
     # Creating shapes on GPU memory
     model_3D = create3DModel(phongPipeline)
     skybox = createSceneSkybox(mvpPipeline)
@@ -101,13 +106,15 @@ if __name__ == "__main__":
     t0 = glfw.get_time()
 
     # inicializa variables
-    camera_theta = -3*np.pi/4
+    camera_t = 0
     camZ = 10
     moveLightTheta = -3*np.pi/4
     moveLightZ = 8
 
     # inicializa modelo controlador de movimiento
     model_movement = ModelMovement()
+    cam_movement = CamMovement()
+    cam_movement.set_points()
 
     perfMonitor = pm.PerformanceMonitor(glfw.get_time(), 0.5)
 
@@ -122,6 +129,8 @@ if __name__ == "__main__":
         t0 = t1
 
         t = t1%4.5
+        if controller.slowMotion:
+            t = (t1/10)%4.5
 
         # Measuring performance
         perfMonitor.update(glfw.get_time())
@@ -137,6 +146,9 @@ if __name__ == "__main__":
 
         # Dibuja y agrega movimiento a partes moviles
         model_movement.update(t)
+
+        # Actualiza posicion camara
+        cam_movement.update(camera_t%10)
 
         # * Cuerpo completo
         body = model_movement.body
@@ -189,16 +201,10 @@ if __name__ == "__main__":
 
 
         if (glfw.get_key(window, glfw.KEY_LEFT) == glfw.PRESS):
-            camera_theta -= 2 * dt
+            camera_t += 2 * dt
 
         if (glfw.get_key(window, glfw.KEY_RIGHT) == glfw.PRESS):
-            camera_theta += 2* dt
-
-        if (glfw.get_key(window, glfw.KEY_UP) == glfw.PRESS):
-            camZ += 8* dt
-
-        if (glfw.get_key(window, glfw.KEY_DOWN) == glfw.PRESS):
-            camZ -= 8* dt
+            camera_t -= 2* dt
 
         if glfw.get_key(window, glfw.KEY_D) == glfw.PRESS:
             moveLightTheta += 2* dt
@@ -213,13 +219,8 @@ if __name__ == "__main__":
             moveLightZ -= 8 * dt
 
         # Setting up the view transform
-        R = 25
-        camX = R * np.sin(camera_theta)
-        camY = R * np.cos(camera_theta)
-
-        viewPos = np.array([camX, camY, camZ])
         view = tr.lookAt(
-            viewPos,
+            cam_movement.pos,
             np.array([0,0,7]),
             np.array([0,0,1])
         )
@@ -255,7 +256,7 @@ if __name__ == "__main__":
         glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "quadraticAttenuation"), 0.01)
 
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "viewPosition"), viewPos[0], viewPos[1], viewPos[2])
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "viewPosition"), cam_movement.pos[0], cam_movement.pos[1], cam_movement.pos[2])
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "view"), 1, GL_TRUE, view)
 
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "model"), 1, GL_TRUE, tr.identity())

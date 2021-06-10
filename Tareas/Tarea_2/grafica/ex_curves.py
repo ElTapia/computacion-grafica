@@ -2,7 +2,7 @@
 """Hermite and Bezier curves using python, numpy and matplotlib"""
 
 import numpy as np
-#import matplotlib.pyplot as mpl
+#import matplotlib.pyplot as plt
 #from mpl_toolkits.mplot3d import Axes3D
 
 __author__ = "Daniel Calderon"
@@ -84,13 +84,12 @@ def matricesCRCurve(points):
     return matrices
 
 
-def evalCRCurveTime(t, points, times):
-    matrices = matricesCRCurve(points)
+def evalCRCurveTime(t, matrices, times):
     N_curves = len(matrices)
     curve_point = evalCurveTime(matrices[0], t)
 
     for i in range(1, N_curves):
-        if times[i] <= t < times[i+1]:
+        if times[i] <= t <= times[i+1]:
             normalized_t = (t-times[i]) / (times[i+1]-times[i])
             curve_point = evalCurveTime(matrices[i], normalized_t)
 
@@ -99,52 +98,55 @@ def evalCRCurveTime(t, points, times):
 if __name__ == "__main__":
 
     # Number of samples to plot
-    N = 100
+    N = 500
 
     # Setting up the matplotlib display for 3D
-    fig = mpl.figure()
+    fig = plt.figure()
     ax = fig.gca(projection='3d')
 
     """
     Example for Catmull-Rom curve
     """
 
-    P0_prima = np.array([[-1, 0, 0]]).T
-    P0 = np.array([[0, 0, 0]]).T
-    P1 = np.array([[1, -np.pi/2, 0]]).T
-    P2 = np.array([[2, np.pi/4, 0]]).T
-    P3 = np.array([[3, -np.pi/2.2, 0]]).T
-    P4 = np.array([[4, np.pi/2.2, 0]]).T
-    P5 = np.array([[5, np.pi/4, 0]]).T
-    P6 = np.array([[6, np.pi/4, 0]]).T
+    P0 = np.array([[-0.3, -0.25, 0]]).T
+    P1 = np.array([[-0.5, 0.25, 0.15]]).T
+    P2 = np.array([[-0.15, 0.15, 0]]).T
+    P3 = np.array([[0, 0.5, -0.15]]).T
+    P4 = np.array([[0.15, 0.15, 0]]).T
+    P5 = np.array([[0.4, 0.25, 0.15]]).T
+    P6 = np.array([[0.15, -0.15, 0]]).T
+    P7 = np.array([[0.4, -0.5, -0.15]]).T
+    P8 = np.array([[0, -0.25, 0]]).T
+    P9 = np.array([[-0.4, -0.5, 0.15]]).T
+    P10 = np.array([[-0.25, -0.15, 0]]).T
+    P11 = np.array([[-0.5, 0.25, 0.15]]).T
+    P12 = np.array([[-0.15, 0.25, 0]]).T
 
     
-    points = [P0_prima, P0, P1, P2, P3, P4, P5, P6]
+    points = [P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12]
+    times = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     matrices = matricesCRCurve(points)
 
     catmullRomCurve = np.ndarray(shape=(N, 3), dtype=float)
-    ts = np.linspace(0.0, 5.0, N)
+    ts = np.linspace(0.0, len(times)-1, N)
 
     for i in range(N):
-        if 0<= ts[i] <= 1:
-            T = generateT(ts[i])
-            catmullRomCurve[i, 0:3] = np.matmul(matrices[0], T).T
+        catmullRomCurve[i, 0:3] = evalCRCurveTime(ts[i], matrices, times).T
+        #if 0<= ts[i] <= 1:
+        #    T = generateT(ts[i])
+        #    catmullRomCurve[i, 0:3] = np.matmul(matrices[0], T).T
 
-        elif 1 <= ts[i] <= 2:
-            T = generateT(ts[i]-1)
-            catmullRomCurve[i, 0:3] = np.matmul(matrices[1], T).T
+        #elif 1 <= ts[i] <= 2:
+        #    T = generateT(ts[i]-1)
+        #    catmullRomCurve[i, 0:3] = np.matmul(matrices[1], T).T
         
-        elif 2 <= ts[i] <= 3:
-            T = generateT(ts[i]-2)
-            catmullRomCurve[i, 0:3] = np.matmul(matrices[2], T).T
+        #elif 2 <= ts[i] <= 3:
+        #    T = generateT(ts[i]-2)
+        #    catmullRomCurve[i, 0:3] = np.matmul(matrices[2], T).T
 
-        elif 3 <= ts[i] <= 4:
-            T = generateT(ts[i]-3)
-            catmullRomCurve[i, 0:3] = np.matmul(matrices[3], T).T
-
-        elif 4 <= ts[i] <= 5:
-            T = generateT(ts[i]-4)
-            catmullRomCurve[i, 0:3] = np.matmul(matrices[4], T).T
+        #elif 3 <= ts[i] <= 4:
+        #    T = generateT(ts[i]-3)
+        #    catmullRomCurve[i, 0:3] = np.matmul(matrices[3], T).T
 
     plotCurve(ax, catmullRomCurve, "Catmull-Rom curve")
 
@@ -152,4 +154,5 @@ if __name__ == "__main__":
     ax.set_ylabel('y')
     ax.set_zlabel('z')
     ax.legend()
-    mpl.show()
+    
+    plt.show()
