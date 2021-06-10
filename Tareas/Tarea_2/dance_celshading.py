@@ -29,6 +29,7 @@ class Controller:
         self.fillPolygon = True
         self.celShading = False
         self.slowMotion = False
+        self.autoCam = False
 
 
 # We will use the global controller as communication with the callback function
@@ -53,6 +54,9 @@ def on_key(window, key, scancode, action, mods):
     
     elif key == glfw.KEY_1:
         controller.slowMotion = not controller.slowMotion
+    
+    elif key == glfw.KEY_2:
+        controller.autoCam = not controller.autoCam
 
 
 if __name__ == "__main__":
@@ -97,7 +101,6 @@ if __name__ == "__main__":
     # and which one is at the back
     glEnable(GL_DEPTH_TEST)
 
-    #TODO: Cambiar shader a phong con texturas
     # Creating shapes on GPU memory
     model_3D = create3DModel(phongPipeline)
     skybox = createSceneSkybox(textPhongPipeline)
@@ -132,6 +135,9 @@ if __name__ == "__main__":
         if controller.slowMotion:
             t = (t1/10)%4.5
 
+        if controller.autoCam:
+            camera_t -= 3 * dt
+
         # Measuring performance
         perfMonitor.update(glfw.get_time())
         glfw.set_window_title(window, title + str(perfMonitor) + " Dance time: " + str(int(t)))
@@ -154,7 +160,8 @@ if __name__ == "__main__":
 
         # * Cuerpo completo
         body = model_movement.body
-        model_3D.transform = tr.matmul([tr.translate(0, 0, body.height)])
+        jumpBody = sg.findNode(model_3D, "jump model")
+        jumpBody.transform = tr.matmul([tr.translate(0, 0, body.height)])
 
         # * mano y antebrazo derecho
         rightArm = model_movement.rightArm
@@ -202,11 +209,11 @@ if __name__ == "__main__":
         completeLeftLegRotation.transform = tr.matmul([tr.rotationY(leftLeg.theta_y), tr.rotationX(leftLeg.theta_x), tr.rotationZ(leftLeg.theta_z)])
 
 
-        if (glfw.get_key(window, glfw.KEY_LEFT) == glfw.PRESS):
-            camera_t += 2 * dt
+        if (glfw.get_key(window, glfw.KEY_LEFT) == glfw.PRESS) and not controller.autoCam:
+            camera_t += 3 * dt
 
-        if (glfw.get_key(window, glfw.KEY_RIGHT) == glfw.PRESS):
-            camera_t -= 2* dt
+        if (glfw.get_key(window, glfw.KEY_RIGHT) == glfw.PRESS) and not controller.autoCam:
+            camera_t -= 3 * dt
 
         if glfw.get_key(window, glfw.KEY_D) == glfw.PRESS:
             moveLightTheta += 2* dt
@@ -223,7 +230,7 @@ if __name__ == "__main__":
         # Setting up the view transform
         view = tr.lookAt(
             cam_movement.pos,
-            np.array([0,0,7]),
+            np.array([0,0,10]),
             np.array([0,0,1])
         )
 

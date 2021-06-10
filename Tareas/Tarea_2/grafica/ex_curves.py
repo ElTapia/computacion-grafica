@@ -2,8 +2,8 @@
 """Hermite and Bezier curves using python, numpy and matplotlib"""
 
 import numpy as np
-#import matplotlib.pyplot as plt
-#from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 __author__ = "Daniel Calderon"
 __license__ = "MIT"
@@ -108,19 +108,19 @@ if __name__ == "__main__":
     Example for Catmull-Rom curve
     """
 
-    P0 = np.array([[-0.3, -0.25, 0]]).T
-    P1 = np.array([[-0.5, 0.25, 0.15]]).T
-    P2 = np.array([[-0.15, 0.15, 0]]).T
-    P3 = np.array([[0, 0.5, -0.15]]).T
-    P4 = np.array([[0.15, 0.15, 0]]).T
-    P5 = np.array([[0.4, 0.25, 0.15]]).T
-    P6 = np.array([[0.15, -0.15, 0]]).T
-    P7 = np.array([[0.4, -0.5, -0.15]]).T
-    P8 = np.array([[0, -0.25, 0]]).T
-    P9 = np.array([[-0.4, -0.5, 0.15]]).T
-    P10 = np.array([[-0.25, -0.15, 0]]).T
-    P11 = np.array([[-0.5, 0.25, 0.15]]).T
-    P12 = np.array([[-0.15, 0.25, 0]]).T
+    P0 = np.array([[-0.3, -0.25, 1]]).T*25
+    P1 = np.array([[-0.5, 0.25, 1.15]]).T*25
+    P2 = np.array([[-0.15, 0.15, 1]]).T*25
+    P3 = np.array([[0, 0.5, 0.75]]).T*25
+    P4 = np.array([[0.15, 0.15, 1]]).T*25
+    P5 = np.array([[0.4, 0.25, 1.15]]).T*25
+    P6 = np.array([[0.15, -0.15, 1]]).T*25
+    P7 = np.array([[0.4, -0.5, 0.75]]).T*25
+    P8 = np.array([[0, -0.25, 1]]).T*25
+    P9 = np.array([[-0.4, -0.5, 1.15]]).T*25
+    P10 = np.array([[-0.25, -0.15, 1]]).T*25
+    P11 = np.array([[-0.5, 0.25, 1.15]]).T*25
+    P12 = np.array([[-0.15, 0.25, 1]]).T*25
 
     
     points = [P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12]

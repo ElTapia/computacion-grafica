@@ -616,19 +616,21 @@ class CamMovement():
         self.curve = cv.evalCRCurveTime
 
     def set_points(self):
-        P0 = np.array([[-20.3, -20.25, 20]]).T
-        P1 = np.array([[-20.5, 20.25, 20.15]]).T
-        P2 = np.array([[-20.15, 20.15, 20]]).T
-        P3 = np.array([[20, 20.5, 5.15]]).T
-        P4 = np.array([[20.15, 20.15, 20]]).T
-        P5 = np.array([[20.4, 20.25, 20.15]]).T
-        P6 = np.array([[20.15, -20.15, 20]]).T
-        P7 = np.array([[20.4, -20.5, 5.15]]).T
-        P8 = np.array([[20, -20.25, 20]]).T
-        P9 = np.array([[-20.4, -20.5, 20.15]]).T
-        P10 = np.array([[-20.25, -20.15, 20]]).T
-        P11 = np.array([[-20.5, 20.25, 20.15]]).T
-        P12 = np.array([[-20.15, 20.25, 0]]).T
+        z_translate = 0.35
+        scale = 50
+        P0 = np.array([[-0.3, -0.25, 0+z_translate]]).T*scale
+        P1 = np.array([[-0.5, 0.25, 0.15+z_translate]]).T*scale
+        P2 = np.array([[-0.15, 0.15, 0+z_translate]]).T*scale
+        P3 = np.array([[0, 0.5, -0.15+z_translate]]).T*scale
+        P4 = np.array([[0.15, 0.15, 0+z_translate]]).T*scale
+        P5 = np.array([[0.4, 0.25, 0.15+z_translate]]).T*scale
+        P6 = np.array([[0.15, -0.15, 0+z_translate]]).T*scale
+        P7 = np.array([[0.4, -0.5, -0.15+z_translate]]).T*scale
+        P8 = np.array([[0, -0.25, 0+z_translate]]).T*scale
+        P9 = np.array([[-0.4, -0.5, 0.15+z_translate]]).T*scale
+        P10 = np.array([[-0.25, -0.15, 0+z_translate]]).T*scale
+        P11 = np.array([[-0.5, 0.25, 0.15+z_translate]]).T*scale
+        P12 = np.array([[-0.15, 0.25, 0+z_translate]]).T*scale
 
         self.points = [P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12]
         self.matrices = cv.matricesCRCurve(self.points)

@@ -98,7 +98,7 @@ def create3DModel(pipeline):
     rightArmNode.transform = tr.matmul([tr.translate(-0.1, -0.1, z_arms), tr.rotationX(np.pi/2),  tr.rotationY(np.pi/2), tr.scale(1, 1, -1)])
     rightArmNode.childs += [gpuArmHand]
 
-    #TODO: Insertar curva theta aca
+    # Movimiento del antebrazo derecho
     rotateRightArmNode = sg.SceneGraphNode("rotate right arm")
     rotateRightArmNode.transform = tr.matmul([tr.rotationY(0), tr.rotationX(0)])
     rotateRightArmNode.childs += [rightArmNode]
@@ -107,7 +107,7 @@ def create3DModel(pipeline):
     leftArmNode.transform = tr.matmul([tr.translate(-0.1, -0.1, z_arms), tr.rotationX(np.pi/2), tr.rotationY(np.pi/2)])
     leftArmNode.childs += [gpuArmHand]
 
-    #TODO: Insertar curva theta aca
+    # Movimiento del antebrazo izquierdo
     rotateLeftArmNode = sg.SceneGraphNode("rotate left arm")
     rotateLeftArmNode.transform = tr.matmul([tr.rotationY(0), tr.rotationX(0)])
     rotateLeftArmNode.childs += [leftArmNode]
@@ -117,11 +117,12 @@ def create3DModel(pipeline):
     rightForearmNode.transform = tr.matmul([tr.rotationX(np.pi/2), tr.uniformScale(0.8)])
     rightForearmNode.childs += [gpuForearm]
 
+    # Nodo del brazo derecho
     completeRightArmNode = sg.SceneGraphNode("complete right arm")
     completeRightArmNode.transform = tr.matmul([tr.translate(0, 0, -2.4)])
     completeRightArmNode.childs += [rightForearmNode, rotateRightArmNode]
 
-    #TODO: Insertar curva theta aca
+    # Movimiento del brazo derecho
     rotateCompleteRightArmNode = sg.SceneGraphNode("rotate complete right arm")
     rotateCompleteRightArmNode.transform = tr.matmul([tr.rotationX(0), tr.rotationY(0)])
     rotateCompleteRightArmNode.childs += [completeRightArmNode]
@@ -138,7 +139,7 @@ def create3DModel(pipeline):
     completeLeftArmNode.transform = tr.matmul([tr.translate(0, 0, -2.4)])
     completeLeftArmNode.childs += [leftForearmNode, rotateLeftArmNode]
 
-    #TODO: Insertar curva theta aca
+    # Movmiento del brazo izquierdo
     rotateCompleteLeftArmNode = sg.SceneGraphNode("rotate complete left arm")
     rotateCompleteLeftArmNode.transform = tr.matmul([tr.rotationX(0), tr.rotationY(0)])
     rotateCompleteLeftArmNode.childs += [completeLeftArmNode]
@@ -159,7 +160,7 @@ def create3DModel(pipeline):
     thighNode.transform = tr.matmul([tr.rotationY(-0.02), tr.translate(0, 0, -3.2), tr.rotationX(np.pi/2)])
     thighNode.childs += [gpuThigh]
 
-    #TODO: Insertar curva theta aca
+    # Movimiento del pie izquierdo
     rotateLeftFootNode = sg.SceneGraphNode("rotate left foot")
     rotateLeftFootNode.transform = tr.matmul([tr.rotationX(0)])
     rotateLeftFootNode.childs += [footNode]
@@ -177,7 +178,7 @@ def create3DModel(pipeline):
     completeLeftLegNode = sg.SceneGraphNode("complete left leg")
     completeLeftLegNode.childs += [leftThighNode, translateLeftFootNode]
 
-    #TODO: Insertar curva theta aca
+    # Movimiento de la pierna izquierda
     rotateCompleteLeftLegNode = sg.SceneGraphNode("rotate complete left leg")
     rotateCompleteLeftLegNode.transform = tr.matmul([tr.rotationY(0)])
     rotateCompleteLeftLegNode.childs += [completeLeftLegNode]
@@ -186,7 +187,7 @@ def create3DModel(pipeline):
     translateCompleteLeftLegNode.transform = tr.matmul([tr.translate(x_leg, 0, z_leg)])
     translateCompleteLeftLegNode.childs += [rotateCompleteLeftLegNode]
 
-    #TODO: Insertar curva theta aca
+    # Movimiento del pie derecho
     rotateRightFootNode = sg.SceneGraphNode("rotate right foot")
     rotateRightFootNode.transform = tr.matmul([tr.rotationY(0)])
     rotateRightFootNode.childs += [footNode]
@@ -201,7 +202,7 @@ def create3DModel(pipeline):
     completeRightLegNode = sg.SceneGraphNode("complete right leg")
     completeRightLegNode.childs += [rightThighNode, translateRightFootNode]
 
-    #TODO: Insertar curva theta aca
+    # Movimiento de la pierna derecha
     rotateCompleteRightLegNode = sg.SceneGraphNode("rotate complete right leg")
     rotateCompleteRightLegNode.transform = tr.matmul([tr.rotationY(0)])
     rotateCompleteRightLegNode.childs += [completeRightLegNode]
@@ -228,5 +229,8 @@ def create3DModel(pipeline):
     modelNode = sg.SceneGraphNode("model")
     modelNode.childs += [modelScaleNode]
 
-    return modelNode
+    jumpModelNode = sg.SceneGraphNode("jump model")
+    jumpModelNode.childs += [modelNode]
+
+    return jumpModelNode
 
