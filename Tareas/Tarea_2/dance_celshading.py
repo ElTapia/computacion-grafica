@@ -88,6 +88,7 @@ if __name__ == "__main__":
     celShadingPipeline = ls.CelShadingShaderProgram()
     phongPipeline = ls.SimplePhongShaderProgram()
     textPhongPipeline = ls.SimpleTexturePhongShaderProgram()
+    texCelShadingPipeline = ls.TextureCelShadingShaderProgram()
 
     # Setting up the clear screen color
     glClearColor(0.85, 0.85, 0.85, 1.0)
@@ -140,8 +141,10 @@ if __name__ == "__main__":
 
         if controller.celShading:
             pipeline = celShadingPipeline
+            tex_pipeline = texCelShadingPipeline
         else:
             pipeline = phongPipeline
+            tex_pipeline = textPhongPipeline
 
         # Dibuja y agrega movimiento a partes moviles
         model_movement.update(t)
@@ -262,31 +265,31 @@ if __name__ == "__main__":
 
         sg.drawSceneGraphNode(model_3D, pipeline, "model")
 
-        glUseProgram(textPhongPipeline.shaderProgram)
+        glUseProgram(tex_pipeline.shaderProgram)
 
-        glUniform3f(glGetUniformLocation(textPhongPipeline.shaderProgram, "La"), 1.0, 1.0, 1.0)
-        glUniform3f(glGetUniformLocation(textPhongPipeline.shaderProgram, "Ld"), 1.0, 1.0, 1.0)
-        glUniform3f(glGetUniformLocation(textPhongPipeline.shaderProgram, "Ls"), 1.0, 1.0, 1.0)
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "La"), 1.0, 1.0, 1.0)
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ld"), 1.0, 1.0, 1.0)
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ls"), 1.0, 1.0, 1.0)
 
-        glUniform3f(glGetUniformLocation(textPhongPipeline.shaderProgram, "Ka"), 0.3, 0.3, 0.3)
-        glUniform3f(glGetUniformLocation(textPhongPipeline.shaderProgram, "Kd"), 0.8, 0.8, 0.8)
-        glUniform3f(glGetUniformLocation(textPhongPipeline.shaderProgram, "Ks"), 0.5, 0.5, 0.5)
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ka"), 0.3, 0.3, 0.3)
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Kd"), 0.8, 0.8, 0.8)
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ks"), 0.5, 0.5, 0.5)
 
-        glUniform3f(glGetUniformLocation(textPhongPipeline.shaderProgram, "lightPosition"), lightposition[0], lightposition[1], lightposition[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "lightPosition"), lightposition[0], lightposition[1], lightposition[2])
 
-        glUniform1ui(glGetUniformLocation(textPhongPipeline.shaderProgram, "shininess"), 1000)
-        glUniform1f(glGetUniformLocation(textPhongPipeline.shaderProgram, "constantAttenuation"), 0.001)
-        glUniform1f(glGetUniformLocation(textPhongPipeline.shaderProgram, "linearAttenuation"), 0.03)
-        glUniform1f(glGetUniformLocation(textPhongPipeline.shaderProgram, "quadraticAttenuation"), 0.01)
+        glUniform1ui(glGetUniformLocation(tex_pipeline.shaderProgram, "shininess"), 1000)
+        glUniform1f(glGetUniformLocation(tex_pipeline.shaderProgram, "constantAttenuation"), 0.001)
+        glUniform1f(glGetUniformLocation(tex_pipeline.shaderProgram, "linearAttenuation"), 0.03)
+        glUniform1f(glGetUniformLocation(tex_pipeline.shaderProgram, "quadraticAttenuation"), 0.01)
 
-        glUniformMatrix4fv(glGetUniformLocation(textPhongPipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
-        glUniform3f(glGetUniformLocation(textPhongPipeline.shaderProgram, "viewPosition"), cam_movement.pos[0], cam_movement.pos[1], cam_movement.pos[2])
-        glUniformMatrix4fv(glGetUniformLocation(textPhongPipeline.shaderProgram, "view"), 1, GL_TRUE, view)
+        glUniformMatrix4fv(glGetUniformLocation(tex_pipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "viewPosition"), cam_movement.pos[0], cam_movement.pos[1], cam_movement.pos[2])
+        glUniformMatrix4fv(glGetUniformLocation(tex_pipeline.shaderProgram, "view"), 1, GL_TRUE, view)
 
-        glUniformMatrix4fv(glGetUniformLocation(textPhongPipeline.shaderProgram, "model"), 1, GL_TRUE, tr.identity())
+        glUniformMatrix4fv(glGetUniformLocation(tex_pipeline.shaderProgram, "model"), 1, GL_TRUE, tr.identity())
 
-        sg.drawSceneGraphNode(skybox, textPhongPipeline, "model")
-        sg.drawSceneGraphNode(floor, textPhongPipeline, "model")
+        sg.drawSceneGraphNode(skybox, tex_pipeline, "model")
+        sg.drawSceneGraphNode(floor, tex_pipeline, "model")
 
         # Once the drawing is rendered, buffers are swap so an uncomplete drawing is never seen.
         glfw.swap_buffers(window)
