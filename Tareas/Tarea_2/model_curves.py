@@ -639,3 +639,34 @@ class CamMovement():
 
     def update(self, t):
         self.pos = self.curve(t, self.matrices, self.times).T[0]
+
+
+class lightMovement():
+    def __init__(self):
+        self.points = []
+
+        self.pos_z = []
+
+        self.times = []
+        self.matrices = []
+        self.curve = cv.evalCRCurveTime
+
+
+    def set_points(self):
+
+        max_z = 6.0
+        min_z = 1.0
+
+        P0 = np.array([[-1,    max_z,       0]]).T
+        P1 = np.array([[0,     max_z,       0]]).T
+        P2 = np.array([[1,     min_z,      0]]).T
+        P3 = np.array([[2,     max_z,       0]]).T
+        P4 = np.array([[3,   max_z,       0]]).T
+
+        self.points = [P0, P1, P2, P3, P4]
+        self.matrices = cv.matricesCRCurve(self.points)
+        self.times = [0, 1, 2]
+
+
+    def update(self, t):
+        self.pos_z = self.curve(t, self.matrices, self.times)[1]

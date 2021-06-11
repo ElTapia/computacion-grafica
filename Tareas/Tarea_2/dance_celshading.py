@@ -89,10 +89,10 @@ if __name__ == "__main__":
     glBindVertexArray(VAO)
 
     # Defining shader program
-    celShadingPipeline = ls.CelShadingShaderProgram()
-    phongPipeline = ls.SimplePhongShaderProgram()
-    textPhongPipeline = ls.SimpleTexturePhongShaderProgram()
-    texCelShadingPipeline = ls.TextureCelShadingShaderProgram()
+    celShadingPipeline = ls.MultipleCelShadingShaderProgram()
+    phongPipeline = ls.MultiplePhongShaderProgram()
+    textPhongPipeline = ls.MultipleTexturePhongShaderProgram()
+    texCelShadingPipeline = ls.MultipleTextureCelShadingShaderProgram()
 
     # Setting up the clear screen color
     glClearColor(0.85, 0.85, 0.85, 1.0)
@@ -109,13 +109,21 @@ if __name__ == "__main__":
     t0 = glfw.get_time()
 
     # inicializa variables
-    camera_t = 0
-    camZ = 10
-    moveLightTheta = -3*np.pi/4
-    moveLightZ = 8
+    camera_t = 8
+
+    moveLight1Theta = -3*np.pi/4
+    moveLight2Theta = 3*np.pi/4
+    moveLight3Theta = np.pi/4
+    moveLight4Theta = -np.pi/4
+
+    moveLightZ_t = 8
 
     # inicializa modelo controlador de movimiento
     model_movement = ModelMovement()
+
+    light_movement = lightMovement()
+    light_movement.set_points()
+
     cam_movement = CamMovement()
     cam_movement.set_points()
 
@@ -151,6 +159,15 @@ if __name__ == "__main__":
         else:
             pipeline = phongPipeline
             tex_pipeline = textPhongPipeline
+
+        # Actualiza movimiento luces
+        moveLight1Theta += 3 * dt
+        moveLight2Theta += 3 * dt
+        moveLight3Theta += 3 * dt
+        moveLight4Theta += 3 * dt
+
+        moveLightZ_t += 3* dt
+        light_movement.update(moveLightZ_t%2)
 
         # Dibuja y agrega movimiento a partes moviles
         model_movement.update(t)
@@ -215,18 +232,6 @@ if __name__ == "__main__":
         if (glfw.get_key(window, glfw.KEY_RIGHT) == glfw.PRESS) and not controller.autoCam:
             camera_t -= 3 * dt
 
-        if glfw.get_key(window, glfw.KEY_D) == glfw.PRESS:
-            moveLightTheta += 2* dt
-
-        if glfw.get_key(window, glfw.KEY_A) == glfw.PRESS:
-            moveLightTheta -= 2* dt
-
-        if glfw.get_key(window, glfw.KEY_W) == glfw.PRESS:
-            moveLightZ += 8 * dt
-
-        if glfw.get_key(window, glfw.KEY_S) == glfw.PRESS:
-            moveLightZ -= 8 * dt
-
         # Setting up the view transform
         view = tr.lookAt(
             cam_movement.pos,
@@ -246,18 +251,33 @@ if __name__ == "__main__":
         else:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
+        La = [1.0, 1.0, 1.0]
+        Ld = [1.0, 1.0, 1.0]
+        Ls = [1.0, 1.0, 1.0]
+
+        Ka = [0.3, 0.3, 0.3]
+        Kd = [0.8, 0.8, 0.8]
+        Ks = [0.5, 0.5, 0.5]
+
         # Setting uniforms that will NOT change on each iteration
         glUseProgram(pipeline.shaderProgram)
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "La"), 1.0, 1.0, 1.0)
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ld"), 1.0, 1.0, 1.0)
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ls"), 1.0, 1.0, 1.0)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "La"), La[0], La[1], La[2])
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ld"), Ld[0], Ld[1], Ld[2])
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ls"), Ls[0], Ls[1], Ls[2])
 
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ka"), 0.3, 0.3, 0.3)
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Kd"), 0.8, 0.8, 0.8)
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ks"), 0.5, 0.5, 0.5)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ka"), Ka[0], Ka[1], Ka[2])
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Kd"), Kd[0], Kd[1], Kd[2])
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ks"), Ks[0], Ks[1], Ks[2])
 
-        lightposition = [10*np.cos(moveLightTheta), 10*np.sin(moveLightTheta), moveLightZ]
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightPosition"), lightposition[0], lightposition[1], lightposition[2])
+        lightposition0 = [25*np.cos(moveLight1Theta), 25*np.sin(moveLight1Theta), light_movement.pos_z]
+        lightposition1 = [10*np.cos(moveLight2Theta), 10*np.sin(moveLight2Theta), light_movement.pos_z]
+        lightposition2 = [25*np.cos(moveLight3Theta), 25*np.sin(moveLight3Theta), light_movement.pos_z]
+        lightposition3 = [10*np.cos(moveLight4Theta), 10*np.sin(moveLight4Theta), light_movement.pos_z]
+
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightPosition0"), lightposition0[0], lightposition0[1], lightposition0[2])
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightPosition1"), lightposition1[0], lightposition1[1], lightposition1[2])
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightPosition2"), lightposition2[0], lightposition2[1], lightposition2[2])
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightPosition3"), lightposition3[0], lightposition3[1], lightposition3[2])
         
         glUniform1ui(glGetUniformLocation(pipeline.shaderProgram, "shininess"), 1000)
         glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "constantAttenuation"), 0.001)
@@ -274,15 +294,18 @@ if __name__ == "__main__":
 
         glUseProgram(tex_pipeline.shaderProgram)
 
-        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "La"), 1.0, 1.0, 1.0)
-        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ld"), 1.0, 1.0, 1.0)
-        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ls"), 1.0, 1.0, 1.0)
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "La"), La[0], La[1], La[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ld"), Ld[0], Ld[1], Ld[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ls"), Ls[0], Ls[1], Ls[2])
 
-        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ka"), 0.3, 0.3, 0.3)
-        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Kd"), 0.8, 0.8, 0.8)
-        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ks"), 0.5, 0.5, 0.5)
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ka"), Ka[0], Ka[1], Ka[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Kd"), Kd[0], Kd[1], Kd[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ks"), Ks[0], Ks[1], Ks[2])
 
-        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "lightPosition"), lightposition[0], lightposition[1], lightposition[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "lightPosition0"), lightposition0[0], lightposition0[1], lightposition0[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "lightPosition1"), lightposition1[0], lightposition1[1], lightposition1[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "lightPosition2"), lightposition2[0], lightposition2[1], lightposition2[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "lightPosition3"), lightposition3[0], lightposition3[1], lightposition3[2])
 
         glUniform1ui(glGetUniformLocation(tex_pipeline.shaderProgram, "shininess"), 1000)
         glUniform1f(glGetUniformLocation(tex_pipeline.shaderProgram, "constantAttenuation"), 0.001)
