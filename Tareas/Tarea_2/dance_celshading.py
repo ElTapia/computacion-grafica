@@ -139,9 +139,9 @@ if __name__ == "__main__":
         dt = t1 - t0
         t0 = t1
 
-        t = t1%4.5
+        t = t1%10
         if controller.slowMotion:
-            t = (t1/10)%4.5
+            t = (t1/10)%10
 
         if controller.autoCam:
             camera_t -= 3 * dt
@@ -166,7 +166,7 @@ if __name__ == "__main__":
         moveLight3Theta += 3 * dt
         moveLight4Theta += 3 * dt
 
-        moveLightZ_t += 3* dt
+        moveLightZ_t += 2* dt
         light_movement.update(moveLightZ_t%2)
 
         # Dibuja y agrega movimiento a partes moviles
@@ -251,9 +251,22 @@ if __name__ == "__main__":
         else:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
-        La = [1.0, 1.0, 1.0]
-        Ld = [1.0, 1.0, 1.0]
-        Ls = [1.0, 1.0, 1.0]
+        a = np.abs(((0.5*t1+0.00) % 2)-1)
+        b = np.abs(((0.5*t1+0.50) % 2)-1)
+
+        La = [a, a, a]
+
+        Ld1 = [a, a, a]
+        Ls1 = [a, a, a]
+
+        Ld2 = [b, b, b]
+        Ls2 = [b, b, b]
+
+        Ld3 = [a, a, a]
+        Ls3 = [a, a, a]
+
+        Ld4 = [a, a, a]
+        Ls4 = [a, a, a]
 
         Ka = [0.3, 0.3, 0.3]
         Kd = [0.8, 0.8, 0.8]
@@ -262,8 +275,16 @@ if __name__ == "__main__":
         # Setting uniforms that will NOT change on each iteration
         glUseProgram(pipeline.shaderProgram)
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "La"), La[0], La[1], La[2])
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ld"), Ld[0], Ld[1], Ld[2])
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ls"), Ls[0], Ls[1], Ls[2])
+
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ld1"), Ld1[0], Ld1[1], Ld1[2])
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ld2"), Ld2[0], Ld2[1], Ld2[2])
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ld3"), Ld3[0], Ld3[1], Ld3[2])
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ld4"), Ld4[0], Ld4[1], Ld4[2])
+
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ls1"), Ls1[0], Ls1[1], Ls1[2])
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ls2"), Ls2[0], Ls2[1], Ls2[2])
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ls3"), Ls3[0], Ls3[1], Ls3[2])
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ls4"), Ls4[0], Ls4[1], Ls4[2])
 
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ka"), Ka[0], Ka[1], Ka[2])
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Kd"), Kd[0], Kd[1], Kd[2])
@@ -278,7 +299,7 @@ if __name__ == "__main__":
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightPosition1"), lightposition1[0], lightposition1[1], lightposition1[2])
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightPosition2"), lightposition2[0], lightposition2[1], lightposition2[2])
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightPosition3"), lightposition3[0], lightposition3[1], lightposition3[2])
-        
+
         glUniform1ui(glGetUniformLocation(pipeline.shaderProgram, "shininess"), 1000)
         glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "constantAttenuation"), 0.001)
         glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "linearAttenuation"), 0.03)
@@ -295,8 +316,16 @@ if __name__ == "__main__":
         glUseProgram(tex_pipeline.shaderProgram)
 
         glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "La"), La[0], La[1], La[2])
-        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ld"), Ld[0], Ld[1], Ld[2])
-        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ls"), Ls[0], Ls[1], Ls[2])
+
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ld1"), Ld1[0], Ld1[1], Ld1[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ld2"), Ld2[0], Ld2[1], Ld2[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ld3"), Ld3[0], Ld3[1], Ld3[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ld4"), Ld4[0], Ld4[1], Ld4[2])
+
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ls1"), Ls1[0], Ls1[1], Ls1[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ls2"), Ls2[0], Ls2[1], Ls2[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ls3"), Ls3[0], Ls3[1], Ls3[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ls4"), Ls4[0], Ls4[1], Ls4[2])
 
         glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ka"), Ka[0], Ka[1], Ka[2])
         glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Kd"), Kd[0], Kd[1], Kd[2])

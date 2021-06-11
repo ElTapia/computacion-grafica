@@ -49,8 +49,17 @@ class MultiplePhongShaderProgram:
 
             uniform vec3 viewPosition;
             uniform vec3 La;
-            uniform vec3 Ld;
-            uniform vec3 Ls;
+
+            uniform vec3 Ld1;
+            uniform vec3 Ld2;
+            uniform vec3 Ld3;
+            uniform vec3 Ld4;
+
+            uniform vec3 Ls1;
+            uniform vec3 Ls2;
+            uniform vec3 Ls3;
+            uniform vec3 Ls4;
+
             uniform vec3 Ka;
             uniform vec3 Kd;
             uniform vec3 Ks;
@@ -70,19 +79,21 @@ class MultiplePhongShaderProgram:
 
                 vec3 result = vec3(0.0f, 0.0f, 0.0f);
                 vec3 lights[4] = vec3[](lightPosition0, lightPosition1, lightPosition2, lightPosition3);
+                vec3 Ld[4] = vec3[](Ld1, Ld2, Ld3, Ld4);
+                vec3 Ls[4] = vec3[](Ls1, Ls2, Ls3, Ls4);
 
                 for (int i = 0; i < 4; i++)
                 {
                     vec3 toLight = lights[i] - fragPosition;
                     vec3 lightDir = normalize(toLight);
                     float diff = max(dot(normalizedNormal, lightDir), 0.0);
-                    vec3 diffuse = Kd * Ld * diff;
+                    vec3 diffuse = Kd * Ld[i] * diff;
                     
                     // specular
                     vec3 viewDir = normalize(viewPosition - fragPosition);
                     vec3 reflectDir = reflect(-lightDir, normalizedNormal);  
                     float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-                    vec3 specular = Ks * Ls * spec;
+                    vec3 specular = Ks * Ls[i] * spec;
 
                     // attenuation
                     float distToLight = length(toLight);
@@ -182,8 +193,17 @@ class MultipleCelShadingShaderProgram:
 
             uniform vec3 viewPosition;
             uniform vec3 La;
-            uniform vec3 Ld;
-            uniform vec3 Ls;
+
+            uniform vec3 Ld1;
+            uniform vec3 Ld2;
+            uniform vec3 Ld3;
+            uniform vec3 Ld4;
+
+            uniform vec3 Ls1;
+            uniform vec3 Ls2;
+            uniform vec3 Ls3;
+            uniform vec3 Ls4;
+
             uniform vec3 Ka;
             uniform vec3 Kd;
             uniform vec3 Ks;
@@ -205,6 +225,8 @@ class MultipleCelShadingShaderProgram:
 
                 vec3 result = vec3(0.0f, 0.0f, 0.0f);
                 vec3 lights[4] = vec3[](lightPosition0, lightPosition1, lightPosition2, lightPosition3);
+                vec3 Ld[4] = vec3[](Ld1, Ld2, Ld3, Ld4);
+                vec3 Ls[4] = vec3[](Ls1, Ls2, Ls3, Ls4);
 
                 for (int i = 0; i < 4; i++){
 
@@ -214,7 +236,7 @@ class MultipleCelShadingShaderProgram:
                     float level = floor(diff * levels);
                     
                     diff = level / levels;
-                    vec3 diffuse = Kd * Ld * diff;
+                    vec3 diffuse = Kd * Ld[i] * diff;
                     
                     // specular
                     vec3 viewDir = normalize(viewPosition - fragPosition);
@@ -223,7 +245,7 @@ class MultipleCelShadingShaderProgram:
                     level = floor(spec * levels);
 
                     spec = level / levels;
-                    vec3 specular = Ks * Ls * spec;
+                    vec3 specular = Ks * Ls[i] * spec;
 
                     // attenuation
                     float distToLight = length(toLight);
@@ -357,8 +379,17 @@ class MultipleTexturePhongShaderProgram:
 
             uniform vec3 viewPosition; 
             uniform vec3 La;
-            uniform vec3 Ld;
-            uniform vec3 Ls;
+
+            uniform vec3 Ld1;
+            uniform vec3 Ld2;
+            uniform vec3 Ld3;
+            uniform vec3 Ld4;
+
+            uniform vec3 Ls1;
+            uniform vec3 Ls2;
+            uniform vec3 Ls3;
+            uniform vec3 Ls4;
+
             uniform vec3 Ka;
             uniform vec3 Kd;
             uniform vec3 Ks;
@@ -380,18 +411,20 @@ class MultipleTexturePhongShaderProgram:
 
                 vec3 result = vec3(0.0f, 0.0f, 0.0f);
                 vec3 lights[4] = vec3[](lightPosition0, lightPosition1, lightPosition2, lightPosition3);
+                vec3 Ld[4] = vec3[](Ld1, Ld2, Ld3, Ld4);
+                vec3 Ls[4] = vec3[](Ls1, Ls2, Ls3, Ls4);
 
                 for (int i = 0; i < 4; i++){
                     vec3 toLight = lights[i] - fragPosition;
                     vec3 lightDir = normalize(toLight);
                     float diff = max(dot(normalizedNormal, lightDir), 0.0);
-                    vec3 diffuse = Kd * Ld * diff;
+                    vec3 diffuse = Kd * Ld[i] * diff;
 
                     // specular
                     vec3 viewDir = normalize(viewPosition - fragPosition);
                     vec3 reflectDir = reflect(-lightDir, normalizedNormal);  
                     float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-                    vec3 specular = Ks * Ls * spec;
+                    vec3 specular = Ks * Ls[i] * spec;
 
                     // attenuation
                     float distToLight = length(toLight);
@@ -495,8 +528,17 @@ class MultipleTextureCelShadingShaderProgram:
 
             uniform vec3 viewPosition; 
             uniform vec3 La;
-            uniform vec3 Ld;
-            uniform vec3 Ls;
+
+            uniform vec3 Ld1;
+            uniform vec3 Ld2;
+            uniform vec3 Ld3;
+            uniform vec3 Ld4;
+
+            uniform vec3 Ls1;
+            uniform vec3 Ls2;
+            uniform vec3 Ls3;
+            uniform vec3 Ls4;
+
             uniform vec3 Ka;
             uniform vec3 Kd;
             uniform vec3 Ks;
@@ -520,6 +562,8 @@ class MultipleTextureCelShadingShaderProgram:
 
                 vec3 result = vec3(0.0f, 0.0f, 0.0f);
                 vec3 lights[4] = vec3[](lightPosition0, lightPosition1, lightPosition2, lightPosition3);
+                vec3 Ld[4] = vec3[](Ld1, Ld2, Ld3, Ld4);
+                vec3 Ls[4] = vec3[](Ls1, Ls2, Ls3, Ls4);
 
                 for( int i = 0; i < 4; i++){
                     vec3 toLight = lights[i] - fragPosition;
@@ -529,7 +573,7 @@ class MultipleTextureCelShadingShaderProgram:
                     float level = floor(diff * levels);
                     diff = level / levels;
 
-                    vec3 diffuse = Kd * Ld * diff;
+                    vec3 diffuse = Kd * Ld[i] * diff;
                     
                     // specular
                     vec3 viewDir = normalize(viewPosition - fragPosition);
@@ -539,7 +583,7 @@ class MultipleTextureCelShadingShaderProgram:
                     level = floor(spec * levels);
                     spec = level / levels;
 
-                    vec3 specular = Ks * Ls * spec;
+                    vec3 specular = Ks * Ls[i] * spec;
 
                     // attenuation
                     float distToLight = length(toLight);
