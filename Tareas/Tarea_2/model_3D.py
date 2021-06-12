@@ -58,33 +58,34 @@ def createFloor(pipeline):
 
 
 # Create every model part from obj files
-def create3DModel(pipeline):
+def create3DModel(pipeline, tex_pipeline):
 
 # Create Shapes
 ###########################################################################
     # Create head obj and shape
-    headShape = readOBJ(getObjPath('head_mejor_calidad.obj'), (0.4, 0.3, 0.2))
+    headShape = readOBJ(getObjPath('head.obj'),  (0.4, 0.3, 0.2))
     gpuHead = createGPUShape(pipeline, headShape)
 
     # Create right arm and hand obj and shape
-    armHandShape = readOBJ(getObjPath('brazo_y_mano.obj'), (0.9, 0.8, 0.7))
-    gpuArmHand = createGPUShape(pipeline, armHandShape)
+    armHandShape = readTexOBJ(getObjPath('brazo_y_mano.obj'), "piel.png")
+    gpuArmHand = createTextureGPUShape(armHandShape, tex_pipeline, getAssetPath("piel.png"))
 
     # Create right forearm and hand obj and shape
-    forearmShape = readOBJ(getObjPath('antebrazo.obj'), (1, 1, 1))
-    gpuForearm = createGPUShape(pipeline, forearmShape)
+    forearmShape = readTexOBJ(getObjPath('antebrazo.obj'), "camiseta_inv.png")
+    gpuForearm = createTextureGPUShape(forearmShape, tex_pipeline, getAssetPath("camiseta_inv.png"))
 
     # Create right foot and hand obj and shape
-    footShape = readOBJ(getObjPath('pie.obj'), (0.1, 0.1, 0.1))
-    gpuFoot = createGPUShape(pipeline, footShape)
+    footShape = readTexOBJ(getObjPath('pie.obj'), "camiseta.png")
+    gpuFoot = createTextureGPUShape(footShape, tex_pipeline, getAssetPath("camiseta_inv.png"))
 
     # Create right thigh and hand obj and shape
-    thighShape = readOBJ(getObjPath('muslo.obj'), (0.3, 0.3, 0.8))
-    gpuThigh = createGPUShape(pipeline, thighShape)
+    thighShape = readTexOBJ(getObjPath('muslo.obj'), "camiseta.png")
+    gpuThigh = createTextureGPUShape(thighShape, tex_pipeline, getAssetPath("camiseta_inv.png"))
 
     # Create body obj and shape
-    bodyShape = readOBJ(getObjPath('torso_mejor_calidad.obj'), (0.8, 0.2, 0.2))
-    gpuBody = createGPUShape(pipeline, bodyShape)
+    bodyShape = readTexOBJ(getObjPath('torso.obj'), "camiseta.png")
+    gpuBody = createTextureGPUShape(bodyShape, tex_pipeline, getAssetPath("camiseta_inv.png"))
+
 
 # Model scene graph
 ###########################################################################
@@ -221,7 +222,7 @@ def create3DModel(pipeline):
 
     upperBodyNode = sg.SceneGraphNode("upper body")
     upperBodyNode.transform = tr.matmul([tr.translate(0, 0, 6)])
-    upperBodyNode.childs += [rotateHeadNode, bodyNode, armsNode]
+    upperBodyNode.childs += [bodyNode, armsNode]
 
     legsNode = sg.SceneGraphNode("legs")
     legsNode.childs += [translateCompleteLeftLegNode, translateCompleteRightLegNode]
@@ -236,5 +237,8 @@ def create3DModel(pipeline):
     jumpModelNode = sg.SceneGraphNode("jump model")
     jumpModelNode.childs += [modelNode]
 
-    return jumpModelNode
+    completeModel = sg.SceneGraphNode("complete model")
+    completeModel.childs += [rotateHeadNode, jumpModelNode]
+
+    return completeModel
 

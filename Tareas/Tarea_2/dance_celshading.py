@@ -93,7 +93,7 @@ if __name__ == "__main__":
     texCelShadingPipeline = ls.MultipleTextureCelShadingShaderProgram()
 
     # Creating shapes on GPU memory
-    model_3D = create3DModel(phongPipeline)
+    model_3D = create3DModel(phongPipeline, textPhongPipeline)
     skybox = createSceneSkybox(textPhongPipeline)
     floor = createFloor(textPhongPipeline)
 
@@ -209,16 +209,15 @@ if __name__ == "__main__":
         cam_movement.update(camera_t%10)
 
 
-        # * Cabeza
-        head = model_movement.head
-        headRotation = sg.findNode(model_3D, "rotate head")
-        headRotation.transform = tr.matmul([tr.rotationZ(head.rotation)])
-
-
         # * Cuerpo completo
         body = model_movement.body
         jumpBody = sg.findNode(model_3D, "jump model")
         jumpBody.transform = tr.matmul([tr.translate(0, 0, body.height)])
+
+        # * Cabeza
+        head = model_movement.head
+        headRotation = sg.findNode(model_3D, "rotate head")
+        headRotation.transform = tr.matmul([tr.translate(0, 0, body.height), tr.translate(0, 0, 6), tr.rotationZ(head.rotation)])
 
         # * mano y antebrazo derecho
         rightArm = model_movement.rightArm
@@ -338,7 +337,7 @@ if __name__ == "__main__":
 
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "model"), 1, GL_TRUE, tr.identity())
 
-        sg.drawSceneGraphNode(model_3D, pipeline, "model")
+        sg.drawSceneGraphNode(sg.findNode(model_3D, "rotate head"), pipeline, "model")
 
         glUseProgram(tex_pipeline.shaderProgram)
 
@@ -382,6 +381,7 @@ if __name__ == "__main__":
 
         sg.drawSceneGraphNode(skybox, tex_pipeline, "model")
         sg.drawSceneGraphNode(floor, tex_pipeline, "model")
+        sg.drawSceneGraphNode(sg.findNode(model_3D, "jump model"), tex_pipeline, "model")
 
         # Once the drawing is rendered, buffers are swap so an uncomplete drawing is never seen.
         glfw.swap_buffers(window)
