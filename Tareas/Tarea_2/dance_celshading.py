@@ -102,6 +102,8 @@ if __name__ == "__main__":
     glEnable(GL_DEPTH_TEST)
 
     t0 = glfw.get_time()
+    lastFrameTime = glfw.get_time()
+    fpsLimit = 1.0 / 10.0
 
     # We will use the global controller as communication with the callback function
     controller = Controller()
@@ -150,18 +152,16 @@ if __name__ == "__main__":
         t0 = t1
 
         t = t1%10
-        if controller.slowMotion:
-            t = (t1/10)%10
 
         if controller.autoCam:
-            camera_t -= 2.5 * dt
+            camera_t -= 2.3 * dt
 
 
-        Ld1 = [0.8, 0.8, 0.8]
-        Ls1 = [0.8, 0.8, 0.8]
+        Ld1 = [0.8, 0.1, 0.1]
+        Ls1 = [0.8, 0.1, 0.1]
 
-        Ld2 = [0.8, 0.1, 0.1]
-        Ls2 = [0.8, 0.1, 0.1]
+        Ld2 = [0.8, 0.8, 0.8]
+        Ls2 = [0.8, 0.8, 0.8]
 
         Ld3 = [0.1, 0.1, 0.8]
         Ls3 = [0.1, 0.1, 0.8]
@@ -169,15 +169,15 @@ if __name__ == "__main__":
         Ld4 = [0.1, 0.1, 0.8]
         Ls4 = [0.1, 0.1, 0.8]
 
-        if int((3*t1)%3) == 0:
+        if int((2.5*t1)%3) == 0:
             Ld1 = [0, 0, 0]
             Ls1 = [0, 0, 0]
 
-        elif int((3*t1)%3) == 1:
+        elif int((2.5*t1)%3) == 1:
             Ld2 = [0, 0, 0]
             Ls2 = [0, 0, 0]
 
-        elif int((3*t1)%3) == 2:
+        elif int((2.5*t1)%3) == 2:
             Ld3 = [0, 0, 0]
             Ls3 = [0, 0, 0]
 
@@ -266,10 +266,10 @@ if __name__ == "__main__":
 
 
         if (glfw.get_key(window, glfw.KEY_LEFT) == glfw.PRESS) and not controller.autoCam:
-            camera_t += 3 * dt
+            camera_t += 2.3 * dt
 
         if (glfw.get_key(window, glfw.KEY_RIGHT) == glfw.PRESS) and not controller.autoCam:
-            camera_t -= 3 * dt
+            camera_t -= 2.3 * dt
 
         # Setting up the view transform
         view = tr.lookAt(
@@ -384,7 +384,15 @@ if __name__ == "__main__":
         sg.drawSceneGraphNode(sg.findNode(model_3D, "jump model"), tex_pipeline, "model")
 
         # Once the drawing is rendered, buffers are swap so an uncomplete drawing is never seen.
-        glfw.swap_buffers(window)
+
+        if controller.slowMotion:
+            if (t1 - lastFrameTime) >= fpsLimit:
+                glfw.swap_buffers(window)
+                lastFrameTime = t1
+
+        else:
+            glfw.swap_buffers(window)
+
 
     # freeing GPU memory
     model_3D.clear()
