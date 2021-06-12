@@ -108,12 +108,6 @@ if __name__ == "__main__":
     # Connecting the callback function 'on_key' to handle keyboard events
     glfw.set_key_callback(window, on_key)
 
-    # Variables de luz para imgui
-    lightposition0 = [0, 67, 50]
-    lightposition1 = [0, -67, 50]
-    lightposition2 = [25, 0, 30]
-    lightposition3 = [-36, 0, 39]
-
     spotDirection1 = [2.5, -50, -30]
     spotDirection2 = [2.5, 50, -30]
     spotDirection3 = [-8, 0, -4]
@@ -132,12 +126,7 @@ if __name__ == "__main__":
     # inicializa variables
     camera_t = 8
 
-    moveLight1Theta = -3*np.pi/4
-    moveLight2Theta = 3*np.pi/4
-    moveLight3Theta = np.pi/4
-    moveLight4Theta = -np.pi/4
-
-    moveLightZ_t = 8
+    moveLight_t = 8
 
     # inicializa modelo controlador de movimiento
     model_movement = ModelMovement()
@@ -168,31 +157,30 @@ if __name__ == "__main__":
             camera_t -= 2.5 * dt
 
 
-        Ld1 = [1, 1, 1]
-        Ls1 = [1, 1, 1]
+        Ld1 = [0.8, 0.8, 0.8]
+        Ls1 = [0.8, 0.8, 0.8]
 
-        Ld2 = [1, 1, 1]
-        Ls2 = [1, 1, 1]
+        Ld2 = [0.8, 0.1, 0.1]
+        Ls2 = [0.8, 0.1, 0.1]
 
-        Ld3 = [1, 1, 1]
-        Ls3 = [1, 1, 1]
+        Ld3 = [0.1, 0.1, 0.8]
+        Ls3 = [0.1, 0.1, 0.8]
 
-        Ld4 = [1, 1, 1]
-        Ls4 = [1, 1, 1]
+        Ld4 = [0.1, 0.1, 0.8]
+        Ls4 = [0.1, 0.1, 0.8]
 
-        if int(2*t1%4) == 0:
+        if int((3*t1)%3) == 0:
             Ld1 = [0, 0, 0]
             Ls1 = [0, 0, 0]
 
-        elif int(2*t1%4) == 1:
+        elif int((3*t1)%3) == 1:
             Ld2 = [0, 0, 0]
             Ls2 = [0, 0, 0]
 
-        elif int(2*t1%4) == 2:
+        elif int((3*t1)%3) == 2:
             Ld3 = [0, 0, 0]
             Ls3 = [0, 0, 0]
 
-        elif int(2*t1%4) == 3:
             Ld4 = [0, 0, 0]
             Ls4 = [0, 0, 0]
 
@@ -211,14 +199,8 @@ if __name__ == "__main__":
             pipeline = phongPipeline
             tex_pipeline = textPhongPipeline
 
-        # Actualiza movimiento luces
-        moveLight1Theta += 3 * dt
-        moveLight2Theta += 3 * dt
-        moveLight3Theta += 3 * dt
-        moveLight4Theta += 3 * dt
-
-        moveLightZ_t += 2* dt
-        light_movement.update(moveLightZ_t%2)
+        moveLight_t += 2* dt
+        light_movement.update(moveLight_t%2)
 
         # Dibuja y agrega movimiento a partes moviles
         model_movement.update(t)
@@ -309,7 +291,13 @@ if __name__ == "__main__":
         else:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
-        # Setting uniforms that will NOT change on each iteration
+
+        lightposition0 = [light_movement.pos, 67, 50]
+        lightposition1 = [light_movement.pos, -67, 50]
+        lightposition2 = [25, light_movement.pos, 30]
+        lightposition3 = [-36, light_movement.pos, 39]
+
+        # Setting uniforms
         glUseProgram(pipeline.shaderProgram)
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "spotDirection1"), spotDirection1[0], spotDirection1[1], spotDirection1[2])
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "spotDirection2"), spotDirection2[0], spotDirection2[1], spotDirection2[2])

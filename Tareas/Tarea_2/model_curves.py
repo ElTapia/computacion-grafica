@@ -757,11 +757,11 @@ class CompleteModel():
         P17 = np.array([[ 5.5,   0,    0]]).T
         P18 = np.array([[ 6,     0.5,            0]]).T
         P19= np.array([[ 6.5,   0,    0]]).T
-        P20= np.array([[ 7,     0.5,            0]]).T
+        P20= np.array([[ 7,     0.8,            0]]).T
         P21 = np.array([[ 7.5,   0,    0]]).T
-        P22 = np.array([[ 8,     0.5,            0]]).T
+        P22 = np.array([[ 8,     0.8,            0]]).T
         P23= np.array([[ 8.5,   0,            0]]).T
-        P24= np.array([[ 9,     0.5,            0]]).T
+        P24= np.array([[ 9,     0.8,            0]]).T
         P25= np.array([[ 9.5,   0,            0]]).T
         P26 = np.array([[ 10,    0,            0]]).T
         P27 = np.array([[ 11,    0,            0]]).T
@@ -848,7 +848,7 @@ class lightMovement():
     def __init__(self):
         self.points = []
 
-        self.pos_z = []
+        self.pos = []
 
         self.times = []
         self.matrices = []
@@ -857,14 +857,14 @@ class lightMovement():
 
     def set_points(self):
 
-        max_z = 6.0
-        min_z = 1.0
+        max_pos = 20.0
+        min_pos = -20.0
 
-        P0 = np.array([[-1,    max_z,       0]]).T
-        P1 = np.array([[0,     max_z,       0]]).T
-        P2 = np.array([[1,     min_z,      0]]).T
-        P3 = np.array([[2,     max_z,       0]]).T
-        P4 = np.array([[3,   max_z,       0]]).T
+        P0 = np.array([[-1,    max_pos,       0]]).T
+        P1 = np.array([[0,     max_pos,       0]]).T
+        P2 = np.array([[1,     min_pos,      0]]).T
+        P3 = np.array([[2,     max_pos,       0]]).T
+        P4 = np.array([[3,     max_pos,       0]]).T
 
         self.points = [P0, P1, P2, P3, P4]
         self.matrices = cv.matricesCRCurve(self.points)
@@ -872,4 +872,4 @@ class lightMovement():
 
 
     def update(self, t):
-        self.pos_z = self.curve(t, self.matrices, self.times)[1]
+        self.pos = self.curve(t, self.matrices, self.times)[1]
