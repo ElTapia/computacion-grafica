@@ -93,6 +93,10 @@ def create3DModel(pipeline):
     headNode.transform = tr.matmul([tr.translate(0, -0.3, 9.4), tr.rotationX(np.pi/2), tr.uniformScale(1.4)])
     headNode.childs += [gpuHead]
 
+    rotateHeadNode = sg.SceneGraphNode("rotate head")
+    rotateHeadNode.transform = tr.matmul([tr.rotationZ(0)])
+    rotateHeadNode.childs += [headNode]
+
     z_arms = -2.6
     rightArmNode = sg.SceneGraphNode("right arm")
     rightArmNode.transform = tr.matmul([tr.translate(-0.1, -0.1, z_arms), tr.rotationX(np.pi/2),  tr.rotationY(np.pi/2), tr.scale(1, 1, -1)])
@@ -217,7 +221,7 @@ def create3DModel(pipeline):
 
     upperBodyNode = sg.SceneGraphNode("upper body")
     upperBodyNode.transform = tr.matmul([tr.translate(0, 0, 6)])
-    upperBodyNode.childs += [headNode, bodyNode, armsNode]
+    upperBodyNode.childs += [rotateHeadNode, bodyNode, armsNode]
 
     legsNode = sg.SceneGraphNode("legs")
     legsNode.childs += [translateCompleteLeftLegNode, translateCompleteRightLegNode]

@@ -2,8 +2,8 @@
 """Hermite and Bezier curves using python, numpy and matplotlib"""
 
 import numpy as np
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+#import matplotlib.pyplot as plt
+#from mpl_toolkits.mplot3d import Axes3D
 
 __author__ = "Daniel Calderon"
 __license__ = "MIT"
@@ -88,7 +88,7 @@ def evalCRCurveTime(t, matrices, times):
     N_curves = len(matrices)
     curve_point = evalCurveTime(matrices[0], t)
 
-    for i in range(1, N_curves):
+    for i in range(N_curves):
         if times[i] <= t <= times[i+1]:
             normalized_t = (t-times[i]) / (times[i+1]-times[i])
             curve_point = evalCurveTime(matrices[i], normalized_t)

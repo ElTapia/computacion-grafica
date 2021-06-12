@@ -19,8 +19,6 @@ from grafica.assets_path import getAssetPath
 from obj_reader import *
 from model_3D import *
 from model_curves import *
-import imgui
-from imgui.integrations.glfw import GlfwRenderer
 
 __author__ = "Daniel Calderon"
 __license__ = "MIT"
@@ -57,44 +55,6 @@ def on_key(window, key, scancode, action, mods):
     
     elif key == glfw.KEY_2:
         controller.autoCam = not controller.autoCam
-
-
-
-def transformGuiOverlay(location, spotDirection):
-    # Funcion para actualizar el menu
-
-    # start new frame context
-    imgui.new_frame()
-
-    # open new window context
-    imgui.begin("Spotlight control", False, imgui.WINDOW_ALWAYS_AUTO_RESIZE)
-
-    # draw text label inside of current window
-    imgui.text("Configuration sliders")
-
-    # Posicion de la fuente de luz
-    edited, location[0] = imgui.slider_float("location X", location[0], -50, 50)
-    edited, location[1] = imgui.slider_float("location Y", location[1], -80, 80)
-    edited, location[2] = imgui.slider_float("location Z", location[2], 0, 50)
-
-    # Direccion del spotlight
-    edited, spotDirection[0] = imgui.slider_float("spot direction X", spotDirection[0], -50, 50)
-    edited, spotDirection[1] = imgui.slider_float("spot direction Y", spotDirection[1], -50, 50)
-    edited, spotDirection[2] = imgui.slider_float("spot direction Z", spotDirection[2], -50, 50)
-
-    # Boton para reiniciar el spotlight
-    if imgui.button("clean spot"):
-        spotDirection = [0, 0, -1]
-
-    # close current window context
-    imgui.end()
-
-    # pass all drawing comands to the rendering pipeline
-    # and close frame context
-    imgui.render()
-    imgui.end_frame()
-
-    return location, spotDirection
 
 
 if __name__ == "__main__":
@@ -143,10 +103,6 @@ if __name__ == "__main__":
 
     t0 = glfw.get_time()
 
-    # initilize imgui context (see documentation)
-    imgui.create_context()
-    impl = GlfwRenderer(window)
-
     # We will use the global controller as communication with the callback function
     controller = Controller()
     # Connecting the callback function 'on_key' to handle keyboard events
@@ -166,7 +122,7 @@ if __name__ == "__main__":
     spotConcentration = 1.231
     shininess = 500
 
-    La = [0.2, 0.2, 0.2]
+    La = [0, 0, 0]
 
     Ka = [0.3, 0.3, 0.3]
     Kd = [0.8, 0.8, 0.8]
@@ -204,16 +160,12 @@ if __name__ == "__main__":
         dt = t1 - t0
         t0 = t1
 
-        impl.process_inputs()
-        # Using GLFW to check for input events
-        glfw.poll_events()
-
         t = t1%10
         if controller.slowMotion:
             t = (t1/10)%10
 
         if controller.autoCam:
-            camera_t -= 3 * dt
+            camera_t -= 2.5 * dt
 
 
         Ld1 = [1, 1, 1]
@@ -228,19 +180,19 @@ if __name__ == "__main__":
         Ld4 = [1, 1, 1]
         Ls4 = [1, 1, 1]
 
-        if int(t1%4) == 0:
+        if int(2*t1%4) == 0:
             Ld1 = [0, 0, 0]
             Ls1 = [0, 0, 0]
 
-        elif int(t1%4) == 1:
+        elif int(2*t1%4) == 1:
             Ld2 = [0, 0, 0]
             Ls2 = [0, 0, 0]
 
-        elif int(t1%4) == 2:
+        elif int(2*t1%4) == 2:
             Ld3 = [0, 0, 0]
             Ls3 = [0, 0, 0]
 
-        elif int(t1%4) == 3:
+        elif int(2*t1%4) == 3:
             Ld4 = [0, 0, 0]
             Ls4 = [0, 0, 0]
 
@@ -273,6 +225,13 @@ if __name__ == "__main__":
 
         # Actualiza posicion camara
         cam_movement.update(camera_t%10)
+
+
+        # * Cabeza
+        head = model_movement.head
+        headRotation = sg.findNode(model_3D, "rotate head")
+        headRotation.transform = tr.matmul([tr.rotationZ(head.rotation)])
+
 
         # * Cuerpo completo
         body = model_movement.body
@@ -343,10 +302,6 @@ if __name__ == "__main__":
 
         # Clearing the screen in both, color and depth
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-
-        # imgui function
-
-        lightposition3, spotDirection4 = transformGuiOverlay(lightposition3, spotDirection4)
 
         # Filling or not the shapes depending on the controller state
         if (controller.fillPolygon):
@@ -439,10 +394,6 @@ if __name__ == "__main__":
 
         sg.drawSceneGraphNode(skybox, tex_pipeline, "model")
         sg.drawSceneGraphNode(floor, tex_pipeline, "model")
-
-        # Drawing the imgui texture over our drawing
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
-        impl.render(imgui.get_draw_data())
 
         # Once the drawing is rendered, buffers are swap so an uncomplete drawing is never seen.
         glfw.swap_buffers(window)
