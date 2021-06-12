@@ -569,15 +569,15 @@ class LeftLegMovement(AbstractPart):
         P9 = np.array([[ 4.5,   0,            0]]).T
         P10 = np.array([[5,     0,            0]]).T
 
-        P11 = np.array([[ 5.5,   0,            0]]).T
+        P11 = np.array([[ 5.5,   -np.pi/8,            0]]).T
         P12 = np.array([[ 6,     0,            0]]).T
-        P13 = np.array([[ 6.5,   0,            0]]).T
+        P13 = np.array([[ 6.5,   -np.pi/8,            0]]).T
         P14 = np.array([[ 7,     0,            0]]).T
-        P15 = np.array([[ 7.5,   0,            0]]).T
+        P15 = np.array([[ 7.5,   -np.pi/8,            0]]).T
         P16 = np.array([[ 8,     0,            0]]).T
-        P17 = np.array([[ 8.5,   0,            0]]).T
+        P17 = np.array([[ 8.5,   -np.pi/8,            0]]).T
         P18 = np.array([[ 9,     0,            0]]).T
-        P19 = np.array([[ 9.5,   0,            0]]).T
+        P19 = np.array([[ 9.5,   -np.pi/8,            0]]).T
         P20 = np.array([[ 10,    0,            0]]).T
         P21 = np.array([[ 11,    0,            0]]).T
 
@@ -648,12 +648,22 @@ class LeftFootMovement(AbstractPart):
         # puntos mov brazo derecho en eje y
         P0 = np.array([[-1,     0,   0]]).T
         P1 = np.array([[ 0,     0,   0]]).T
-        P2 = np.array([[ 10,   0,   0]]).T
-        P3 = np.array([[ 11,     0,   0]]).T
+        P2 = np.array([[ 5,     0,   0]]).T
+        P3 = np.array([[ 5.5,   np.pi/6,            0]]).T
+        P4 = np.array([[ 6,     0,            0]]).T
+        P5 = np.array([[ 6.5,   np.pi/6,            0]]).T
+        P6 = np.array([[ 7,     0,            0]]).T
+        P7 = np.array([[ 7.5,   np.pi/6,            0]]).T
+        P8 = np.array([[ 8,     0,            0]]).T
+        P9 = np.array([[ 8.5,   np.pi/6,            0]]).T
+        P10 = np.array([[ 9,     0,            0]]).T
+        P11 = np.array([[ 9.5,   np.pi/6,            0]]).T
+        P12 = np.array([[ 10,    0,            0]]).T
+        P13 = np.array([[ 11,    0,            0]]).T
 
-        self.points_theta_x = [P0, P1, P2, P3]
+        self.points_theta_x = [P0, P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12, P13]
         self.matrices_x = cv.matricesCRCurve(self.points_theta_x)
-        self.times_theta_x  = [0, 10]
+        self.times_theta_x  = [0, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10]
 
 
     def set_points_theta_y(self):
