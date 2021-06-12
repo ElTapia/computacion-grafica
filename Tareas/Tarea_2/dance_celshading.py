@@ -19,6 +19,9 @@ from grafica.assets_path import getAssetPath
 from obj_reader import *
 from model_3D import *
 from model_curves import *
+import imgui
+from imgui.integrations.glfw import GlfwRenderer
+
 __author__ = "Daniel Calderon"
 __license__ = "MIT"
 
@@ -31,9 +34,6 @@ class Controller:
         self.slowMotion = False
         self.autoCam = False
 
-
-# We will use the global controller as communication with the callback function
-controller = Controller()
 
 
 def on_key(window, key, scancode, action, mods):
@@ -59,6 +59,44 @@ def on_key(window, key, scancode, action, mods):
         controller.autoCam = not controller.autoCam
 
 
+
+def transformGuiOverlay(location, spotDirection):
+    # Funcion para actualizar el menu
+
+    # start new frame context
+    imgui.new_frame()
+
+    # open new window context
+    imgui.begin("Spotlight control", False, imgui.WINDOW_ALWAYS_AUTO_RESIZE)
+
+    # draw text label inside of current window
+    imgui.text("Configuration sliders")
+
+    # Posicion de la fuente de luz
+    edited, location[0] = imgui.slider_float("location X", location[0], -50, 50)
+    edited, location[1] = imgui.slider_float("location Y", location[1], -80, 80)
+    edited, location[2] = imgui.slider_float("location Z", location[2], 0, 50)
+
+    # Direccion del spotlight
+    edited, spotDirection[0] = imgui.slider_float("spot direction X", spotDirection[0], -50, 50)
+    edited, spotDirection[1] = imgui.slider_float("spot direction Y", spotDirection[1], -50, 50)
+    edited, spotDirection[2] = imgui.slider_float("spot direction Z", spotDirection[2], -50, 50)
+
+    # Boton para reiniciar el spotlight
+    if imgui.button("clean spot"):
+        spotDirection = [0, 0, -1]
+
+    # close current window context
+    imgui.end()
+
+    # pass all drawing comands to the rendering pipeline
+    # and close frame context
+    imgui.render()
+    imgui.end_frame()
+
+    return location, spotDirection
+
+
 if __name__ == "__main__":
 
     # Initialize glfw
@@ -82,11 +120,11 @@ if __name__ == "__main__":
 
     glfw.make_context_current(window)
 
-    # Connecting the callback function 'on_key' to handle keyboard events
-    glfw.set_key_callback(window, on_key)
-
     VAO = glGenVertexArrays(1)
     glBindVertexArray(VAO)
+
+    # Setting up the clear screen color
+    glClearColor(0.85, 0.85, 0.85, 1.0)
 
     # Defining shader program
     celShadingPipeline = ls.MultipleCelShadingShaderProgram()
@@ -94,19 +132,46 @@ if __name__ == "__main__":
     textPhongPipeline = ls.MultipleTexturePhongShaderProgram()
     texCelShadingPipeline = ls.MultipleTextureCelShadingShaderProgram()
 
-    # Setting up the clear screen color
-    glClearColor(0.85, 0.85, 0.85, 1.0)
-
-    # As we work in 3D, we need to check which part is in front,
-    # and which one is at the back
-    glEnable(GL_DEPTH_TEST)
-
     # Creating shapes on GPU memory
     model_3D = create3DModel(phongPipeline)
     skybox = createSceneSkybox(textPhongPipeline)
     floor = createFloor(textPhongPipeline)
 
+    # As we work in 3D, we need to check which part is in front,
+    # and which one is at the back
+    glEnable(GL_DEPTH_TEST)
+
     t0 = glfw.get_time()
+
+    # initilize imgui context (see documentation)
+    imgui.create_context()
+    impl = GlfwRenderer(window)
+
+    # We will use the global controller as communication with the callback function
+    controller = Controller()
+    # Connecting the callback function 'on_key' to handle keyboard events
+    glfw.set_key_callback(window, on_key)
+
+    # Variables de luz para imgui
+    lightposition0 = [0, 67, 50]
+    lightposition1 = [0, -67, 50]
+    lightposition2 = [25, 0, 30]
+    lightposition3 = [-36, 0, 39]
+
+    spotDirection1 = [2.5, -50, -30]
+    spotDirection2 = [2.5, 50, -30]
+    spotDirection3 = [-8, 0, -4]
+    spotDirection4 = [2.3, 0, -9]
+
+    spotConcentration = 1.231
+    shininess = 500
+
+    La = [0.2, 0.2, 0.2]
+
+    Ka = [0.3, 0.3, 0.3]
+    Kd = [0.8, 0.8, 0.8]
+    Ks = [0.5, 0.5, 0.5]
+
 
     # inicializa variables
     camera_t = 8
@@ -139,12 +204,46 @@ if __name__ == "__main__":
         dt = t1 - t0
         t0 = t1
 
+        impl.process_inputs()
+        # Using GLFW to check for input events
+        glfw.poll_events()
+
         t = t1%10
         if controller.slowMotion:
             t = (t1/10)%10
 
         if controller.autoCam:
             camera_t -= 3 * dt
+
+
+        Ld1 = [1, 1, 1]
+        Ls1 = [1, 1, 1]
+
+        Ld2 = [1, 1, 1]
+        Ls2 = [1, 1, 1]
+
+        Ld3 = [1, 1, 1]
+        Ls3 = [1, 1, 1]
+
+        Ld4 = [1, 1, 1]
+        Ls4 = [1, 1, 1]
+
+        if int(t1%4) == 0:
+            Ld1 = [0, 0, 0]
+            Ls1 = [0, 0, 0]
+
+        elif int(t1%4) == 1:
+            Ld2 = [0, 0, 0]
+            Ls2 = [0, 0, 0]
+
+        elif int(t1%4) == 2:
+            Ld3 = [0, 0, 0]
+            Ls3 = [0, 0, 0]
+
+        elif int(t1%4) == 3:
+            Ld4 = [0, 0, 0]
+            Ls4 = [0, 0, 0]
+
 
         # Measuring performance
         perfMonitor.update(glfw.get_time())
@@ -245,35 +344,25 @@ if __name__ == "__main__":
         # Clearing the screen in both, color and depth
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
 
+        # imgui function
+
+        lightposition3, spotDirection4 = transformGuiOverlay(lightposition3, spotDirection4)
+
         # Filling or not the shapes depending on the controller state
         if (controller.fillPolygon):
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
         else:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
-        a = np.abs(((0.5*t1+0.00) % 2)-1)
-        b = np.abs(((0.5*t1+0.50) % 2)-1)
-
-        La = [a, a, a]
-
-        Ld1 = [a, a, a]
-        Ls1 = [a, a, a]
-
-        Ld2 = [b, b, b]
-        Ls2 = [b, b, b]
-
-        Ld3 = [a, a, a]
-        Ls3 = [a, a, a]
-
-        Ld4 = [a, a, a]
-        Ls4 = [a, a, a]
-
-        Ka = [0.3, 0.3, 0.3]
-        Kd = [0.8, 0.8, 0.8]
-        Ks = [0.5, 0.5, 0.5]
-
         # Setting uniforms that will NOT change on each iteration
         glUseProgram(pipeline.shaderProgram)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "spotDirection1"), spotDirection1[0], spotDirection1[1], spotDirection1[2])
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "spotDirection2"), spotDirection2[0], spotDirection2[1], spotDirection2[2])
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "spotDirection3"), spotDirection3[0], spotDirection3[1], spotDirection3[2])
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "spotDirection4"), spotDirection4[0], spotDirection4[1], spotDirection4[2])
+
+        glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "spotConcentration"), spotConcentration)
+
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "La"), La[0], La[1], La[2])
 
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ld1"), Ld1[0], Ld1[1], Ld1[2])
@@ -290,17 +379,12 @@ if __name__ == "__main__":
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Kd"), Kd[0], Kd[1], Kd[2])
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ks"), Ks[0], Ks[1], Ks[2])
 
-        lightposition0 = [25*np.cos(moveLight1Theta), 25*np.sin(moveLight1Theta), light_movement.pos_z]
-        lightposition1 = [10*np.cos(moveLight2Theta), 10*np.sin(moveLight2Theta), light_movement.pos_z]
-        lightposition2 = [25*np.cos(moveLight3Theta), 25*np.sin(moveLight3Theta), light_movement.pos_z]
-        lightposition3 = [10*np.cos(moveLight4Theta), 10*np.sin(moveLight4Theta), light_movement.pos_z]
-
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightPosition0"), lightposition0[0], lightposition0[1], lightposition0[2])
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightPosition1"), lightposition1[0], lightposition1[1], lightposition1[2])
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightPosition2"), lightposition2[0], lightposition2[1], lightposition2[2])
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightPosition3"), lightposition3[0], lightposition3[1], lightposition3[2])
 
-        glUniform1ui(glGetUniformLocation(pipeline.shaderProgram, "shininess"), 1000)
+        glUniform1ui(glGetUniformLocation(pipeline.shaderProgram, "shininess"), shininess)
         glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "constantAttenuation"), 0.001)
         glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "linearAttenuation"), 0.03)
         glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "quadraticAttenuation"), 0.01)
@@ -315,6 +399,12 @@ if __name__ == "__main__":
 
         glUseProgram(tex_pipeline.shaderProgram)
 
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "spotDirection1"), spotDirection1[0], spotDirection1[1], spotDirection1[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "spotDirection2"), spotDirection2[0], spotDirection2[1], spotDirection2[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "spotDirection3"), spotDirection3[0], spotDirection3[1], spotDirection3[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "spotDirection4"), spotDirection4[0], spotDirection4[1], spotDirection4[2])
+
+        glUniform1f(glGetUniformLocation(tex_pipeline.shaderProgram, "spotConcentration"), spotConcentration)
         glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "La"), La[0], La[1], La[2])
 
         glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ld1"), Ld1[0], Ld1[1], Ld1[2])
@@ -336,7 +426,7 @@ if __name__ == "__main__":
         glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "lightPosition2"), lightposition2[0], lightposition2[1], lightposition2[2])
         glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "lightPosition3"), lightposition3[0], lightposition3[1], lightposition3[2])
 
-        glUniform1ui(glGetUniformLocation(tex_pipeline.shaderProgram, "shininess"), 1000)
+        glUniform1ui(glGetUniformLocation(tex_pipeline.shaderProgram, "shininess"), shininess)
         glUniform1f(glGetUniformLocation(tex_pipeline.shaderProgram, "constantAttenuation"), 0.001)
         glUniform1f(glGetUniformLocation(tex_pipeline.shaderProgram, "linearAttenuation"), 0.03)
         glUniform1f(glGetUniformLocation(tex_pipeline.shaderProgram, "quadraticAttenuation"), 0.01)
@@ -349,6 +439,10 @@ if __name__ == "__main__":
 
         sg.drawSceneGraphNode(skybox, tex_pipeline, "model")
         sg.drawSceneGraphNode(floor, tex_pipeline, "model")
+
+        # Drawing the imgui texture over our drawing
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
+        impl.render(imgui.get_draw_data())
 
         # Once the drawing is rendered, buffers are swap so an uncomplete drawing is never seen.
         glfw.swap_buffers(window)

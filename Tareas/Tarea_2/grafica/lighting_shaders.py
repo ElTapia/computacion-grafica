@@ -47,6 +47,13 @@ class MultiplePhongShaderProgram:
             uniform vec3 lightPosition2;
             uniform vec3 lightPosition3; 
 
+            uniform vec3 spotDirection1;
+            uniform vec3 spotDirection2;
+            uniform vec3 spotDirection3;
+            uniform vec3 spotDirection4;
+
+            uniform float spotConcentration;
+
             uniform vec3 viewPosition;
             uniform vec3 La;
 
@@ -79,6 +86,7 @@ class MultiplePhongShaderProgram:
 
                 vec3 result = vec3(0.0f, 0.0f, 0.0f);
                 vec3 lights[4] = vec3[](lightPosition0, lightPosition1, lightPosition2, lightPosition3);
+                vec3 spotDirections[4] = vec3[](spotDirection1, spotDirection2, spotDirection3, spotDirection4);
                 vec3 Ld[4] = vec3[](Ld1, Ld2, Ld3, Ld4);
                 vec3 Ls[4] = vec3[](Ls1, Ls2, Ls3, Ls4);
 
@@ -101,7 +109,7 @@ class MultiplePhongShaderProgram:
                         + linearAttenuation * distToLight
                         + quadraticAttenuation * distToLight * distToLight;
                     
-                    result += ((diffuse + specular) / attenuation);
+                    result += ((diffuse + specular) *  pow(max(dot(-spotDirections[i], lightDir), 0), spotConcentration)/ attenuation);
                 }
 
                 result = (ambient + result) * fragOriginalColor;
@@ -191,6 +199,13 @@ class MultipleCelShadingShaderProgram:
             uniform vec3 lightPosition2; 
             uniform vec3 lightPosition3;
 
+            uniform vec3 spotDirection1;
+            uniform vec3 spotDirection2;
+            uniform vec3 spotDirection3;
+            uniform vec3 spotDirection4;
+
+            uniform float spotConcentration;
+
             uniform vec3 viewPosition;
             uniform vec3 La;
 
@@ -225,6 +240,7 @@ class MultipleCelShadingShaderProgram:
 
                 vec3 result = vec3(0.0f, 0.0f, 0.0f);
                 vec3 lights[4] = vec3[](lightPosition0, lightPosition1, lightPosition2, lightPosition3);
+                vec3 spotDirections[4] = vec3[](spotDirection1, spotDirection2, spotDirection3, spotDirection4);
                 vec3 Ld[4] = vec3[](Ld1, Ld2, Ld3, Ld4);
                 vec3 Ls[4] = vec3[](Ls1, Ls2, Ls3, Ls4);
 
@@ -253,7 +269,7 @@ class MultipleCelShadingShaderProgram:
                         + linearAttenuation * distToLight
                         + quadraticAttenuation * distToLight * distToLight;
 
-                    result += ((diffuse + specular) / attenuation);
+                    result += ((diffuse + specular) *  pow(max(dot(-spotDirections[i], lightDir), 0), spotConcentration) / attenuation);
                 }
 
                 result = (ambient + result) * fragOriginalColor;
@@ -377,6 +393,13 @@ class MultipleTexturePhongShaderProgram:
             uniform vec3 lightPosition2; 
             uniform vec3 lightPosition3;
 
+            uniform vec3 spotDirection1;
+            uniform vec3 spotDirection2;
+            uniform vec3 spotDirection3;
+            uniform vec3 spotDirection4;
+
+            uniform float spotConcentration;
+
             uniform vec3 viewPosition; 
             uniform vec3 La;
 
@@ -411,6 +434,7 @@ class MultipleTexturePhongShaderProgram:
 
                 vec3 result = vec3(0.0f, 0.0f, 0.0f);
                 vec3 lights[4] = vec3[](lightPosition0, lightPosition1, lightPosition2, lightPosition3);
+                vec3 spotDirections[4] = vec3[](spotDirection1, spotDirection2, spotDirection3, spotDirection4);
                 vec3 Ld[4] = vec3[](Ld1, Ld2, Ld3, Ld4);
                 vec3 Ls[4] = vec3[](Ls1, Ls2, Ls3, Ls4);
 
@@ -432,7 +456,7 @@ class MultipleTexturePhongShaderProgram:
                         + linearAttenuation * distToLight
                         + quadraticAttenuation * distToLight * distToLight;
 
-                    result += ((diffuse + specular) / attenuation);
+                    result += ((diffuse + specular) *  pow(max(dot(-spotDirections[i], lightDir), 0), spotConcentration)/ attenuation);
                 }
 
                 vec4 fragOriginalColor = texture(samplerTex, fragTexCoords);
@@ -526,6 +550,13 @@ class MultipleTextureCelShadingShaderProgram:
             uniform vec3 lightPosition2; 
             uniform vec3 lightPosition3;
 
+            uniform vec3 spotDirection1;
+            uniform vec3 spotDirection2;
+            uniform vec3 spotDirection3;
+            uniform vec3 spotDirection4;
+
+            uniform float spotConcentration;
+
             uniform vec3 viewPosition; 
             uniform vec3 La;
 
@@ -562,6 +593,7 @@ class MultipleTextureCelShadingShaderProgram:
 
                 vec3 result = vec3(0.0f, 0.0f, 0.0f);
                 vec3 lights[4] = vec3[](lightPosition0, lightPosition1, lightPosition2, lightPosition3);
+                vec3 spotDirections[4] = vec3[](spotDirection1, spotDirection2, spotDirection3, spotDirection4);
                 vec3 Ld[4] = vec3[](Ld1, Ld2, Ld3, Ld4);
                 vec3 Ls[4] = vec3[](Ls1, Ls2, Ls3, Ls4);
 
@@ -591,7 +623,7 @@ class MultipleTextureCelShadingShaderProgram:
                         + linearAttenuation * distToLight
                         + quadraticAttenuation * distToLight * distToLight;
 
-                    result += ((diffuse + specular) / attenuation);
+                    result += ((diffuse + specular) *  pow(max(dot(-spotDirections[i], lightDir), 0), spotConcentration) / attenuation);
                 }
                     
                 vec4 fragOriginalColor = texture(samplerTex, fragTexCoords);
