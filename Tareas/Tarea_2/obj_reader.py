@@ -73,6 +73,7 @@ def readOBJ(filename, color):
         return bs.Shape(vertexData, indices)
 
 
+# Lee OBJ con texturas
 def readTexOBJ(filename, tex_filename):
 
     vertices = []

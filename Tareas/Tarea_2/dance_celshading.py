@@ -33,7 +33,6 @@ class Controller:
         self.autoCam = False
 
 
-
 def on_key(window, key, scancode, action, mods):
 
     if action != glfw.PRESS:
@@ -47,12 +46,15 @@ def on_key(window, key, scancode, action, mods):
     elif key == glfw.KEY_ESCAPE:
         glfw.set_window_should_close(window, True)
 
+    # Activa cel shading
     elif key == glfw.KEY_TAB:
         controller.celShading = not controller.celShading
-    
+
+    # Activa slow motions
     elif key == glfw.KEY_1:
         controller.slowMotion = not controller.slowMotion
-    
+
+    # Activa camara automatica
     elif key == glfw.KEY_2:
         controller.autoCam = not controller.autoCam
 
@@ -102,14 +104,18 @@ if __name__ == "__main__":
     glEnable(GL_DEPTH_TEST)
 
     t0 = glfw.get_time()
+
+    # Parámetros para reducir fps en slow motion
     lastFrameTime = glfw.get_time()
     fpsLimit = 1.0 / 20.0
 
     # We will use the global controller as communication with the callback function
     controller = Controller()
+
     # Connecting the callback function 'on_key' to handle keyboard events
     glfw.set_key_callback(window, on_key)
 
+    # Parámetros para spotlight
     spotDirection1 = [2.5, -50, -30]
     spotDirection2 = [2.5, 50, -30]
     spotDirection3 = [-8, 0, -4]
@@ -118,8 +124,10 @@ if __name__ == "__main__":
     spotConcentration = 1.231
     shininess = 500
 
+    # Luz ambiental
     La = [0, 0, 0]
 
+    # Factores de reflexion en materiales
     Ka = [0.3, 0.3, 0.3]
     Kd = [0.8, 0.8, 0.8]
     Ks = [0.5, 0.5, 0.5]
@@ -133,9 +141,11 @@ if __name__ == "__main__":
     # inicializa modelo controlador de movimiento
     model_movement = ModelMovement()
 
+    # Inicializa curva para luces
     light_movement = lightMovement()
     light_movement.set_points()
 
+    # Inicializa curva para camara
     cam_movement = CamMovement()
     cam_movement.set_points()
 
@@ -151,12 +161,14 @@ if __name__ == "__main__":
         dt = t1 - t0
         t0 = t1
 
+        # Tiempo para el movimiento de las partes
         t = t1%10
 
+        # activa camara automatica -> avanza sola en su curva
         if controller.autoCam:
             camera_t -= 2.3 * dt
 
-
+        # Setea colores de luces
         Ld1 = [0.8, 0.1, 0.1]
         Ls1 = [0.8, 0.1, 0.1]
 
@@ -169,6 +181,7 @@ if __name__ == "__main__":
         Ld4 = [0.1, 0.1, 0.8]
         Ls4 = [0.1, 0.1, 0.8]
 
+        # Enciende y apaga luces
         if int((2.5*t1)%3) == 0:
             Ld1 = [0, 0, 0]
             Ls1 = [0, 0, 0]
@@ -187,11 +200,12 @@ if __name__ == "__main__":
 
         # Measuring performance
         perfMonitor.update(glfw.get_time())
-        glfw.set_window_title(window, title + str(perfMonitor) + " Dance time: " + str(int(t)))
+        glfw.set_window_title(window, title + str(perfMonitor) + " Dance time: " + str(int(t)) + " segs.")
 
         # Using GLFW to check for input events
         glfw.poll_events()
 
+        # Activa cel shading
         if controller.celShading:
             pipeline = celShadingPipeline
             tex_pipeline = texCelShadingPipeline
@@ -199,6 +213,7 @@ if __name__ == "__main__":
             pipeline = phongPipeline
             tex_pipeline = textPhongPipeline
 
+        # Actualiza movimiento luces
         moveLight_t += 2* dt
         light_movement.update(moveLight_t%2)
 
@@ -208,16 +223,18 @@ if __name__ == "__main__":
         # Actualiza posicion camara
         cam_movement.update(camera_t%10)
 
-
+        # Movimientos de cada parte
         # * Cuerpo completo
         body = model_movement.body
         jumpBody = sg.findNode(model_3D, "jump model")
         jumpBody.transform = tr.matmul([tr.translate(0, 0, body.height)])
 
+
         # * Cabeza
         head = model_movement.head
         headRotation = sg.findNode(model_3D, "rotate head")
         headRotation.transform = tr.matmul([tr.translate(0, 0, body.height), tr.translate(0, 0, 6), tr.rotationZ(head.rotation)])
+
 
         # * mano y antebrazo derecho
         rightArm = model_movement.rightArm
@@ -249,22 +266,25 @@ if __name__ == "__main__":
         rightLegRotation = sg.findNode(model_3D, "rotate right foot")
         rightLegRotation.transform = tr.matmul([tr.rotationX(rightFoot.theta_x), tr.rotationY(rightFoot.theta_y), tr.rotationZ(rightFoot.theta_z)])
 
+
         # * pierna completa derecha
         rightLeg = model_movement.rightLeg
         completeRightLegRotation = sg.findNode(model_3D, "rotate complete right leg")
         completeRightLegRotation.transform = tr.matmul([tr.rotationY(rightLeg.theta_y), tr.rotationX(rightLeg.theta_x), tr.rotationZ(rightLeg.theta_z)])
+
 
         # * pierna y pie izquierdo
         leftFoot = model_movement.leftFoot
         leftLegRotation = sg.findNode(model_3D, "rotate left foot")
         leftLegRotation.transform = tr.matmul([tr.rotationY(leftFoot.theta_y), tr.rotationX(leftFoot.theta_x), tr.rotationZ(leftFoot.theta_z)])
 
+
         # * pierna completa izquierda
         leftLeg = model_movement.leftLeg
         completeLeftLegRotation = sg.findNode(model_3D, "rotate complete left leg")
         completeLeftLegRotation.transform = tr.matmul([tr.rotationY(leftLeg.theta_y), tr.rotationX(leftLeg.theta_x), tr.rotationZ(leftLeg.theta_z)])
 
-
+        # Controla movimiento de camara con teclas y si no esta automatico
         if (glfw.get_key(window, glfw.KEY_LEFT) == glfw.PRESS) and not controller.autoCam:
             camera_t += 2.3 * dt
 
@@ -290,13 +310,14 @@ if __name__ == "__main__":
         else:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
-
-        lightposition0 = [light_movement.pos, 67, 50]
-        lightposition1 = [light_movement.pos, -67, 50]
-        lightposition2 = [25, light_movement.pos, 30]
-        lightposition3 = [-36, light_movement.pos, 39]
+        # Posiciones de la luz siguen curva
+        lightposition0 = [light_movement.pos, 67, 50] # Mueve en eje x
+        lightposition1 = [light_movement.pos, -67, 50] # Mueve en eje x
+        lightposition2 = [25, light_movement.pos, 30] # Mueve en eje y
+        lightposition3 = [-36, light_movement.pos, 39] # Mueve en eje y
 
         # Setting uniforms
+        # Pipeline sin texturas
         glUseProgram(pipeline.shaderProgram)
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "spotDirection1"), spotDirection1[0], spotDirection1[1], spotDirection1[2])
         glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "spotDirection2"), spotDirection2[0], spotDirection2[1], spotDirection2[2])
@@ -337,8 +358,10 @@ if __name__ == "__main__":
 
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "model"), 1, GL_TRUE, tr.identity())
 
+        # Dibuja solo la cabeza -> Unica sin texturas (solo color)
         sg.drawSceneGraphNode(sg.findNode(model_3D, "rotate head"), pipeline, "model")
 
+        # Pipeline de texturas
         glUseProgram(tex_pipeline.shaderProgram)
 
         glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "spotDirection1"), spotDirection1[0], spotDirection1[1], spotDirection1[2])
@@ -379,12 +402,14 @@ if __name__ == "__main__":
 
         glUniformMatrix4fv(glGetUniformLocation(tex_pipeline.shaderProgram, "model"), 1, GL_TRUE, tr.identity())
 
+        # Dibuja objetos con texturas
         sg.drawSceneGraphNode(skybox, tex_pipeline, "model")
         sg.drawSceneGraphNode(floor, tex_pipeline, "model")
         sg.drawSceneGraphNode(sg.findNode(model_3D, "jump model"), tex_pipeline, "model")
 
         # Once the drawing is rendered, buffers are swap so an uncomplete drawing is never seen.
 
+        # Activa slow motion dibujando cada 15 fps
         if controller.slowMotion:
             if (t1 - lastFrameTime) >= fpsLimit:
                 glfw.swap_buffers(window)

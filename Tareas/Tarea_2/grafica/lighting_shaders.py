@@ -5,6 +5,7 @@ from OpenGL.GL import *
 import OpenGL.GL.shaders
 from grafica.gpu_shape import GPUShape
 
+# Shader con multiples spotlights usando phong
 class MultiplePhongShaderProgram:
 
     def __init__(self):
@@ -157,6 +158,7 @@ class MultiplePhongShaderProgram:
         glBindVertexArray(0)
 
 
+# Shader con multiples spotlights con cel shading
 class MultipleCelShadingShaderProgram:
 
     def __init__(self):
@@ -226,7 +228,8 @@ class MultipleCelShadingShaderProgram:
             uniform float constantAttenuation;
             uniform float linearAttenuation;
             uniform float quadraticAttenuation;
-            
+
+            // Niveles de discretizacion
             const float levels = 3.0;
 
             void main()
@@ -351,6 +354,8 @@ class MultipleCelShadingShaderProgram:
         # Unbind the current VAO
         glBindVertexArray(0)
 
+
+# Shader para texturas con multiples spotlights usando phong
 class MultipleTexturePhongShaderProgram:
 
     def __init__(self):
@@ -508,6 +513,7 @@ class MultipleTexturePhongShaderProgram:
         glBindVertexArray(0)
 
 
+# Shader para texturas con multiples spotlights usando cel shading
 class MultipleTextureCelShadingShaderProgram:
 
     def __init__(self):
@@ -578,6 +584,7 @@ class MultipleTextureCelShadingShaderProgram:
             uniform float linearAttenuation;
             uniform float quadraticAttenuation;
 
+            // Niveles de discretizacion
             const float levels = 3.0;
 
             uniform sampler2D samplerTex;
