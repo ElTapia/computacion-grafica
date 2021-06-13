@@ -105,7 +105,7 @@ def create3DModel(pipeline, tex_pipeline):
 
     # Movimiento del antebrazo derecho
     rotateRightArmNode = sg.SceneGraphNode("rotate right arm")
-    rotateRightArmNode.transform = tr.matmul([tr.rotationY(0), tr.rotationX(0)])
+    rotateRightArmNode.transform = tr.matmul([tr.rotationX(0), tr.rotationY(0), tr.rotationZ(0)])
     rotateRightArmNode.childs += [rightArmNode]
 
     leftArmNode = sg.SceneGraphNode("left arm")
@@ -114,7 +114,7 @@ def create3DModel(pipeline, tex_pipeline):
 
     # Movimiento del antebrazo izquierdo
     rotateLeftArmNode = sg.SceneGraphNode("rotate left arm")
-    rotateLeftArmNode.transform = tr.matmul([tr.rotationY(0), tr.rotationX(0)])
+    rotateLeftArmNode.transform = tr.matmul([tr.rotationX(0), tr.rotationY(0),  tr.rotationZ(0)])
     rotateLeftArmNode.childs += [leftArmNode]
 
     x_forearms = 2.2
@@ -129,7 +129,7 @@ def create3DModel(pipeline, tex_pipeline):
 
     # Movimiento del brazo derecho
     rotateCompleteRightArmNode = sg.SceneGraphNode("rotate complete right arm")
-    rotateCompleteRightArmNode.transform = tr.matmul([tr.rotationX(0), tr.rotationY(0)])
+    rotateCompleteRightArmNode.transform = tr.matmul([tr.rotationX(0), tr.rotationY(0), tr.rotationZ(0)])
     rotateCompleteRightArmNode.childs += [completeRightArmNode]
 
     translateCompleteRightArmNode = sg.SceneGraphNode("translate complete right arm")
@@ -146,7 +146,7 @@ def create3DModel(pipeline, tex_pipeline):
 
     # Movmiento del brazo izquierdo
     rotateCompleteLeftArmNode = sg.SceneGraphNode("rotate complete left arm")
-    rotateCompleteLeftArmNode.transform = tr.matmul([tr.rotationX(0), tr.rotationY(0)])
+    rotateCompleteLeftArmNode.transform = tr.matmul([tr.rotationX(0), tr.rotationY(0), tr.rotationZ(0)])
     rotateCompleteLeftArmNode.childs += [completeLeftArmNode]
 
     translateCompleteLeftArmNode = sg.SceneGraphNode("translate complete left arm")
@@ -158,16 +158,16 @@ def create3DModel(pipeline, tex_pipeline):
     bodyNode.childs += [gpuBody]
 
     footNode = sg.SceneGraphNode("foot")
-    footNode.transform = tr.matmul([tr.translate(0.05, -0.4, -4.3), tr.scale(1, 0.8, 1), tr.rotationX(np.pi/2)])
+    footNode.transform = tr.matmul([tr.translate(0.05, -0.4, -4.3),  tr.rotationX(np.pi/2), tr.scale(1, 1, 0.8)])
     footNode.childs += [gpuFoot]
 
     thighNode = sg.SceneGraphNode("thigh")
-    thighNode.transform = tr.matmul([tr.rotationY(-0.02), tr.translate(0, 0, -3.2), tr.rotationX(np.pi/2)])
+    thighNode.transform = tr.matmul([tr.translate(0, 0, -3.2), tr.rotationX(np.pi/2)])
     thighNode.childs += [gpuThigh]
 
     # Movimiento del pie izquierdo
     rotateLeftFootNode = sg.SceneGraphNode("rotate left foot")
-    rotateLeftFootNode.transform = tr.matmul([tr.rotationX(0)])
+    rotateLeftFootNode.transform = tr.matmul([tr.rotationX(0), tr.rotationY(0), tr.rotationZ(0)])
     rotateLeftFootNode.childs += [footNode]
 
     translateLeftFootNode = sg.SceneGraphNode("translate left foot")
@@ -185,7 +185,7 @@ def create3DModel(pipeline, tex_pipeline):
 
     # Movimiento de la pierna izquierda
     rotateCompleteLeftLegNode = sg.SceneGraphNode("rotate complete left leg")
-    rotateCompleteLeftLegNode.transform = tr.matmul([tr.rotationY(0)])
+    rotateCompleteLeftLegNode.transform = tr.matmul([tr.rotationY(0), tr.rotationX(0), tr.rotationZ(0)])
     rotateCompleteLeftLegNode.childs += [completeLeftLegNode]
 
     translateCompleteLeftLegNode = sg.SceneGraphNode("translate complete left leg")
@@ -194,7 +194,7 @@ def create3DModel(pipeline, tex_pipeline):
 
     # Movimiento del pie derecho
     rotateRightFootNode = sg.SceneGraphNode("rotate right foot")
-    rotateRightFootNode.transform = tr.matmul([tr.rotationY(0)])
+    rotateRightFootNode.transform = tr.matmul([tr.rotationX(0), tr.rotationY(0), tr.rotationZ(0)])
     rotateRightFootNode.childs += [footNode]
 
     translateRightFootNode = sg.SceneGraphNode("translate right foot")
@@ -209,7 +209,7 @@ def create3DModel(pipeline, tex_pipeline):
 
     # Movimiento de la pierna derecha
     rotateCompleteRightLegNode = sg.SceneGraphNode("rotate complete right leg")
-    rotateCompleteRightLegNode.transform = tr.matmul([tr.rotationY(0)])
+    rotateCompleteRightLegNode.transform = tr.matmul([tr.rotationY(0), tr.rotationX(0), tr.rotationZ(0)])
     rotateCompleteRightLegNode.childs += [completeRightLegNode]
 
     translateCompleteRightLegNode = sg.SceneGraphNode("translate complete right leg")
@@ -227,14 +227,11 @@ def create3DModel(pipeline, tex_pipeline):
     legsNode = sg.SceneGraphNode("legs")
     legsNode.childs += [translateCompleteLeftLegNode, translateCompleteRightLegNode]
 
-    modelScaleNode = sg.SceneGraphNode("scale model")
-    modelScaleNode.transform = tr.matmul([tr.uniformScale(1)])
-    modelScaleNode.childs += [upperBodyNode, legsNode]
-
     modelNode = sg.SceneGraphNode("model")
-    modelNode.childs += [modelScaleNode]
+    modelNode.childs += [upperBodyNode, legsNode]
 
     jumpModelNode = sg.SceneGraphNode("jump model")
+    jumpModelNode.transform = tr.matmul([tr.translate(0, 0, 0)])
     jumpModelNode.childs += [modelNode]
 
     completeModel = sg.SceneGraphNode("complete model")

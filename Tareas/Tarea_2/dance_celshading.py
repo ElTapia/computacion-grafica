@@ -103,7 +103,7 @@ if __name__ == "__main__":
 
     t0 = glfw.get_time()
     lastFrameTime = glfw.get_time()
-    fpsLimit = 1.0 / 15.0
+    fpsLimit = 1.0 / 20.0
 
     # We will use the global controller as communication with the callback function
     controller = Controller()
