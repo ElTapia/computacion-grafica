@@ -107,7 +107,7 @@ if __name__ == "__main__":
 
     # Parámetros para reducir fps en slow motion
     lastFrameTime = glfw.get_time()
-    fpsLimit = 1.0 / 20.0
+    fpsLimit = 1.0 / 25.0
 
     # We will use the global controller as communication with the callback function
     controller = Controller()
