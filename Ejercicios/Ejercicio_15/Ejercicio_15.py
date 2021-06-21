@@ -14,7 +14,7 @@ import grafica.scene_graph as sg
 import grafica.easy_shaders as es
 import ode_resolver as edo
 
-__author__ = "Nelson Marambio"
+__author__ = "Sebastián Tapia"
 __license__ = "MIT"
 
 # Definicion de variables fisicas
@@ -144,7 +144,7 @@ if __name__ == "__main__":
     glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, GL_TRUE)
     glfw.window_hint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
 
-    window = glfw.create_window(width, height, "Plano inclinado", None, None)
+    window = glfw.create_window(width, height, "Ejercicio 15: Plano inclinado variable", None, None)
 
     if not window:
         glfw.terminate()
