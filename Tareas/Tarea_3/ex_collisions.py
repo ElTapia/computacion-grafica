@@ -110,35 +110,88 @@ class Controller:
         self.circleCollisions = False
         self.useGravity = False
 
+        # Variables para controlar la camara
+        self.is_up_pressed = False
+        self.is_down_pressed = False
+        self.is_left_pressed = False
+        self.is_right_pressed = False
+
+        ###########################################################
+        # Se crea instancia de la camara
+        self.polar_camera = PolarCamera()
+        ###########################################################
+
+    # Entregar la referencia a la camara
+    def get_camera(self):
+        return self.polar_camera
+
+    # Metodo para ller el input del teclado
+    def on_key(self, window, key, scancode, action, mods):
+
+        # Caso de detectar la tecla [UP], actualiza estado de variable
+        if key == glfw.KEY_UP:
+            if action == glfw.PRESS:
+                self.is_up_pressed = True
+            elif action == glfw.RELEASE:
+                self.is_up_pressed = False
+
+        # Caso de detectar la tecla [DOWN], actualiza estado de variable
+        if key == glfw.KEY_DOWN:
+            if action == glfw.PRESS:
+                self.is_down_pressed = True
+            elif action == glfw.RELEASE:
+                self.is_down_pressed = False
+
+        # Caso de detectar la tecla [RIGHT], actualiza estado de variable
+        if key == glfw.KEY_RIGHT:
+            if action == glfw.PRESS:
+                self.is_right_pressed = True
+            elif action == glfw.RELEASE:
+                self.is_right_pressed = False
+
+        # Caso de detectar la tecla [LEFT], actualiza estado de variable
+        if key == glfw.KEY_LEFT:
+            if action == glfw.PRESS:
+                self.is_left_pressed = True
+            elif action == glfw.RELEASE:
+                self.is_left_pressed = False
+        
+        # Caso de detectar la barra espaciadora, se cambia el metodo de dibujo
+        if key == glfw.KEY_SPACE:
+            if action == glfw.PRESS:
+                self.fillPolygon = not self.fillPolygon
+
+        # Caso en que se cierra la ventana
+        if key == glfw.KEY_ESCAPE:
+            if action == glfw.PRESS:
+                glfw.set_window_should_close(window, True)
+
+        # Caso de detectar Control izquierdo, se cambia el metodo de dibujo
+        elif key == glfw.KEY_LEFT_CONTROL:
+            if action == glfw.PRESS:
+                self.showAxis = not self.showAxis
+
+
+    #Funcion que recibe el input para manejar la camara y controlar sus coordenadas
+    def update_camera(self, delta):
+        # Camara rota a la izquierda
+        if self.is_left_pressed:
+            self.polar_camera.set_theta(-2 * delta)
+
+        # Camara rota a la derecha
+        if self.is_right_pressed:
+            self.polar_camera.set_theta( 2 * delta)
+        
+        # Camara se acerca al centro
+        if self.is_up_pressed:
+            self.polar_camera.set_rho(-5 * delta)
+
+        # Camara se aleja del centro
+        if self.is_down_pressed:
+            self.polar_camera.set_rho(5 * delta)
+
 # we will use the global controller as communication with the callback function
 controller = Controller()
-
-
-# This function will be executed whenever a key is pressed or released
-def on_key(window, key, scancode, action, mods):
-
-    if action != glfw.PRESS:
-        return
-    
-    global controller
-
-    if key == glfw.KEY_SPACE:
-        controller.fillPolygon = not controller.fillPolygon
-        print("Fill polygons?", controller.fillPolygon)
-
-    elif key == glfw.KEY_ESCAPE:
-        glfw.set_window_should_close(window, True)
-
-    elif key == glfw.KEY_1:
-        controller.circleCollisions = not controller.circleCollisions
-        print("Collisions among circles?", controller.circleCollisions)
-
-    elif key == glfw.KEY_2:
-        controller.useGravity = not controller.useGravity
-        print("Gravity?", controller.useGravity)
-
-    else:
-        print('Unknown key')
 
 
 if __name__ == "__main__":
@@ -162,13 +215,13 @@ if __name__ == "__main__":
     glfw.make_context_current(window)
 
     # Connecting the callback function 'on_key' to handle keyboard events
-    glfw.set_key_callback(window, on_key)
+    glfw.set_key_callback(window, controller.on_key)
 
     VAO = glGenVertexArrays(1)
     glBindVertexArray(VAO)
 
     # Creating our shader program and telling OpenGL to use it
-    pipeline = es.SimpleTransformShaderProgram()
+    pipeline = es.SimpleModelViewProjectionShaderProgram()
     glUseProgram(pipeline.shaderProgram)
 
     # Setting up the clear screen color
@@ -197,8 +250,17 @@ if __name__ == "__main__":
     gravityAcceleration = np.array([0.0, -1.0], dtype=np.float32)
     noGravityAcceleration = np.array([0.0, 0.0], dtype=np.float32)
 
+    # View and projection
+    projection = tr.perspective(60, float(WINDOW_WIDTH)/float(WINDOW_HEIGHT), 0.1, 100)
+    t0 = glfw.get_time()
+
     # Application loop
     while not glfw.window_should_close(window):
+
+        # Variables del tiempo
+        t1 = glfw.get_time()
+        delta = t1 -t0
+        t0 = t1
 
         # Measuring performance
         perfMonitor.update(glfw.get_time())
@@ -210,6 +272,15 @@ if __name__ == "__main__":
         # Using the time as the theta parameter
         theta = glfw.get_time()
         deltaTime = perfMonitor.getDeltaTime()
+        
+        
+        if glfw.get_key(window, glfw.KEY_1) == glfw.PRESS:
+            controller.circleCollisions = not controller.circleCollisions
+            print("Collisions among circles?", controller.circleCollisions)
+
+        if glfw.get_key(window, glfw.KEY_2) == glfw.PRESS:
+            controller.useGravity = not controller.useGravity
+            print("Gravity?", controller.useGravity)
 
         if controller.useGravity:
             acceleration = gravityAcceleration
@@ -234,15 +305,26 @@ if __name__ == "__main__":
         # Clearing the screen
         glClear(GL_COLOR_BUFFER_BIT)
 
+        controller.update_camera(delta)
+        camera = controller.get_camera()
+        viewMatrix = camera.update_view()
+
         # Filling or not the shapes depending on the controller state
         if (controller.fillPolygon):
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
         else:
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
+        # Drawing (no texture)
+        glUseProgram(pipeline.shaderProgram)
+
+        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
+        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "view"), 1, GL_TRUE, viewMatrix)
+        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "model"), 1, GL_TRUE, tr.identity())
+
         # drawing all the circles
         for circle in circles:
-            circle.draw()
+            circle.draw("model")
 
         # Once the drawing is rendered, buffers are swap so an uncomplete drawing is never seen.
         glfw.swap_buffers(window)
@@ -250,5 +332,5 @@ if __name__ == "__main__":
     # freeing GPU memory
     for circle in circles:
         circle.gpuShape.clear()
-    
+
     glfw.terminate()
