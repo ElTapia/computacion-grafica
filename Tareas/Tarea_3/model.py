@@ -29,12 +29,11 @@ class Circle:
         # addapting the size of the circle's vertices to have a circle
         # with the desired radius
 
-        scaleFactor = 2 * RADIUS
-        bs.scaleVertices(shape, 6, (scaleFactor, scaleFactor, scaleFactor))
+        #bs.scaleVertices(shape, 6, (scaleFactor, scaleFactor, scaleFactor))
         self.pipeline = pipeline
         self.gpuShape = createGPUShape(self.pipeline, shape)
         self.position = position
-        self.radius = RADIUS
+        self.radius   = RADIUS
         self.velocity = velocity
 
     def action(self, gravityAceleration, deltaTime):
@@ -43,8 +42,9 @@ class Circle:
         self.position += self.velocity * deltaTime
 
     def draw(self, transformName):
+        scaleFactor = 2 * self.radius
         glUniformMatrix4fv(glGetUniformLocation(self.pipeline.shaderProgram, transformName), 1, GL_TRUE,
-            tr.translate(self.position[0], self.position[1], 0.0)
+            tr.matmul([tr.translate(self.position[0], self.position[1], 0.0), tr.uniformScale(scaleFactor)])
         )
         self.pipeline.drawCall(self.gpuShape)
 
@@ -68,7 +68,10 @@ class PolarCamera:
     def set_rho(self, delta):
         if ((self.rho + delta) > 0.1):
             self.rho += delta
-    
+
+    def get_eye(self):
+        return self.eye
+
     # Actualizar la matriz de vista
     def update_view(self):
         # Se calcula la posición de la camara con coordenadas poleras relativas al centro

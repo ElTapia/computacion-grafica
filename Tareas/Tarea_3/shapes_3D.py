@@ -20,7 +20,7 @@ def createColorNormalSphere(N, r, g, b):
 
     vertices = []           # lista para almacenar los verices
     indices = []            # lista para almacenar los indices
-    dTheta = 2 * np.pi /N   # angulo que hay entre cada iteracion de la coordenada theta
+    dTheta = np.pi / N      # angulo que hay entre cada iteracion de la coordenada theta
     dPhi = 2 * np.pi /N     # angulo que hay entre cada iteracion de la coordenada phi
     rho = 0.5               # radio de la esfera
     c = 0                   # contador de vertices, para ayudar a indicar los indices
@@ -44,6 +44,13 @@ def createColorNormalSphere(N, r, g, b):
             v2 = [rho*np.sin(theta1)*np.cos(phi1), rho*np.sin(theta1)*np.sin(phi1), rho*np.cos(theta1)]
             # Vertice para las iteraciones siguientes de theta (i + 1) y phi (j + 1) 
             v3 = [rho*np.sin(theta)*np.cos(phi1), rho*np.sin(theta)*np.sin(phi1), rho*np.cos(theta)]
+            
+            # Se crean los vectores normales para cada vertice segun los valores de rho tongo 
+            n0 = [np.sin(theta)*np.cos(phi), np.sin(theta)*np.sin(phi), np.cos(theta)]
+            n1 = [np.sin(theta1)*np.cos(phi), np.sin(theta1)*np.sin(phi), np.cos(theta1)]
+            n2 = [np.sin(theta1)*np.cos(phi1), np.sin(theta1)*np.sin(phi1), np.cos(theta1)]
+            n3 = [np.sin(theta)*np.cos(phi1), np.sin(theta)*np.sin(phi1), np.cos(theta)]
+
 
             # Creamos los triangulos superiores
             #        v0
@@ -93,26 +100,7 @@ def createColorNormalSphere(N, r, g, b):
                 vertices += [v2[0], v2[1], v2[2], r, g, b]
                 vertices += [v3[0], v3[1], v3[2], r, g, b]
                 indices += [ c + 0, c + 1, c +2 ]
-                indices += [ c + 2, c + 3, c +0 ]
+                indices += [ c + 2, c + 3, c + 0 ]
                 c += 4
+
     return bs.Shape(vertices, indices)
-
-
-def createSphereNode(r, g, b, pipeline):
-    # Funcion para crear Grafo de una esfera de la escena, se separa en otro grafo, por si se quiere dibujar con otro material
-    sphere = createGPUShape(pipeline, createColorNormalSphere(20, r,g,b)) # Shape de la esfera
-
-    # Nodo de la esfera trasladado y escalado
-    sphereNode = sg.SceneGraphNode("sphere")
-    sphereNode.transform =tr.matmul([
-        tr.translate(0.25,0.15,-0.35),
-        tr.scale(0.3,0.3,0.3)
-    ])
-    sphereNode.childs = [sphere]
-
-    # Nodo del del objeto escalado con el mismo valor de la escena base
-    scaledSphere = sg.SceneGraphNode("sc_sphere")
-    scaledSphere.transform = tr.scale(5, 5, 5)
-    scaledSphere.childs = [sphereNode]
-
-    return scaledSphere

@@ -17,8 +17,6 @@ class Shape:
         return "vertices: " + str(self.vertices) + "\n"\
             "indices: " + str(self.indices)
 
-    
-
 
 def merge(destinationShape, strideSize, sourceShape):
 
