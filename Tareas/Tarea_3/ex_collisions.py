@@ -13,6 +13,7 @@ import grafica.basic_shapes as bs
 import grafica.lighting_shaders as ls
 import grafica.transformations as tr
 import grafica.performance_monitor as pm
+import grafica.scene_graph as sg
 from model import *
 
 __author__ = "Daniel Calderon"
@@ -21,7 +22,7 @@ __license__ = "MIT"
 # Example parameters
 
 NUMBER_OF_CIRCLES = 16
-CIRCLE_DISCRETIZATION = 20
+CIRCLE_DISCRETIZATION = 15
 RADIUS = 0.04
 WINDOW_WIDTH = 600
 WINDOW_HEIGHT = 600
@@ -231,18 +232,20 @@ if __name__ == "__main__":
     circles = []
     for i in range(NUMBER_OF_CIRCLES):
         position = np.array([
-            float(i)/NUMBER_OF_CIRCLES,
-            float(i)/NUMBER_OF_CIRCLES,
-            RADIUS
+            float(i)/NUMBER_OF_CIRCLES - RADIUS,
+            float(i)/NUMBER_OF_CIRCLES - RADIUS,
+            0
         ])
         velocity = np.array([
-            -0.5,
-            -0.5,
-            0
+            0.0,
+            0.0,
+            0.0
         ])
         r, g, b = random.uniform(0,1), random.uniform(0,1), random.uniform(0,1)
         circle = Circle(pipeline, position, velocity, r, g, b, CIRCLE_DISCRETIZATION, RADIUS)
         circles += [circle]
+
+    scene = create_scene(pipeline, 1.0, 2.0, RADIUS)
 
     perfMonitor = pm.PerformanceMonitor(glfw.get_time(), 0.5)
 
@@ -299,10 +302,6 @@ if __name__ == "__main__":
         # checking and processing collisions among circles
         for i in range(len(circles)):
             for j in range(i+1, len(circles)):
-                ri = np.sqrt(circles[i].position[0]**2 + circles[i].position[1]**2)
-                rj = np.sqrt(circles[j].position[0]**2 + circles[j].position[1]**2)
-                if ri < rj:
-                    circles[j], circles[i] = circles[i], circles[j]
                 if areColliding(circles[i], circles[j]):
                     collide(circles[i], circles[j])
 
@@ -346,11 +345,14 @@ if __name__ == "__main__":
         for i in range(len(circles)):
             circles[i].draw("model")
 
+        sg.drawSceneGraphNode(scene, pipeline, "model")
+
         # Once the drawing is rendered, buffers are swap so an uncomplete drawing is never seen.
         glfw.swap_buffers(window)
 
     # freeing GPU memory
     for circle in circles:
         circle.gpuShape.clear()
+    scene.clear()
 
     glfw.terminate()

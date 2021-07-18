@@ -11,6 +11,7 @@ import grafica.easy_shaders as es
 import grafica.transformations as tr
 import grafica.performance_monitor as pm
 import shapes_3D as s3d
+import grafica.scene_graph as sg
 
 
 # Convenience function to ease initialization
@@ -86,3 +87,20 @@ class PolarCamera:
             self.up
         )
         return viewMatrix
+
+
+def create_scene(pipeline, width, height, radius):
+    green_cube = bs.createColorCube(0.1, 0.7, 0.3)
+    gpu_cube = createGPUShape(pipeline, green_cube)
+
+    green_cube_node = sg.SceneGraphNode("cubo verde")
+    green_cube_node.childs += [gpu_cube]
+
+    scaled_cube = sg.SceneGraphNode("cubo escalado")
+    scaled_cube.transform = tr.matmul([tr.translate(0, 0, -radius-0.25), tr.scale(width, height, 0.5)])
+    scaled_cube.childs += [green_cube_node]
+
+    scene = sg.SceneGraphNode("Escena")
+    scene.childs += [scaled_cube]
+
+    return scene
