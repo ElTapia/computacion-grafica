@@ -21,7 +21,7 @@ __license__ = "MIT"
 
 # Example parameters
 
-NUMBER_OF_CIRCLES = 16
+NUMBER_OF_CIRCLES = 3
 CIRCLE_DISCRETIZATION = 15
 RADIUS = 0.04
 WINDOW_WIDTH = 600
@@ -230,12 +230,18 @@ if __name__ == "__main__":
 
     # Creating shapes on GPU memory
     circles = []
+    positions = []
+    first_pos = np.array([0, -0.15, 0])
+
+    positions += [first_pos]
+
+    second_pos = first_pos + np.array([RADIUS, -np.sqrt(3)*RADIUS, 0])
+    third_pos = first_pos + np.array([-RADIUS, -np.sqrt(3)*RADIUS, 0])
+
+    positions += [second_pos, third_pos]
+
     for i in range(NUMBER_OF_CIRCLES):
-        position = np.array([
-            float(i)/NUMBER_OF_CIRCLES - RADIUS,
-            float(i)/NUMBER_OF_CIRCLES - RADIUS,
-            0
-        ])
+        position = positions[i]
         velocity = np.array([
             0.0,
             0.0,
