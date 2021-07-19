@@ -50,6 +50,83 @@ class Circle:
         self.pipeline.drawCall(self.gpuShape)
 
 
+def rotate2D(vector, theta):
+    """
+    Direct application of a 2D rotation
+    """
+    sin_theta = np.sin(theta)
+    cos_theta = np.cos(theta)
+
+    return np.array([
+        cos_theta * vector[0] - sin_theta * vector[1],
+        sin_theta * vector[0] + cos_theta * vector[1],
+        0
+    ], dtype = np.float32)
+
+
+def collide(circle1, circle2):
+    """
+    If there are a collision between the circles, it modifies the velocity of
+    both circles in a way that preserves energy and momentum.
+    """
+    
+    assert isinstance(circle1, Circle)
+    assert isinstance(circle2, Circle)
+
+    normal = circle2.position - circle1.position
+    normal /= np.linalg.norm(normal)
+
+    circle1MovingToNormal = np.dot(circle2.velocity, normal) > 0.0
+    circle2MovingToNormal = np.dot(circle1.velocity, normal) < 0.0
+
+    if not (circle1MovingToNormal and circle2MovingToNormal):
+
+        # obtaining the tangent direction
+        tangent = rotate2D(normal, np.pi/2.0)
+
+        # Projecting the velocity vector over the normal and tangent directions
+        # for both circles, 1 and 2.
+        v1n = np.dot(circle1.velocity, normal) * normal
+        v1t = np.dot(circle1.velocity, tangent) * tangent
+
+        v2n = np.dot(circle2.velocity, normal) * normal
+        v2t = np.dot(circle2.velocity, tangent) * tangent
+
+        # swaping the normal components...
+        # this means that we applying energy and momentum conservation
+        circle1.velocity = v2n + v1t
+        circle2.velocity = v1n + v2t
+
+
+def areColliding(circle1, circle2):
+    assert isinstance(circle1, Circle)
+    assert isinstance(circle2, Circle)
+
+    difference = circle2.position - circle1.position
+    distance = np.linalg.norm(difference)
+    collisionDistance = circle2.radius + circle1.radius
+    return distance < collisionDistance
+
+
+def collideWithBorder(circle, border_width, border_height):
+
+    # Right
+    if circle.position[0] + circle.radius > border_width/2:
+        circle.velocity[0] = -abs(circle.velocity[0])
+
+    # Left
+    if circle.position[0] < -border_width/2 + circle.radius:
+        circle.velocity[0] = abs(circle.velocity[0])
+
+    # Top
+    if circle.position[1] > border_height/2 - circle.radius:
+        circle.velocity[1] = -abs(circle.velocity[1])
+
+    # Bottom
+    if circle.position[1] < -border_height/2 + circle.radius:
+        circle.velocity[1] = abs(circle.velocity[1])
+
+
 # Clase para manejar una camara que se mueve en coordenadas polares
 class PolarCamera:
     def __init__(self):
