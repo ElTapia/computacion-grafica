@@ -236,14 +236,14 @@ def createColorCube(r, g, b):
     vertices = [
     #    positions        colors
         -0.5, -0.5,  0.5, r, g, b,
-         0.5, -0.5,  0.5, r, g, b,
+         0.5, -0.5,  0.5, r+0.2, g+0.1, b+0.2,
          0.5,  0.5,  0.5, r, g, b,
-        -0.5,  0.5,  0.5, r, g, b,
+        -0.5,  0.5,  0.5, r+0.2, g+0.1, b+0.2,
 
         -0.5, -0.5, -0.5, r, g, b,
-         0.5, -0.5, -0.5, r, g, b,
+         0.5, -0.5, -0.5, r+0.2, g+0.1, b+0.2,
          0.5,  0.5, -0.5, r, g, b,
-        -0.5,  0.5, -0.5, r, g, b]
+        -0.5,  0.5, -0.5, r+0.2, g+0.1, b+0.2]
 
     # Defining connections among vertices
     # We have a triangle every 3 indices specified

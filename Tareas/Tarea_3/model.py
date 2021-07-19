@@ -90,7 +90,7 @@ class PolarCamera:
 
 
 def create_scene(pipeline, width, height, radius):
-    green_cube = bs.createColorCube(0.1, 0.7, 0.3)
+    green_cube = bs.createColorNormalsCube(0.1, 0.7, 0.3)
     gpu_cube = createGPUShape(pipeline, green_cube)
 
     green_cube_node = sg.SceneGraphNode("cubo verde")

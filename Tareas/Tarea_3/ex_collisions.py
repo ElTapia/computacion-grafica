@@ -21,11 +21,13 @@ __license__ = "MIT"
 
 # Example parameters
 
-NUMBER_OF_CIRCLES = 3
-CIRCLE_DISCRETIZATION = 15
-RADIUS = 0.04
+NUMBER_OF_CIRCLES = 16
+CIRCLE_DISCRETIZATION = 20
+RADIUS = 0.028875
 WINDOW_WIDTH = 600
 WINDOW_HEIGHT = 600
+BORDER_WIDTH = 1.46
+BORDER_HEIGHT = 2.74
 
 
 def rotate2D(vector, theta):
@@ -89,19 +91,19 @@ def areColliding(circle1, circle2):
 def collideWithBorder(circle):
 
     # Right
-    if circle.position[0] + circle.radius > 0.5:
+    if circle.position[0] + circle.radius > BORDER_WIDTH/2:
         circle.velocity[0] = -abs(circle.velocity[0])
 
     # Left
-    if circle.position[0] < -0.5 + circle.radius:
+    if circle.position[0] < -BORDER_WIDTH/2 + circle.radius:
         circle.velocity[0] = abs(circle.velocity[0])
 
     # Top
-    if circle.position[1] > 1.0 - circle.radius:
+    if circle.position[1] > BORDER_HEIGHT/2 - circle.radius:
         circle.velocity[1] = -abs(circle.velocity[1])
 
     # Bottom
-    if circle.position[1] < -1.0 + circle.radius:
+    if circle.position[1] < -BORDER_HEIGHT/2 + circle.radius:
         circle.velocity[1] = abs(circle.velocity[1])
 
 
@@ -207,6 +209,7 @@ if __name__ == "__main__":
     glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 1)
     glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, GL_TRUE)
     glfw.window_hint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
+    glfw.window_hint(glfw.SAMPLES, 4)
     window = glfw.create_window(WINDOW_WIDTH, WINDOW_HEIGHT, title, None, None)
 
     if not window:
@@ -222,7 +225,7 @@ if __name__ == "__main__":
     glBindVertexArray(VAO)
 
     # Creating our shader program and telling OpenGL to use it
-    pipeline = es.SimpleModelViewProjectionShaderProgram()
+    pipeline = ls.SimplePhongDirectionalShaderProgram()
     glUseProgram(pipeline.shaderProgram)
 
     # Setting up the clear screen color
@@ -232,16 +235,38 @@ if __name__ == "__main__":
     circles = []
     positions = []
     first_pos = np.array([0, -0.15, 0])
-
-    positions += [first_pos]
+    first_row = [first_pos]
 
     second_pos = first_pos + np.array([RADIUS, -np.sqrt(3)*RADIUS, 0])
     third_pos = first_pos + np.array([-RADIUS, -np.sqrt(3)*RADIUS, 0])
 
-    positions += [second_pos, third_pos]
+    second_row = [second_pos, third_pos]
 
-    for i in range(NUMBER_OF_CIRCLES):
-        position = positions[i]
+    fourth_pos = second_pos + np.array([RADIUS, -np.sqrt(3)*RADIUS, 0])
+    fifth_pos = second_pos + np.array([-RADIUS, -np.sqrt(3)*RADIUS, 0])
+    sixth_pos = third_pos + np.array([-RADIUS, -np.sqrt(3)*RADIUS, 0])
+
+    third_row = [fourth_pos, fifth_pos, sixth_pos]
+
+    seventh_pos = fourth_pos + np.array([RADIUS, -np.sqrt(3)*RADIUS, 0])
+    eighth_pos = fourth_pos + np.array([-RADIUS, -np.sqrt(3)*RADIUS, 0])
+    nineth_pos = fifth_pos + np.array([-RADIUS, -np.sqrt(3)*RADIUS, 0])
+    tenth_pos = sixth_pos + np.array([-RADIUS, -np.sqrt(3)*RADIUS, 0])
+
+    fourth_row = [seventh_pos, eighth_pos, nineth_pos, tenth_pos]
+
+    eleventh_pos = seventh_pos + np.array([RADIUS, -np.sqrt(3)*RADIUS, 0])
+    twelfth_pos = seventh_pos + np.array([-RADIUS, -np.sqrt(3)*RADIUS, 0])
+    thirteenth_pos = eighth_pos + np.array([-RADIUS, -np.sqrt(3)*RADIUS, 0])
+    fourteenth_pos = nineth_pos + np.array([-RADIUS, -np.sqrt(3)*RADIUS, 0])
+    fifteenth_pos = tenth_pos + np.array([-RADIUS, -np.sqrt(3)*RADIUS, 0])
+
+    fifth_row = [eleventh_pos, twelfth_pos, thirteenth_pos, fourteenth_pos, fifteenth_pos]
+
+    positions += first_row + second_row + third_row + fourth_row + fifth_row
+
+    for i in range(1, NUMBER_OF_CIRCLES):
+        position = positions[i-1]
         velocity = np.array([
             0.0,
             0.0,
@@ -251,7 +276,12 @@ if __name__ == "__main__":
         circle = Circle(pipeline, position, velocity, r, g, b, CIRCLE_DISCRETIZATION, RADIUS)
         circles += [circle]
 
-    scene = create_scene(pipeline, 1.0, 2.0, RADIUS)
+    white_pos = np.array([0, 0.5, 0])
+    white_velocity = np.array([0.0, 0.0, 0.0])
+    white_r, white_g, white_b = 1, 1, 1
+    white_ball = Circle(pipeline, white_pos, white_velocity, white_r, white_g, white_b, CIRCLE_DISCRETIZATION, RADIUS)
+
+    scene = create_scene(pipeline, BORDER_WIDTH, BORDER_HEIGHT, RADIUS)
 
     perfMonitor = pm.PerformanceMonitor(glfw.get_time(), 0.5)
 
@@ -263,12 +293,6 @@ if __name__ == "__main__":
 
     # View and projection
     projection = tr.perspective(60, float(WINDOW_WIDTH)/float(WINDOW_HEIGHT), 0.1, 100)
-
-    # valores de iluminacion
-    lightPos = [0, 0, 1]
-    ka = [0.2, 0.2, 0.2]
-    kd = [0.5, 0.5, 0.5]
-    ks = [1.0, 1.0, 1.0]
 
     # Application loop
     while not glfw.window_should_close(window):
@@ -285,8 +309,11 @@ if __name__ == "__main__":
         deltaTime = perfMonitor.getDeltaTime()
         delta = deltaTime
 
-        if glfw.get_key(window, glfw.KEY_2) == glfw.PRESS:
-            controller.useGravity = not controller.useGravity
+        if glfw.get_key(window, glfw.KEY_ENTER) == glfw.PRESS:
+            white_ball.velocity[1] = -1
+
+        if glfw.get_key(window, glfw.KEY_ENTER) == glfw.PRESS:
+            white_ball.velocity[1] = -1
 
         if controller.useGravity:
             acceleration = gravityAcceleration
@@ -301,6 +328,9 @@ if __name__ == "__main__":
             # checking and processing collisions against the border
             collideWithBorder(circle)
 
+        white_ball.action(acceleration, deltaTime)
+        collideWithBorder(white_ball)
+
         controller.update_camera(delta)
         camera = controller.get_camera()
         viewMatrix = camera.update_view()
@@ -310,6 +340,9 @@ if __name__ == "__main__":
             for j in range(i+1, len(circles)):
                 if areColliding(circles[i], circles[j]):
                     collide(circles[i], circles[j])
+
+            if areColliding(circles[i], white_ball):
+                    collide(circles[i], white_ball)
 
 
         # Clearing the screen
@@ -326,23 +359,23 @@ if __name__ == "__main__":
         # Drawing (no texture)
         glUseProgram(pipeline.shaderProgram)
 
-        #glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "La"), 0.7, 0.7, 0.7)
-        #glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ld"), 0.7, 0.7, 0.7)
-        #glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ls"), 1.0, 1.0, 1.0)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "La"), 0.7, 0.7, 0.7)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ld"), 0.7, 0.7, 0.7)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ls"), 1.0, 1.0, 1.0)
 
-        #glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ka"), 0.7, 0.7, 0.7)
-        #glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Kd"), 0.7, 0.7, 0.7)
-        #glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ks"), 1.0, 1.0, 1.0)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ka"), 0.7, 0.7, 0.7)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Kd"), 0.7, 0.7, 0.7)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ks"), 1.0, 1.0, 1.0)
 
         # Se entrega el vector con la direccion de la luz direccional
-        #glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightDirection"),  0, 0, -1)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightDirection"),  0, 0, -1)
         
-        #glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "viewPosition"), camera.eye[0], camera.eye[1], camera.eye[2])
-        #glUniform1ui(glGetUniformLocation(pipeline.shaderProgram, "shininess"), 100)
+        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "viewPosition"), camera.get_eye()[0], camera.get_eye()[1], camera.get_eye()[2])
+        glUniform1ui(glGetUniformLocation(pipeline.shaderProgram, "shininess"), 100)
         
-        #glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "constantAttenuation"), 0.001)
-        #glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "linearAttenuation"), 0.03)
-        #glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "quadraticAttenuation"), 0.01)
+        glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "constantAttenuation"), 0.001)
+        glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "linearAttenuation"), 0.03)
+        glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "quadraticAttenuation"), 0.01)
 
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
         glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "view"), 1, GL_TRUE, viewMatrix)
@@ -350,6 +383,7 @@ if __name__ == "__main__":
         # drawing all the circles
         for i in range(len(circles)):
             circles[i].draw("model")
+        white_ball.draw("model")
 
         sg.drawSceneGraphNode(scene, pipeline, "model")
 
@@ -359,6 +393,7 @@ if __name__ == "__main__":
     # freeing GPU memory
     for circle in circles:
         circle.gpuShape.clear()
+    white_ball.clear()
     scene.clear()
 
     glfw.terminate()

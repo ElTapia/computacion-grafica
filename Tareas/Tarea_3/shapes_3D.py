@@ -62,9 +62,9 @@ def createColorNormalSphere(N, r, g, b):
             # v1 ---------- v2
             if i == 0:
                 #           vertices              color    normales
-                vertices += [v0[0], v0[1], v0[2], r, g, b]
-                vertices += [v1[0], v1[1], v1[2], r, g, b]
-                vertices += [v2[0], v2[1], v2[2], r, g, b]
+                vertices += [v0[0], v0[1], v0[2], r, g, b, n0[0], n0[1], n0[2]]
+                vertices += [v1[0], v1[1], v1[2], r, g, b, n1[0], n1[1], n1[2]]
+                vertices += [v2[0], v2[1], v2[2], r, g, b, n2[0], n2[1], n2[2]]
                 indices += [ c + 0, c + 1, c +2 ]
                 c += 3
 
@@ -78,9 +78,9 @@ def createColorNormalSphere(N, r, g, b):
             #        v1
             elif i == (N-2):
                 #           vertices              color    normales
-                vertices += [v0[0], v0[1], v0[2], r, g, b]
-                vertices += [v1[0], v1[1], v1[2], r, g, b]
-                vertices += [v3[0], v3[1], v3[2], r, g, b]
+                vertices += [v0[0], v0[1], v0[2], r, g, b, n0[0], n0[1], n0[2]]
+                vertices += [v1[0], v1[1], v1[2], r, g, b, n1[0], n1[1], n1[2]]
+                vertices += [v3[0], v3[1], v3[2], r, g, b, n3[0], n3[1], n3[2]]
                 indices += [ c + 0, c + 1, c +2 ]
                 c += 3
             
@@ -95,10 +95,10 @@ def createColorNormalSphere(N, r, g, b):
             #  v1 -------------- v2
             else: 
                 #           vertices              color    normales
-                vertices += [v0[0], v0[1], v0[2], r, g, b]
-                vertices += [v1[0], v1[1], v1[2], r, g, b]
-                vertices += [v2[0], v2[1], v2[2], r, g, b]
-                vertices += [v3[0], v3[1], v3[2], r, g, b]
+                vertices += [v0[0], v0[1], v0[2], r, g, b, n0[0], n0[1], n0[2]]
+                vertices += [v1[0], v1[1], v1[2], r, g, b, n1[0], n1[1], n1[2]]
+                vertices += [v2[0], v2[1], v2[2], r, g, b, n2[0], n2[1], n2[2]]
+                vertices += [v3[0], v3[1], v3[2], r, g, b, n3[0], n3[1], n3[2]]
                 indices += [ c + 0, c + 1, c +2 ]
                 indices += [ c + 2, c + 3, c + 0 ]
                 c += 4
