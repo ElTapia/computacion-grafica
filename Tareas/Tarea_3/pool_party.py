@@ -149,8 +149,8 @@ if __name__ == "__main__":
     glBindVertexArray(VAO)
 
     # Creating our shader program and telling OpenGL to use it
-    pipeline = ls.SimplePhongDirectionalShaderProgram()
-    glUseProgram(pipeline.shaderProgram)
+    color_pipeline = ls.SimplePhongDirectionalShaderProgram()
+    tex_pipeline = ls.SimplePhongTextureDirectionalShaderProgram()
 
     # Setting up the clear screen color
     glClearColor(0.15, 0.15, 0.15, 1.0)
@@ -197,15 +197,15 @@ if __name__ == "__main__":
             0.0
         ])
         r, g, b = random.uniform(0,1), random.uniform(0,1), random.uniform(0,1)
-        circle = Circle(pipeline, position, velocity, r, g, b, CIRCLE_DISCRETIZATION, RADIUS)
+        circle = Circle(color_pipeline, position, velocity, r, g, b, CIRCLE_DISCRETIZATION, RADIUS)
         circles += [circle]
 
     white_pos = np.array([0, 0.5, 0])
     white_velocity = np.array([0.0, 0.0, 0.0])
     white_r, white_g, white_b = 1, 1, 1
-    white_ball = Circle(pipeline, white_pos, white_velocity, white_r, white_g, white_b, CIRCLE_DISCRETIZATION, RADIUS)
+    white_ball = Circle(color_pipeline, white_pos, white_velocity, white_r, white_g, white_b, CIRCLE_DISCRETIZATION, RADIUS)
 
-    scene = create_scene(pipeline, BORDER_WIDTH, BORDER_HEIGHT, RADIUS)
+    scene = create_scene(tex_pipeline, BORDER_WIDTH, BORDER_HEIGHT, RADIUS)
 
     perfMonitor = pm.PerformanceMonitor(glfw.get_time(), 0.5)
 
@@ -271,35 +271,59 @@ if __name__ == "__main__":
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
 
         # Drawing (no texture)
-        glUseProgram(pipeline.shaderProgram)
+        glUseProgram(color_pipeline.shaderProgram)
 
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "La"), 0.7, 0.7, 0.7)
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ld"), 0.7, 0.7, 0.7)
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ls"), 1.0, 1.0, 1.0)
+        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "La"), 0.7, 0.7, 0.7)
+        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "Ld"), 0.7, 0.7, 0.7)
+        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "Ls"), 1.0, 1.0, 1.0)
 
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ka"), 0.7, 0.7, 0.7)
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Kd"), 0.7, 0.7, 0.7)
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "Ks"), 1.0, 1.0, 1.0)
+        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "Ka"), 0.7, 0.7, 0.7)
+        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "Kd"), 0.7, 0.7, 0.7)
+        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "Ks"), 1.0, 1.0, 1.0)
 
         # Se entrega el vector con la direccion de la luz direccional
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "lightDirection"),  0, 0, -1)
+        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "lightDirection"),  0, 0, -1)
         
-        glUniform3f(glGetUniformLocation(pipeline.shaderProgram, "viewPosition"), camera.get_eye()[0], camera.get_eye()[1], camera.get_eye()[2])
-        glUniform1ui(glGetUniformLocation(pipeline.shaderProgram, "shininess"), 100)
+        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "viewPosition"), camera.get_eye()[0], camera.get_eye()[1], camera.get_eye()[2])
+        glUniform1ui(glGetUniformLocation(color_pipeline.shaderProgram, "shininess"), 100)
         
-        glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "constantAttenuation"), 0.001)
-        glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "linearAttenuation"), 0.03)
-        glUniform1f(glGetUniformLocation(pipeline.shaderProgram, "quadraticAttenuation"), 0.01)
+        glUniform1f(glGetUniformLocation(color_pipeline.shaderProgram, "constantAttenuation"), 0.001)
+        glUniform1f(glGetUniformLocation(color_pipeline.shaderProgram, "linearAttenuation"), 0.03)
+        glUniform1f(glGetUniformLocation(color_pipeline.shaderProgram, "quadraticAttenuation"), 0.01)
 
-        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
-        glUniformMatrix4fv(glGetUniformLocation(pipeline.shaderProgram, "view"), 1, GL_TRUE, viewMatrix)
+        glUniformMatrix4fv(glGetUniformLocation(color_pipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
+        glUniformMatrix4fv(glGetUniformLocation(color_pipeline.shaderProgram, "view"), 1, GL_TRUE, viewMatrix)
 
         # drawing all the circles
         for i in range(len(circles)):
             circles[i].draw("model")
         white_ball.draw("model")
 
-        sg.drawSceneGraphNode(scene, pipeline, "model")
+        # Drawing (texture)
+        glUseProgram(tex_pipeline.shaderProgram)
+
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "La"), 0.7, 0.7, 0.7)
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ld"), 0.7, 0.7, 0.7)
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ls"), 1.0, 1.0, 1.0)
+
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ka"), 0.7, 0.7, 0.7)
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Kd"), 0.7, 0.7, 0.7)
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ks"), 1.0, 1.0, 1.0)
+
+        # Se entrega el vector con la direccion de la luz direccional
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "lightDirection"),  0, 0, -1)
+        
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "viewPosition"), camera.get_eye()[0], camera.get_eye()[1], camera.get_eye()[2])
+        glUniform1ui(glGetUniformLocation(tex_pipeline.shaderProgram, "shininess"), 100)
+        
+        glUniform1f(glGetUniformLocation(tex_pipeline.shaderProgram, "constantAttenuation"), 0.001)
+        glUniform1f(glGetUniformLocation(tex_pipeline.shaderProgram, "linearAttenuation"), 0.03)
+        glUniform1f(glGetUniformLocation(tex_pipeline.shaderProgram, "quadraticAttenuation"), 0.01)
+
+        glUniformMatrix4fv(glGetUniformLocation(tex_pipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
+        glUniformMatrix4fv(glGetUniformLocation(tex_pipeline.shaderProgram, "view"), 1, GL_TRUE, viewMatrix)
+
+        sg.drawSceneGraphNode(scene, tex_pipeline, "model")
 
         # Once the drawing is rendered, buffers are swap so an uncomplete drawing is never seen.
         glfw.swap_buffers(window)

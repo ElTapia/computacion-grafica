@@ -9,9 +9,10 @@ __license__ = "MIT"
 
 # A simple class container to store vertices and indices that define a shape
 class Shape:
-    def __init__(self, vertices, indices):
+    def __init__(self, vertices, indices, image_filename=None):
         self.vertices = vertices
         self.indices = indices
+        self.image_filename = image_filename
 
     def __str__(self):
         return "vertices: " + str(self.vertices) + "\n"\
@@ -396,6 +397,25 @@ def createColorNormalsCube(r, g, b):
          20,21,22,22,23,20] # Y-
 
     return Shape(vertices, indices)
+
+def createTextureNormalsPlane(image_filename):
+
+    # Defining the location and colors of each vertex  of the shape
+    vertices = [
+    #   positions         tex coords     normals
+    # Z+
+        -0.5, -0.5,  0.5,   0, 1,         0,0,1,
+         0.5, -0.5,  0.5,   1, 1,         0,0,1,
+         0.5,  0.5,  0.5,   1, 0,         0,0,1,
+        -0.5,  0.5,  0.5,   0, 0,         0,0,1
+        ]
+
+    # Defining connections among vertices
+    # We have a triangle every 3 indices specified
+    indices = [
+          0, 1, 2, 2, 3, 0]
+
+    return Shape(vertices, indices, image_filename)
 
 
 def createTextureNormalsCube(image_filename):

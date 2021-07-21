@@ -13,13 +13,23 @@ import grafica.performance_monitor as pm
 import shapes_3D as s3d
 import grafica.scene_graph as sg
 import ode_resolver as edo
-
+import grafica.assets_path as ap
 
 # Convenience function to ease initialization
 def createGPUShape(pipeline, shape):
     gpuShape = es.GPUShape().initBuffers()
     pipeline.setupVAO(gpuShape)
     gpuShape.fillBuffers(shape.vertices, shape.indices, GL_DYNAMIC_DRAW)
+    return gpuShape
+
+# Crea gpu de texturas
+def createTextureGPUShape(shape, pipeline, path):
+    # Funcion Conveniente para facilitar la inicializacion de un GPUShape con texturas
+    gpuShape = es.GPUShape().initBuffers()
+    pipeline.setupVAO(gpuShape)
+    gpuShape.fillBuffers(shape.vertices, shape.indices, GL_DYNAMIC_DRAW)
+    gpuShape.texture = es.textureSimpleSetup(
+        path, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST)
     return gpuShape
 
 
@@ -170,17 +180,18 @@ class PolarCamera:
 
 
 def create_scene(pipeline, width, height, radius):
-    green_cube = bs.createColorNormalsCube(0.1, 0.7, 0.3)
-    gpu_cube = createGPUShape(pipeline, green_cube)
 
-    green_cube_node = sg.SceneGraphNode("cubo verde")
-    green_cube_node.childs += [gpu_cube]
+    table = bs.createTextureNormalsPlane("mesa.png")
+    gpu_table = createTextureGPUShape(table, pipeline, ap.getAssetPath("mesa.png"))
 
-    scaled_cube = sg.SceneGraphNode("cubo escalado")
-    scaled_cube.transform = tr.matmul([tr.translate(0, 0, -radius-0.25), tr.scale(width, height, 0.5)])
-    scaled_cube.childs += [green_cube_node]
+    table_node = sg.SceneGraphNode("mesa")
+    table_node.childs += [gpu_table]
+
+    scaled_table = sg.SceneGraphNode("mesa escalada")
+    scaled_table.transform = tr.matmul([tr.translate(0, 0, -radius-0.25), tr.scale(width+0.2, height+0.75, 0.5)])
+    scaled_table.childs += [table_node]
 
     scene = sg.SceneGraphNode("Escena")
-    scene.childs += [scaled_cube]
+    scene.childs += [scaled_table]
 
     return scene
