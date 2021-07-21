@@ -28,6 +28,9 @@ WINDOW_WIDTH = 600
 WINDOW_HEIGHT = 600
 BORDER_WIDTH = 1.46
 BORDER_HEIGHT = 2.74
+GRAVITY = 9.8
+MU = 0.9
+C = 1
 
 # A class to store the application control
 class Controller:
@@ -118,7 +121,6 @@ class Controller:
 # we will use the global controller as communication with the callback function
 controller = Controller()
 
-
 if __name__ == "__main__":
 
     # Initialize glfw
@@ -131,7 +133,7 @@ if __name__ == "__main__":
     glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 1)
     glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, GL_TRUE)
     glfw.window_hint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
-    glfw.window_hint(glfw.SAMPLES, 4)
+    #glfw.window_hint(glfw.SAMPLES, 4)
     window = glfw.create_window(WINDOW_WIDTH, WINDOW_HEIGHT, title, None, None)
 
     if not window:
@@ -210,9 +212,6 @@ if __name__ == "__main__":
     # glfw will swap buffers as soon as possible
     glfw.swap_interval(0)
 
-    gravityAcceleration = np.array([0.0, -1.0, 0.0], dtype=np.float32)
-    noGravityAcceleration = np.array([0.0, 0.0, 0.0], dtype=np.float32)
-
     # View and projection
     projection = tr.perspective(60, float(WINDOW_WIDTH)/float(WINDOW_HEIGHT), 0.1, 100)
 
@@ -226,31 +225,24 @@ if __name__ == "__main__":
         # Using GLFW to check for input events
         glfw.poll_events()
 
-        # Using the time as the theta parameter
-        theta = glfw.get_time()
+        # Using the time as the t parameter
+        t = glfw.get_time()
+
         deltaTime = perfMonitor.getDeltaTime()
         delta = deltaTime
 
         if glfw.get_key(window, glfw.KEY_ENTER) == glfw.PRESS:
-            white_ball.velocity[1] = -1
+            white_ball.velocity = np.array([0.0, -1.0, 0.0])
 
-        if glfw.get_key(window, glfw.KEY_ENTER) == glfw.PRESS:
-            white_ball.velocity[1] = -1
-
-        if controller.useGravity:
-            acceleration = gravityAcceleration
-        else:
-            acceleration = noGravityAcceleration
-        
         # Physics!
         for circle in circles:
             # moving each circle
-            circle.action(acceleration, deltaTime)
+            circle.action(deltaTime, MU, GRAVITY)
 
             # checking and processing collisions against the border
             collideWithBorder(circle, BORDER_WIDTH, BORDER_HEIGHT)
 
-        white_ball.action(acceleration, deltaTime)
+        white_ball.action(deltaTime, MU, GRAVITY)
         collideWithBorder(white_ball, BORDER_WIDTH, BORDER_HEIGHT)
 
         controller.update_camera(delta)
@@ -261,10 +253,10 @@ if __name__ == "__main__":
         for i in range(len(circles)):
             for j in range(i+1, len(circles)):
                 if areColliding(circles[i], circles[j]):
-                    collide(circles[i], circles[j])
+                    collide(circles[i], circles[j], C)
 
             if areColliding(circles[i], white_ball):
-                    collide(circles[i], white_ball)
+                    collide(circles[i], white_ball, C)
 
 
         # Clearing the screen

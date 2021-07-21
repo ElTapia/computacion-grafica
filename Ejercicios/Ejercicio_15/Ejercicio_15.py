@@ -31,7 +31,7 @@ delta_roce = 0.1
 
 posicion_ini = 1.0
 velocidad_ini = 0
-h = 0.0001
+h = 0.003
 
 # Formateo para usar las funciones
 z0 = [posicion_ini, velocidad_ini]

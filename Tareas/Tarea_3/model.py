@@ -12,6 +12,7 @@ import grafica.transformations as tr
 import grafica.performance_monitor as pm
 import shapes_3D as s3d
 import grafica.scene_graph as sg
+import ode_resolver as edo
 
 
 # Convenience function to ease initialization
@@ -37,10 +38,12 @@ class Circle:
         self.radius   = RADIUS
         self.velocity = velocity
 
-    def action(self, gravityAceleration, deltaTime):
+    def action(self, deltaTime, mu, gravity):
         # Euler integration
-        self.velocity += deltaTime * gravityAceleration
-        self.position += self.velocity * deltaTime
+
+        self.velocity += deltaTime*np.array([0, 0, 0])
+        self.position += deltaTime*self.velocity
+
 
     def draw(self, transformName):
         scaleFactor = 2 * self.radius
@@ -64,7 +67,7 @@ def rotate2D(vector, theta):
     ], dtype = np.float32)
 
 
-def collide(circle1, circle2):
+def collide(circle1, circle2, c):
     """
     If there are a collision between the circles, it modifies the velocity of
     both circles in a way that preserves energy and momentum.
@@ -94,8 +97,8 @@ def collide(circle1, circle2):
 
         # swaping the normal components...
         # this means that we applying energy and momentum conservation
-        circle1.velocity = v2n + v1t
-        circle2.velocity = v1n + v2t
+        circle1.velocity = (v1n * (1-c) + v2n * (1+c))/2 + v1t
+        circle2.velocity = (v2n * (1-c) + v1n * (1+c))/2 + v2t
 
 
 def areColliding(circle1, circle2):

@@ -29,11 +29,10 @@ def RK4_step(f, h, t_n, z_n):
 
 # Dada una función f, un h, un vector de tiempos y las condiciones iniciales, calcula la aproximación con RK4
 def resolve_RK4(f, h, t, z_0):
-    z = [z_0]
+    z = z_0
 
-    for i in range(1, len(t)):
-        rk4_step = RK4_step(f, h, t[i], z[-1])
-        z.append(rk4_step)
+    rk4_step = RK4_step(f, h, t, z_0)
+    z = rk4_step
 
     return z
 
