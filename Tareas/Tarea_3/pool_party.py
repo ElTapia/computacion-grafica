@@ -28,9 +28,9 @@ WINDOW_WIDTH = 600
 WINDOW_HEIGHT = 600
 BORDER_WIDTH = 1.46
 BORDER_HEIGHT = 2.74
-GRAVITY = 9.8
-MU = 0.9
-C = 1
+GRAVITY = 0.98
+MU = 0.5
+C = 0.9999
 
 # A class to store the application control
 class Controller:
@@ -133,7 +133,7 @@ if __name__ == "__main__":
     glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 1)
     glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, GL_TRUE)
     glfw.window_hint(glfw.OPENGL_PROFILE, glfw.OPENGL_CORE_PROFILE)
-    #glfw.window_hint(glfw.SAMPLES, 4)
+    glfw.window_hint(glfw.SAMPLES, 4)
     window = glfw.create_window(WINDOW_WIDTH, WINDOW_HEIGHT, title, None, None)
 
     if not window:
@@ -232,7 +232,7 @@ if __name__ == "__main__":
         delta = deltaTime
 
         if glfw.get_key(window, glfw.KEY_ENTER) == glfw.PRESS:
-            white_ball.velocity = np.array([0.0, -1.0, 0.0])
+            white_ball.velocity = np.array([0.0, -3.0, 0.0])
 
         # Physics!
         for circle in circles:

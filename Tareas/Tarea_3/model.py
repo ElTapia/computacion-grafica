@@ -49,10 +49,44 @@ class Circle:
         self.velocity = velocity
 
     def action(self, deltaTime, mu, gravity):
-        # Euler integration
 
-        self.velocity += deltaTime*np.array([0, 0, 0])
-        self.position += deltaTime*self.velocity
+        # Euler integration
+        if self.velocity[0] > 0:
+            self.velocity[0] += deltaTime*(-mu)*gravity
+            self.position[0] += deltaTime*self.velocity[0]
+
+        # RK4 integration
+        if self.velocity[1] > 0:
+            z = [self.position[1], self.velocity[1]]
+
+            def f(t, z):
+                return np.array([z[1], (-mu)*gravity])
+
+            z = edo.RK4_step(f, deltaTime, 0, z)
+            self.velocity[1] = z[1]
+            self.position[1] = z[0]
+
+        # modified Euler integration
+        if self.velocity[0] < 0:
+            z = [self.position[0], self.velocity[0]]
+
+            def f(t, z):
+                return np.array([z[1], (mu)*gravity])
+
+            z = edo.modified_euler_step(f, deltaTime, 0, z)
+            self.velocity[0] = z[1]
+            self.position[0] = z[0]
+
+        # improved Euler integration
+        if self.velocity[1] < 0:
+            z = [self.position[1], self.velocity[1]]
+
+            def f(t, z):
+                return np.array([z[1], (mu)*gravity])
+
+            z = edo.improved_euler_step(f, deltaTime, 0, z)
+            self.velocity[1] = z[1]
+            self.position[1] = z[0]
 
 
     def draw(self, transformName):

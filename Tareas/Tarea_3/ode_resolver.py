@@ -27,28 +27,23 @@ def RK4_step(f, h, t_n, z_n):
     k4 = K4(f, h, t_n, z_n)
     return z_n + (h/6)*(k1 + 2*k2 + 2*k3 + k4)
 
-# Dada una función f, un h, un vector de tiempos y las condiciones iniciales, calcula la aproximación con RK4
-def resolve_RK4(f, h, t, z_0):
-    z = z_0
 
-    rk4_step = RK4_step(f, h, t, z_0)
-    z = rk4_step
+# Calculo un paso de la aproximacion con Euler modificado
+def modified_euler_step(f, h, t_n, z_n):
+    f_n = f(t_n, z_n)
+    next_z = z_n + h*f(t_n + h/2, z_n + h/2 * f_n)
+    return next_z
 
-    return z
+
+# Calculo un paso de la aproximacion con Euler mejorado
+def improved_euler_step(f, h, t_n, z_n):
+    f_n = f(t_n, z_n)
+    next_z = z_n + h/2 *(f_n + f(t_n + h, z_n + h*f_n))
+    return next_z
+
 
 # Calculo un paso de la aproximacion con el método de euler
 def euler_step(f, h, t_n, z_n):
     next_z = z_n + h*f(t_n, z_n)
     return next_z
-
-# Dada una función f, un h, un vector de tiempos y las condiciones iniciales, calcula la aproximación con euler
-def resolve_euler(f, h, t, z_0):
-    # Vector donde se dejarán los resultados
-    z = [z_0]
-
-    for i in range(1,len(t)):
-        z_siguiente = euler_step(f, h, t[i], z[-1])
-        z.append(z_siguiente)
-    
-    return z
 
