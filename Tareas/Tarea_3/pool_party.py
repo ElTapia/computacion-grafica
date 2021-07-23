@@ -7,6 +7,7 @@ import OpenGL.GL.shaders
 import numpy as np
 import random
 import sys
+import json
 import os.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import grafica.basic_shapes as bs
@@ -19,18 +20,23 @@ from model import *
 __author__ = "Daniel Calderon"
 __license__ = "MIT"
 
-# Example parameters
+# Parameters
+
+jsonFile = str(sys.argv[1])
+configuration = open(jsonFile,)
+params = json.load(configuration)
 
 NUMBER_OF_CIRCLES = 16
 CIRCLE_DISCRETIZATION = 20
 RADIUS = 0.028875
-WINDOW_WIDTH = 600
-WINDOW_HEIGHT = 600
+WINDOW_WIDTH = 800
+WINDOW_HEIGHT = 800
 BORDER_WIDTH = 1.46
 BORDER_HEIGHT = 2.74
 GRAVITY = 0.98
-MU = 0.5
-C = 0.999999999
+
+MU = params["fricción"]
+C = params["restitución"]
 
 # A class to store the application control
 class Controller:
