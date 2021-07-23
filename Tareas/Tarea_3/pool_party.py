@@ -249,6 +249,7 @@ if __name__ == "__main__":
             collideWithBorder(circle, BORDER_WIDTH, BORDER_HEIGHT)
 
         white_ball.action(deltaTime, MU, GRAVITY)
+        print(white_ball.velocity)
         collideWithBorder(white_ball, BORDER_WIDTH, BORDER_HEIGHT)
 
         controller.update_camera(delta)

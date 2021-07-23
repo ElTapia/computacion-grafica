@@ -50,6 +50,17 @@ class Circle:
 
     def action(self, deltaTime, mu, gravity):
 
+        epsilon = 1e-3
+        if np.fabs(self.velocity[0]) < epsilon:
+            self.velocity[0] = 0
+            self.position[0] += deltaTime*0
+            pass
+
+        if np.fabs(self.velocity[1]) < epsilon:
+            self.velocity[1] = 0
+            self.position[1] += deltaTime*0
+            pass
+
         # Euler integration
         if self.velocity[0] >= 0:
             self.velocity[0] += deltaTime*(-mu)*gravity
