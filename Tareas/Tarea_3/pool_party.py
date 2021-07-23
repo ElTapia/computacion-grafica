@@ -30,7 +30,7 @@ BORDER_WIDTH = 1.46
 BORDER_HEIGHT = 2.74
 GRAVITY = 0.98
 MU = 0.5
-C = 0.9999
+C = 0.999999999
 
 # A class to store the application control
 class Controller:

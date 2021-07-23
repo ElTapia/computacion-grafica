@@ -23,11 +23,11 @@ def createGPUShape(pipeline, shape):
     return gpuShape
 
 # Crea gpu de texturas
-def createTextureGPUShape(shape, pipeline, path):
+def createTextureGPUShape(shape, pipeline, path, draw=GL_DYNAMIC_DRAW):
     # Funcion Conveniente para facilitar la inicializacion de un GPUShape con texturas
     gpuShape = es.GPUShape().initBuffers()
     pipeline.setupVAO(gpuShape)
-    gpuShape.fillBuffers(shape.vertices, shape.indices, GL_DYNAMIC_DRAW)
+    gpuShape.fillBuffers(shape.vertices, shape.indices, draw)
     gpuShape.texture = es.textureSimpleSetup(
         path, GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE, GL_NEAREST, GL_NEAREST)
     return gpuShape
@@ -51,23 +51,12 @@ class Circle:
     def action(self, deltaTime, mu, gravity):
 
         # Euler integration
-        if self.velocity[0] > 0:
+        if self.velocity[0] >= 0:
             self.velocity[0] += deltaTime*(-mu)*gravity
             self.position[0] += deltaTime*self.velocity[0]
 
-        # RK4 integration
-        if self.velocity[1] > 0:
-            z = [self.position[1], self.velocity[1]]
-
-            def f(t, z):
-                return np.array([z[1], (-mu)*gravity])
-
-            z = edo.RK4_step(f, deltaTime, 0, z)
-            self.velocity[1] = z[1]
-            self.position[1] = z[0]
-
         # modified Euler integration
-        if self.velocity[0] < 0:
+        elif self.velocity[0] < 0:
             z = [self.position[0], self.velocity[0]]
 
             def f(t, z):
@@ -77,8 +66,19 @@ class Circle:
             self.velocity[0] = z[1]
             self.position[0] = z[0]
 
+        # RK4 integration
+        if self.velocity[1] >= 0:
+            z = [self.position[1], self.velocity[1]]
+
+            def f(t, z):
+                return np.array([z[1], (-mu)*gravity])
+
+            z = edo.RK4_step(f, deltaTime, 0, z)
+            self.velocity[1] = z[1]
+            self.position[1] = z[0]
+
         # improved Euler integration
-        if self.velocity[1] < 0:
+        elif self.velocity[1] < 0:
             z = [self.position[1], self.velocity[1]]
 
             def f(t, z):
@@ -140,7 +140,6 @@ def collide(circle1, circle2, c):
         v2t = np.dot(circle2.velocity, tangent) * tangent
 
         # swaping the normal components...
-        # this means that we applying energy and momentum conservation
         circle1.velocity = (v1n * (1-c) + v2n * (1+c))/2 + v1t
         circle2.velocity = (v2n * (1-c) + v1n * (1+c))/2 + v2t
 
@@ -179,7 +178,7 @@ class PolarCamera:
     def __init__(self):
         self.center = np.array([0.0, 0.0, -0.5]) # centro de movimiento de la camara y donde mira la camara
         self.theta = 0                           # coordenada theta, angulo de la camara
-        self.rho = 5                             # coordenada rho, distancia al centro de la camara
+        self.rho = 2                             # coordenada rho, distancia al centro de la camara
         self.eye = np.array([0.0, 0.0, 0.0])     # posicion de la camara
         self.height = 2.0                        # altura fija de la camara
         self.up = np.array([0, 0, 1])            # vector up
@@ -213,6 +212,51 @@ class PolarCamera:
         return viewMatrix
 
 
+def create_skybox(pipeline):
+    shapeSky = bs.createTextureNormalsCube('')
+    gpuSky = createTextureGPUShape(shapeSky, pipeline, ap.getAssetPath("sides.png"), GL_STATIC_DRAW)
+    
+    #################################################################################################
+    shapeSecondSky = bs.createTextureNormalsPlane('')
+    gpuSecondSky = createTextureGPUShape(shapeSecondSky, pipeline, ap.getAssetPath("frente.png"), GL_STATIC_DRAW)
+    ####################################################################################################
+
+    shapeThirdSky = bs.createTextureNormalsPlane('')
+    gpuThirdSky = createTextureGPUShape(shapeThirdSky, pipeline, ap.getAssetPath("back.png"), GL_STATIC_DRAW)
+    ####################################################################################################
+
+    shapeFourthSky = bs.createTextureNormalsPlane('')
+    gpuFourthSky = createTextureGPUShape(shapeFourthSky, pipeline, ap.getAssetPath("floor.png"), GL_STATIC_DRAW)
+
+    ####################################################################################################
+
+    skybox = sg.SceneGraphNode("skybox")
+    skybox.transform = tr.matmul([tr.translate(0, 0, 0.3), tr.uniformScale(2)])
+    skybox.childs += [gpuSky]
+
+    ##########################################################
+    secondSky = sg.SceneGraphNode("second Sky")
+    secondSky.transform = tr.matmul([tr.translate(-0.01, 0, 0.42), tr.rotationX(np.pi/2), tr.rotationY(np.pi/2), tr.uniformScale(2)])
+    secondSky.childs += [gpuSecondSky]
+
+    ##########################################################
+    thirdSky = sg.SceneGraphNode("third Sky")
+    thirdSky.transform = tr.matmul([tr.translate(0.01, 0, 0.5), tr.rotationX(np.pi/2), tr.rotationY(-np.pi/2), tr.uniformScale(2)])
+    thirdSky.childs += [gpuThirdSky]
+
+    ##########################################################
+    fourthSky = sg.SceneGraphNode("fourth Sky")
+    fourthSky.transform = tr.matmul([tr.translate(0, 0, -1.5), tr.uniformScale(2)])
+    fourthSky.childs += [gpuFourthSky]
+
+    newSkybox = sg.SceneGraphNode("new Skybox")
+    newSkybox.transform = tr.matmul([tr.translate(0, 0, 0.5), tr.uniformScale(4)])
+    newSkybox.childs += [skybox, secondSky, thirdSky, fourthSky]
+    ############################################################
+
+    return newSkybox
+
+
 def create_scene(pipeline, width, height, radius):
 
     table = bs.createTextureNormalsPlane("mesa.png")
@@ -225,7 +269,9 @@ def create_scene(pipeline, width, height, radius):
     scaled_table.transform = tr.matmul([tr.translate(0, 0, -radius-0.25), tr.scale(width+0.2, height+0.75, 0.5)])
     scaled_table.childs += [table_node]
 
+    skybox = create_skybox(pipeline)
+
     scene = sg.SceneGraphNode("Escena")
-    scene.childs += [scaled_table]
+    scene.childs += [scaled_table, skybox]
 
     return scene
