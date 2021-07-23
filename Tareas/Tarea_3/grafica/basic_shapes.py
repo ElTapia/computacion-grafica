@@ -405,7 +405,7 @@ def createColorNormalsCube(r, g, b):
         ]
 
     # Defining connections among vertices
-    # We have a triangle every 3 indices specified
+    # We have a triangle every 3 indices specified    
     indices = [
           0, 1, 2, 2, 3, 0, # Z+
           7, 6, 5, 5, 4, 7, # Z-

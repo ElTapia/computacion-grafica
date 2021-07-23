@@ -211,7 +211,7 @@ if __name__ == "__main__":
     white_r, white_g, white_b = 1, 1, 1
     white_ball = Circle(color_pipeline, white_pos, white_velocity, white_r, white_g, white_b, CIRCLE_DISCRETIZATION, RADIUS)
 
-    scene = create_scene(tex_pipeline, BORDER_WIDTH, BORDER_HEIGHT, RADIUS)
+    scene = create_scene(color_pipeline, tex_pipeline, BORDER_WIDTH, BORDER_HEIGHT, RADIUS)
 
     perfMonitor = pm.PerformanceMonitor(glfw.get_time(), 0.5)
 
@@ -238,7 +238,7 @@ if __name__ == "__main__":
         delta = deltaTime
 
         if glfw.get_key(window, glfw.KEY_ENTER) == glfw.PRESS:
-            white_ball.velocity = np.array([0.0, -3.0, 0.0])
+            white_ball.velocity = np.array([3.0, -3.0, 0.0])
 
         # Physics!
         for circle in circles:
@@ -305,6 +305,9 @@ if __name__ == "__main__":
             circles[i].draw("model")
         white_ball.draw("model")
 
+        sg.drawSceneGraphNode(sg.findNode(scene, "Escena con colores"), color_pipeline, "model")
+
+
         # Drawing (texture)
         glUseProgram(tex_pipeline.shaderProgram)
 
@@ -329,7 +332,8 @@ if __name__ == "__main__":
         glUniformMatrix4fv(glGetUniformLocation(tex_pipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
         glUniformMatrix4fv(glGetUniformLocation(tex_pipeline.shaderProgram, "view"), 1, GL_TRUE, viewMatrix)
 
-        sg.drawSceneGraphNode(scene, tex_pipeline, "model")
+        tex_scene = sg.findNode(scene, "Escena con texturas")
+        sg.drawSceneGraphNode(tex_scene, tex_pipeline, "model")
 
         # Once the drawing is rendered, buffers are swap so an uncomplete drawing is never seen.
         glfw.swap_buffers(window)
