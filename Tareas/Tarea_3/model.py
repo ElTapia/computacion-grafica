@@ -196,9 +196,10 @@ class PolarCamera:
     def __init__(self):
         self.center = np.array([0.0, 0.0, -0.5]) # centro de movimiento de la camara y donde mira la camara
         self.theta = 0                           # coordenada theta, angulo de la camara
-        self.rho = 0.1                             # coordenada rho, distancia al centro de la camara
+        self.rho = 1                             # coordenada rho, distancia al centro de la camara
         self.eye = np.array([0.0, 0.0, 0.0])     # posicion de la camara
         self.height = 2.0                        # altura fija de la camara
+        self.can_shoot = False                   # Activa camara para lanzar bola blanca
         self.camera_to_up = False                # Posiciona cárama desde arriba
         self.camera_up = 4.0                     # altura cámara en vista desde arriba
         self.up = np.array([0, 0, 1])            # vector up
@@ -217,7 +218,7 @@ class PolarCamera:
         return self.eye
 
     # Actualizar la matriz de vista
-    def update_view(self):
+    def update_view(self, white_ball_pos):
         # Se calcula la posición de la camara con coordenadas poleras relativas al centro
 
         self.eye[0] = self.rho * np.sin(self.theta) + self.center[0]
@@ -225,9 +226,18 @@ class PolarCamera:
         self.eye[2] = self.height + self.center[2]
 
         if self.camera_to_up:
+            self.can_shoot = False
+            self.center = np.array([0.0, 0.0, -0.5])
             self.eye[0] = 0
             self.eye[1] = 0.5
             self.eye[2] = self.camera_up + self.center[2]
+
+        if self.can_shoot:
+            self.center[0] = white_ball_pos[0]
+            self.center[1] = white_ball_pos[1]
+            self.center[2] = 0.1
+            self.eye[2] = 0.2
+
 
         # Se genera la matriz de vista
         viewMatrix = tr.lookAt(

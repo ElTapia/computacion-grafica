@@ -208,7 +208,7 @@ if __name__ == "__main__":
     # View and projection
     projection = tr.perspective(60, float(WINDOW_WIDTH)/float(WINDOW_HEIGHT), 0.1, 100)
 
-    epsilon = 5e-3 # tolerancia disparo
+    epsilon = 1e-2 # tolerancia disparo
 
     # Application loop
     while not glfw.window_should_close(window):
@@ -242,7 +242,6 @@ if __name__ == "__main__":
         if np.fabs(white_ball.velocity[0])> epsilon and np.fabs(white_ball.velocity[1]) > epsilon:
             can_shoot = False
 
-
         if glfw.get_key(window, glfw.KEY_ENTER) == glfw.PRESS and can_shoot:
             white_ball.velocity = np.array([3.0, -3.0, 0.0])
 
@@ -252,7 +251,9 @@ if __name__ == "__main__":
 
         controller.update_camera(delta)
         camera = controller.get_camera()
-        viewMatrix = camera.update_view()
+        viewMatrix = camera.update_view(white_ball.position)
+
+        camera.can_shoot = can_shoot
 
         # checking and processing collisions among circles
         for i in range(len(circles)):
