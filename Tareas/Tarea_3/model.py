@@ -56,15 +56,15 @@ class Circle:
 
     def action(self, deltaTime, mu, gravity):
 
-        epsilon = 1e-3
+        epsilon = 5e-3
         if np.fabs(self.velocity[0]) < epsilon:
             self.velocity[0] = 0.0
-            self.position[0] += deltaTime*0.0
+            self.position[0] += 0.0
             pass
 
         if np.fabs(self.velocity[1]) < epsilon:
             self.velocity[1] = 0
-            self.position[1] += deltaTime*0
+            self.position[1] += 0
             pass
 
         # Euler integration
@@ -196,9 +196,11 @@ class PolarCamera:
     def __init__(self):
         self.center = np.array([0.0, 0.0, -0.5]) # centro de movimiento de la camara y donde mira la camara
         self.theta = 0                           # coordenada theta, angulo de la camara
-        self.rho = 2                             # coordenada rho, distancia al centro de la camara
+        self.rho = 0.1                             # coordenada rho, distancia al centro de la camara
         self.eye = np.array([0.0, 0.0, 0.0])     # posicion de la camara
         self.height = 2.0                        # altura fija de la camara
+        self.camera_to_up = False                # Posiciona cárama desde arriba
+        self.camera_up = 4.0                     # altura cámara en vista desde arriba
         self.up = np.array([0, 0, 1])            # vector up
         self.viewMatrix = None                   # Matriz de vista
     
@@ -217,9 +219,15 @@ class PolarCamera:
     # Actualizar la matriz de vista
     def update_view(self):
         # Se calcula la posición de la camara con coordenadas poleras relativas al centro
+
         self.eye[0] = self.rho * np.sin(self.theta) + self.center[0]
         self.eye[1] = self.rho * np.cos(self.theta) + self.center[1]
         self.eye[2] = self.height + self.center[2]
+
+        if self.camera_to_up:
+            self.eye[0] = 0
+            self.eye[1] = 0.5
+            self.eye[2] = self.camera_up + self.center[2]
 
         # Se genera la matriz de vista
         viewMatrix = tr.lookAt(

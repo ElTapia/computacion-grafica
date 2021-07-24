@@ -45,8 +45,6 @@ class Controller:
         self.useGravity = False
 
         # Variables para controlar la camara
-        self.is_up_pressed = False
-        self.is_down_pressed = False
         self.is_left_pressed = False
         self.is_right_pressed = False
 
@@ -59,22 +57,8 @@ class Controller:
     def get_camera(self):
         return self.polar_camera
 
-    # Metodo para ller el input del teclado
+    # Metodo para leer el input del teclado
     def on_key(self, window, key, scancode, action, mods):
-
-        # Caso de detectar la tecla [UP], actualiza estado de variable
-        if key == glfw.KEY_UP:
-            if action == glfw.PRESS:
-                self.is_up_pressed = True
-            elif action == glfw.RELEASE:
-                self.is_up_pressed = False
-
-        # Caso de detectar la tecla [DOWN], actualiza estado de variable
-        if key == glfw.KEY_DOWN:
-            if action == glfw.PRESS:
-                self.is_down_pressed = True
-            elif action == glfw.RELEASE:
-                self.is_down_pressed = False
 
         # Caso de detectar la tecla [RIGHT], actualiza estado de variable
         if key == glfw.KEY_RIGHT:
@@ -105,24 +89,24 @@ class Controller:
             if action == glfw.PRESS:
                 self.showAxis = not self.showAxis
 
+        # Activa vista desde arriba
+        if key == glfw.KEY_1:
+            if action == glfw.PRESS:
+                self.polar_camera.camera_to_up = not self.polar_camera.camera_to_up
+
 
     #Funcion que recibe el input para manejar la camara y controlar sus coordenadas
     def update_camera(self, delta):
+
         # Camara rota a la izquierda
-        if self.is_left_pressed:
+        if self.is_left_pressed and not self.polar_camera.camera_to_up:
             self.polar_camera.set_theta(-2 * delta)
 
         # Camara rota a la derecha
-        if self.is_right_pressed:
+        if self.is_right_pressed and not self.polar_camera.camera_to_up:
             self.polar_camera.set_theta( 2 * delta)
-        
-        # Camara se acerca al centro
-        if self.is_up_pressed:
-            self.polar_camera.set_rho(-5 * delta)
 
-        # Camara se aleja del centro
-        if self.is_down_pressed:
-            self.polar_camera.set_rho(5 * delta)
+
 
 # we will use the global controller as communication with the callback function
 controller = Controller()
@@ -224,8 +208,12 @@ if __name__ == "__main__":
     # View and projection
     projection = tr.perspective(60, float(WINDOW_WIDTH)/float(WINDOW_HEIGHT), 0.1, 100)
 
+    epsilon = 5e-3 # tolerancia disparo
+
     # Application loop
     while not glfw.window_should_close(window):
+
+        can_shoot = True # switch para poder lanzar bola blanca
 
         # Measuring performance
         perfMonitor.update(glfw.get_time())
@@ -240,9 +228,6 @@ if __name__ == "__main__":
         deltaTime = perfMonitor.getDeltaTime()
         delta = deltaTime
 
-        if glfw.get_key(window, glfw.KEY_ENTER) == glfw.PRESS:
-            white_ball.velocity = np.array([3.0, -3.0, 0.0])
-
         # Physics!
         for circle in circles:
             # moving each circle
@@ -250,6 +235,17 @@ if __name__ == "__main__":
 
             # checking and processing collisions against the border
             collideWithBorder(circle, BORDER_WIDTH, BORDER_HEIGHT)
+
+            if np.fabs(circle.velocity[0])> epsilon and np.fabs(circle.velocity[1]) > epsilon:
+                can_shoot = False
+
+        if np.fabs(white_ball.velocity[0])> epsilon and np.fabs(white_ball.velocity[1]) > epsilon:
+            can_shoot = False
+
+
+        if glfw.get_key(window, glfw.KEY_ENTER) == glfw.PRESS and can_shoot:
+            white_ball.velocity = np.array([3.0, -3.0, 0.0])
+
 
         white_ball.action(deltaTime, MU, GRAVITY)
         collideWithBorder(white_ball, BORDER_WIDTH, BORDER_HEIGHT)
