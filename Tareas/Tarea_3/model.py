@@ -35,7 +35,7 @@ def createTextureGPUShape(shape, pipeline, path, draw=GL_DYNAMIC_DRAW):
 
 class Circle:
 
-    def __init__(self, pipeline, position, velocity, r, g, b, CIRCLE_DISCRETIZATION, RADIUS):
+    def __init__(self, pipeline, position, velocity, r, g, b, CIRCLE_DISCRETIZATION, RADIUS, texture=None):
         shape = s3d.createColorNormalSphere(CIRCLE_DISCRETIZATION, r, g, b)
 
         # addapting the size of the circle's vertices to have a circle
@@ -44,16 +44,22 @@ class Circle:
         #bs.scaleVertices(shape, 6, (scaleFactor, scaleFactor, scaleFactor))
         self.pipeline = pipeline
         self.gpuShape = createGPUShape(self.pipeline, shape)
+
+        if texture != None:
+            shape = s3d.createTextureNormalSphere(CIRCLE_DISCRETIZATION)
+            self.gpuShape = createTextureGPUShape(shape, self.pipeline, ap.getAssetPath(texture))
+
         self.position = position
         self.radius   = RADIUS
         self.velocity = velocity
+
 
     def action(self, deltaTime, mu, gravity):
 
         epsilon = 1e-3
         if np.fabs(self.velocity[0]) < epsilon:
-            self.velocity[0] = 0
-            self.position[0] += deltaTime*0
+            self.velocity[0] = 0.0
+            self.position[0] += deltaTime*0.0
             pass
 
         if np.fabs(self.velocity[1]) < epsilon:
@@ -103,7 +109,7 @@ class Circle:
     def draw(self, transformName):
         scaleFactor = 2 * self.radius
         glUniformMatrix4fv(glGetUniformLocation(self.pipeline.shaderProgram, transformName), 1, GL_TRUE,
-            tr.matmul([tr.translate(self.position[0], self.position[1], 0.0), tr.uniformScale(scaleFactor)])
+            tr.matmul([tr.translate(self.position[0], self.position[1], 0.0), tr.uniformScale(scaleFactor), tr.rotationZ(np.pi)])
         )
         self.pipeline.drawCall(self.gpuShape)
 

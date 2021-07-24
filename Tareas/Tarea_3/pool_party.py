@@ -195,6 +195,9 @@ if __name__ == "__main__":
 
     positions += first_row + second_row + third_row + fourth_row + fifth_row
 
+    textures = ["1.png", "2.png", "3.png", "4.png", "5.png", "6.png", "7.png", "8.png", "9.png", "10.png",
+                "11.png", "12.png", "13.png", "14.png", "15.png"]
+
     for i in range(1, NUMBER_OF_CIRCLES):
         position = positions[i-1]
         velocity = np.array([
@@ -202,8 +205,8 @@ if __name__ == "__main__":
             0.0,
             0.0
         ])
-        r, g, b = random.uniform(0,1), random.uniform(0,1), random.uniform(0,1)
-        circle = Circle(color_pipeline, position, velocity, r, g, b, CIRCLE_DISCRETIZATION, RADIUS)
+        texture = textures[i-1]
+        circle = Circle(tex_pipeline, position, velocity, 0, 0, 0, CIRCLE_DISCRETIZATION, RADIUS, texture=texture)
         circles += [circle]
 
     white_pos = np.array([0, 0.5, 0])
@@ -249,7 +252,6 @@ if __name__ == "__main__":
             collideWithBorder(circle, BORDER_WIDTH, BORDER_HEIGHT)
 
         white_ball.action(deltaTime, MU, GRAVITY)
-        print(white_ball.velocity)
         collideWithBorder(white_ball, BORDER_WIDTH, BORDER_HEIGHT)
 
         controller.update_camera(delta)
@@ -301,11 +303,7 @@ if __name__ == "__main__":
         glUniformMatrix4fv(glGetUniformLocation(color_pipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
         glUniformMatrix4fv(glGetUniformLocation(color_pipeline.shaderProgram, "view"), 1, GL_TRUE, viewMatrix)
 
-        # drawing all the circles
-        for i in range(len(circles)):
-            circles[i].draw("model")
         white_ball.draw("model")
-
         sg.drawSceneGraphNode(sg.findNode(scene, "Escena con colores"), color_pipeline, "model")
 
 
@@ -332,6 +330,10 @@ if __name__ == "__main__":
 
         glUniformMatrix4fv(glGetUniformLocation(tex_pipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
         glUniformMatrix4fv(glGetUniformLocation(tex_pipeline.shaderProgram, "view"), 1, GL_TRUE, viewMatrix)
+
+        # drawing all the circles
+        for i in range(len(circles)):
+            circles[i].draw("model")
 
         tex_scene = sg.findNode(scene, "Escena con texturas")
         sg.drawSceneGraphNode(tex_scene, tex_pipeline, "model")
