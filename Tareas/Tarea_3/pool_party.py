@@ -198,12 +198,12 @@ if __name__ == "__main__":
     white_ball = Circle(tex_pipeline, white_pos, white_velocity, CIRCLE_DISCRETIZATION, RADIUS, texture="white.png")
 
     holes_radius = RADIUS
-    hole1 = np.array([BORDER_WIDTH, BORDER_HEIGHT, 0])
-    hole2 = np.array([BORDER_WIDTH, -BORDER_HEIGHT, 0])
-    hole3 = np.array([-BORDER_WIDTH, BORDER_HEIGHT, 0])
-    hole4 = np.array([-BORDER_WIDTH, -BORDER_HEIGHT, 0])
-    hole5 = np.array([BORDER_WIDTH,  0, 0])
-    hole6 = np.array([-BORDER_WIDTH, 0, 0])
+    hole1 = np.array([BORDER_WIDTH/2, BORDER_HEIGHT/2, 0])
+    hole2 = np.array([BORDER_WIDTH/2, -BORDER_HEIGHT/2, 0])
+    hole3 = np.array([-BORDER_WIDTH/2, BORDER_HEIGHT/2, 0])
+    hole4 = np.array([-BORDER_WIDTH/2, -BORDER_HEIGHT/2, 0])
+    hole5 = np.array([BORDER_WIDTH/2,  0, 0])
+    hole6 = np.array([-BORDER_WIDTH/2, 0, 0])
     holes_pos = [hole1, hole2, hole3, hole4, hole5, hole6]
 
     scene = create_scene(color_pipeline, tex_pipeline, BORDER_WIDTH, BORDER_HEIGHT, RADIUS)
