@@ -37,6 +37,7 @@ class Circle:
 
     def __init__(self, pipeline, position, velocity, r, g, b, CIRCLE_DISCRETIZATION, RADIUS, texture=None):
         shape = s3d.createColorNormalSphere(CIRCLE_DISCRETIZATION, r, g, b)
+        shadow_shape = bs.createTextureNormalsQuad(1, 1)
 
         # addapting the size of the circle's vertices to have a circle
         # with the desired radius
@@ -199,7 +200,7 @@ class PolarCamera:
         self.rho = 1                             # coordenada rho, distancia al centro de la camara
         self.eye = np.array([0.0, 0.0, 0.0])     # posicion de la camara
         self.height = 2.0                        # altura fija de la camara
-        self.can_shoot = False                   # Activa camara para lanzar bola blanca
+        self.can_shoot = True                   # Activa camara para lanzar bola blanca
         self.camera_to_up = False                # Posiciona cárama desde arriba
         self.camera_up = 4.0                     # altura cámara en vista desde arriba
         self.up = np.array([0, 0, 1])            # vector up

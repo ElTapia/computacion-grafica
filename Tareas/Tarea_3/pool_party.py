@@ -195,8 +195,7 @@ if __name__ == "__main__":
 
     white_pos = np.array([0, 0.5, 0])
     white_velocity = np.array([0.0, 0.0, 0.0])
-    white_r, white_g, white_b = 1, 1, 1
-    white_ball = Circle(color_pipeline, white_pos, white_velocity, white_r, white_g, white_b, CIRCLE_DISCRETIZATION, RADIUS)
+    white_ball = Circle(tex_pipeline, white_pos, white_velocity, 0,0,0, CIRCLE_DISCRETIZATION, RADIUS, texture="white.png")
 
     scene = create_scene(color_pipeline, tex_pipeline, BORDER_WIDTH, BORDER_HEIGHT, RADIUS)
 
@@ -236,10 +235,10 @@ if __name__ == "__main__":
             # checking and processing collisions against the border
             collideWithBorder(circle, BORDER_WIDTH, BORDER_HEIGHT)
 
-            if np.fabs(circle.velocity[0])> epsilon and np.fabs(circle.velocity[1]) > epsilon:
+            if np.fabs(circle.velocity[0])> epsilon or np.fabs(circle.velocity[1]) > epsilon:
                 can_shoot = False
 
-        if np.fabs(white_ball.velocity[0])> epsilon and np.fabs(white_ball.velocity[1]) > epsilon:
+        if np.fabs(white_ball.velocity[0])> epsilon or np.fabs(white_ball.velocity[1]) > epsilon:
             can_shoot = False
 
         if glfw.get_key(window, glfw.KEY_ENTER) == glfw.PRESS and can_shoot:
@@ -300,7 +299,6 @@ if __name__ == "__main__":
         glUniformMatrix4fv(glGetUniformLocation(color_pipeline.shaderProgram, "projection"), 1, GL_TRUE, projection)
         glUniformMatrix4fv(glGetUniformLocation(color_pipeline.shaderProgram, "view"), 1, GL_TRUE, viewMatrix)
 
-        white_ball.draw("model")
         sg.drawSceneGraphNode(sg.findNode(scene, "Escena con colores"), color_pipeline, "model")
 
 
@@ -332,6 +330,7 @@ if __name__ == "__main__":
         for i in range(len(circles)):
             circles[i].draw("model")
 
+        white_ball.draw("model")
         tex_scene = sg.findNode(scene, "Escena con texturas")
         sg.drawSceneGraphNode(tex_scene, tex_pipeline, "model")
 
