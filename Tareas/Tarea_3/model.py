@@ -35,20 +35,16 @@ def createTextureGPUShape(shape, pipeline, path, draw=GL_DYNAMIC_DRAW):
 
 class Circle:
 
-    def __init__(self, pipeline, position, velocity, r, g, b, CIRCLE_DISCRETIZATION, RADIUS, texture=None):
-        shape = s3d.createColorNormalSphere(CIRCLE_DISCRETIZATION, r, g, b)
+    def __init__(self, pipeline, position, velocity, CIRCLE_DISCRETIZATION, RADIUS, texture):
+        shape = s3d.createTextureNormalSphere(CIRCLE_DISCRETIZATION)
         shadow_shape = bs.createTextureNormalsQuad(1, 1)
 
         # addapting the size of the circle's vertices to have a circle
         # with the desired radius
 
-        #bs.scaleVertices(shape, 6, (scaleFactor, scaleFactor, scaleFactor))
         self.pipeline = pipeline
-        self.gpuShape = createGPUShape(self.pipeline, shape)
-
-        if texture != None:
-            shape = s3d.createTextureNormalSphere(CIRCLE_DISCRETIZATION)
-            self.gpuShape = createTextureGPUShape(shape, self.pipeline, ap.getAssetPath(texture))
+        self.gpuShape = createTextureGPUShape(shape, self.pipeline, ap.getAssetPath(texture))
+        self.gpuShadowShape = createTextureGPUShape(shadow_shape, self.pipeline, ap.getAssetPath("8.png")) #Cambiar sombra
 
         self.position = position
         self.radius   = RADIUS
@@ -113,6 +109,11 @@ class Circle:
             tr.matmul([tr.translate(self.position[0], self.position[1], 0.0), tr.uniformScale(scaleFactor), tr.rotationZ(np.pi)])
         )
         self.pipeline.drawCall(self.gpuShape)
+
+        glUniformMatrix4fv(glGetUniformLocation(self.pipeline.shaderProgram, transformName), 1, GL_TRUE,
+            tr.matmul([tr.translate(self.position[0], self.position[1], -self.radius+0.001), tr.uniformScale(scaleFactor)])
+        )
+        self.pipeline.drawCall(self.gpuShadowShape)
 
 
 def rotate2D(vector, theta):

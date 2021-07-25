@@ -190,12 +190,12 @@ if __name__ == "__main__":
             0.0
         ])
         texture = textures[i-1]
-        circle = Circle(tex_pipeline, position, velocity, 0, 0, 0, CIRCLE_DISCRETIZATION, RADIUS, texture=texture)
+        circle = Circle(tex_pipeline, position, velocity, CIRCLE_DISCRETIZATION, RADIUS, texture=texture)
         circles += [circle]
 
     white_pos = np.array([0, 0.5, 0])
     white_velocity = np.array([0.0, 0.0, 0.0])
-    white_ball = Circle(tex_pipeline, white_pos, white_velocity, 0,0,0, CIRCLE_DISCRETIZATION, RADIUS, texture="white.png")
+    white_ball = Circle(tex_pipeline, white_pos, white_velocity, CIRCLE_DISCRETIZATION, RADIUS, texture="white.png")
 
     scene = create_scene(color_pipeline, tex_pipeline, BORDER_WIDTH, BORDER_HEIGHT, RADIUS)
 
@@ -207,7 +207,7 @@ if __name__ == "__main__":
     # View and projection
     projection = tr.perspective(60, float(WINDOW_WIDTH)/float(WINDOW_HEIGHT), 0.1, 100)
 
-    epsilon = 1e-2 # tolerancia disparo
+    epsilon = 1e-1 # tolerancia disparo
 
     # Application loop
     while not glfw.window_should_close(window):
@@ -227,6 +227,12 @@ if __name__ == "__main__":
         deltaTime = perfMonitor.getDeltaTime()
         delta = deltaTime
 
+        controller.update_camera(delta)
+        camera = controller.get_camera()
+        viewMatrix = camera.update_view(white_ball.position)
+
+        camera.can_shoot = can_shoot
+
         # Physics!
         for circle in circles:
             # moving each circle
@@ -242,17 +248,14 @@ if __name__ == "__main__":
             can_shoot = False
 
         if glfw.get_key(window, glfw.KEY_ENTER) == glfw.PRESS and can_shoot:
-            white_ball.velocity = np.array([3.0, -3.0, 0.0])
+            forward_vector = (camera.center - camera.eye)/np.linalg.norm(camera.center - camera.eye)
+
+            force = 3
+            white_ball.velocity = np.array([force*forward_vector[0], force*forward_vector[1], 0.0])
 
 
         white_ball.action(deltaTime, MU, GRAVITY)
         collideWithBorder(white_ball, BORDER_WIDTH, BORDER_HEIGHT)
-
-        controller.update_camera(delta)
-        camera = controller.get_camera()
-        viewMatrix = camera.update_view(white_ball.position)
-
-        camera.can_shoot = can_shoot
 
         # checking and processing collisions among circles
         for i in range(len(circles)):
