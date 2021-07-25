@@ -139,8 +139,8 @@ if __name__ == "__main__":
     glBindVertexArray(VAO)
 
     # Creating our shader program and telling OpenGL to use it
-    color_pipeline = ls.SimplePhongDirectionalShaderProgram()
-    tex_pipeline = ls.SimplePhongTextureDirectionalShaderProgram()
+    color_pipeline = ls.MultiplePhongShaderProgram()
+    tex_pipeline = ls.MultipleTexturePhongShaderProgram()
 
     # Setting up the clear screen color
     glClearColor(0.15, 0.15, 0.15, 1.0)
@@ -218,6 +218,18 @@ if __name__ == "__main__":
 
     epsilon = 1e-1 # tolerancia disparo
 
+    spotConcentration = 8
+    spot_dir = [0, 0, -1]
+    light_pos1 = [0, -3.5, 5] 
+    light_pos2 = [0, 2.5, 5] 
+    
+    Ld1 = [0.7, 0.7, 0.7]
+    Ld2 = [0.7, 0.7, 0.7]
+    
+    Ls1 = [1.0, 1.0, 1.0]
+    Ls2 = [1.0, 1.0, 1.0]
+    
+
     # Application loop
     while not glfw.window_should_close(window):
 
@@ -292,16 +304,25 @@ if __name__ == "__main__":
         # Drawing (no texture)
         glUseProgram(color_pipeline.shaderProgram)
 
+        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "spotDirection1"), spot_dir[0], spot_dir[1], spot_dir[2])
+        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "spotDirection2"), spot_dir[0], spot_dir[1], spot_dir[2])
+
+        glUniform1f(glGetUniformLocation(color_pipeline.shaderProgram, "spotConcentration"), spotConcentration)
+    
         glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "La"), 0.7, 0.7, 0.7)
-        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "Ld"), 0.7, 0.7, 0.7)
-        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "Ls"), 1.0, 1.0, 1.0)
+
+        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "Ld1"), Ld1[0], Ld1[1], Ld1[2])
+        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "Ld2"), Ld2[0], Ld2[1], Ld2[2])
+
+        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "Ls1"), Ls1[0], Ls1[1], Ls1[2])
+        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "Ls2"), Ls2[0], Ls2[1], Ls2[2])
 
         glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "Ka"), 0.7, 0.7, 0.7)
         glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "Kd"), 0.7, 0.7, 0.7)
         glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "Ks"), 1.0, 1.0, 1.0)
 
-        # Se entrega el vector con la direccion de la luz direccional
-        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "lightDirection"),  0, 0, -1)
+        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "lightPosition0"), 0, -1, 50)
+        glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "lightPosition1"), 0, 1, 50)
         
         glUniform3f(glGetUniformLocation(color_pipeline.shaderProgram, "viewPosition"), camera.get_eye()[0], camera.get_eye()[1], camera.get_eye()[2])
         glUniform1ui(glGetUniformLocation(color_pipeline.shaderProgram, "shininess"), 100)
@@ -319,16 +340,25 @@ if __name__ == "__main__":
         # Drawing (texture)
         glUseProgram(tex_pipeline.shaderProgram)
 
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "spotDirection1"), spot_dir[0], spot_dir[1], spot_dir[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "spotDirection2"), spot_dir[0], spot_dir[1], spot_dir[2])
+
+        glUniform1f(glGetUniformLocation(tex_pipeline.shaderProgram, "spotConcentration"), spotConcentration)
+    
         glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "La"), 0.7, 0.7, 0.7)
-        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ld"), 0.7, 0.7, 0.7)
-        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ls"), 1.0, 1.0, 1.0)
+
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ld1"), Ld1[0], Ld1[1], Ld1[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ld2"), Ld2[0], Ld2[1], Ld2[2])
+
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ls1"), Ls1[0], Ls1[1], Ls1[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ls2"), Ls2[0], Ls2[1], Ls2[2])
 
         glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ka"), 0.7, 0.7, 0.7)
         glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Kd"), 0.7, 0.7, 0.7)
         glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "Ks"), 1.0, 1.0, 1.0)
 
-        # Se entrega el vector con la direccion de la luz direccional
-        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "lightDirection"),  0, 0, -1)
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "lightPosition0"), light_pos1[0], light_pos1[1], light_pos1[2])
+        glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "lightPosition1"), light_pos2[0], light_pos2[1], light_pos2[2])
         
         glUniform3f(glGetUniformLocation(tex_pipeline.shaderProgram, "viewPosition"), camera.get_eye()[0], camera.get_eye()[1], camera.get_eye()[2])
         glUniform1ui(glGetUniformLocation(tex_pipeline.shaderProgram, "shininess"), 100)

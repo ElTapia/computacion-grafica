@@ -152,10 +152,10 @@ def collide(circle1, circle2, c):
 
         # Projecting the velocity vector over the normal and tangent directions
         # for both circles, 1 and 2.
-        v1n = np.dot(circle1.velocity, normal) * normal
+        v1n = np.dot(circle1.velocity, normal) * normal + 0.001
         v1t = np.dot(circle1.velocity, tangent) * tangent
 
-        v2n = np.dot(circle2.velocity, normal) * normal
+        v2n = np.dot(circle2.velocity, normal) * normal + 0.001
         v2t = np.dot(circle2.velocity, tangent) * tangent
 
         # swaping the normal components...
