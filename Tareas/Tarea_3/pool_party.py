@@ -197,6 +197,15 @@ if __name__ == "__main__":
     white_velocity = np.array([0.0, 0.0, 0.0])
     white_ball = Circle(tex_pipeline, white_pos, white_velocity, CIRCLE_DISCRETIZATION, RADIUS, texture="white.png")
 
+    holes_radius = RADIUS
+    hole1 = np.array([BORDER_WIDTH, BORDER_HEIGHT, 0])
+    hole2 = np.array([BORDER_WIDTH, -BORDER_HEIGHT, 0])
+    hole3 = np.array([-BORDER_WIDTH, BORDER_HEIGHT, 0])
+    hole4 = np.array([-BORDER_WIDTH, -BORDER_HEIGHT, 0])
+    hole5 = np.array([BORDER_WIDTH,  0, 0])
+    hole6 = np.array([-BORDER_WIDTH, 0, 0])
+    holes_pos = [hole1, hole2, hole3, hole4, hole5, hole6]
+
     scene = create_scene(color_pipeline, tex_pipeline, BORDER_WIDTH, BORDER_HEIGHT, RADIUS)
 
     perfMonitor = pm.PerformanceMonitor(glfw.get_time(), 0.5)
@@ -240,6 +249,8 @@ if __name__ == "__main__":
 
             # checking and processing collisions against the border
             collideWithBorder(circle, BORDER_WIDTH, BORDER_HEIGHT)
+            for hole in holes_pos:
+                collideWithHole(circles, circle, hole, holes_radius)
 
             if np.fabs(circle.velocity[0])> epsilon or np.fabs(circle.velocity[1]) > epsilon:
                 can_shoot = False

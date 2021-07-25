@@ -172,10 +172,15 @@ def areColliding(circle1, circle2):
     collisionDistance = circle2.radius + circle1.radius
     return distance < collisionDistance
 
+def collideWithHole(circles, circle, point, radius):
+    d = np.linalg.norm(circle.position - point)
+    if d < circle.radius + radius:
+        circles.remove(circle)
+
 
 def collideWithBorder(circle, border_width, border_height):
 
-    offset = 0.05
+    offset = 0.028875
     # Right
     if circle.position[0] + circle.radius > border_width/2-offset:
         circle.velocity[0] = -abs(circle.velocity[0])
