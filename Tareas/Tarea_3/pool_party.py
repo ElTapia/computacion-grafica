@@ -197,13 +197,14 @@ if __name__ == "__main__":
     white_velocity = np.array([0.0, 0.0, 0.0])
     white_ball = Circle(tex_pipeline, white_pos, white_velocity, CIRCLE_DISCRETIZATION, RADIUS, texture="white.png")
 
+    offset = 0.1
     holes_radius = RADIUS
-    hole1 = np.array([BORDER_WIDTH/2, BORDER_HEIGHT/2, 0])
-    hole2 = np.array([BORDER_WIDTH/2, -BORDER_HEIGHT/2, 0])
-    hole3 = np.array([-BORDER_WIDTH/2, BORDER_HEIGHT/2, 0])
-    hole4 = np.array([-BORDER_WIDTH/2, -BORDER_HEIGHT/2, 0])
-    hole5 = np.array([BORDER_WIDTH/2,  0, 0])
-    hole6 = np.array([-BORDER_WIDTH/2, 0, 0])
+    hole1 = np.array([BORDER_WIDTH/2-offset, BORDER_HEIGHT/2-offset, 0])
+    hole2 = np.array([BORDER_WIDTH/2-offset, -BORDER_HEIGHT/2+offset, 0])
+    hole3 = np.array([-BORDER_WIDTH/2+offset, BORDER_HEIGHT/2-offset, 0])
+    hole4 = np.array([-BORDER_WIDTH/2+offset, -BORDER_HEIGHT/2+offset, 0])
+    hole5 = np.array([BORDER_WIDTH/2-offset,  0, 0])
+    hole6 = np.array([-BORDER_WIDTH/2+offset, 0, 0])
     holes_pos = [hole1, hole2, hole3, hole4, hole5, hole6]
 
     scene = create_scene(color_pipeline, tex_pipeline, BORDER_WIDTH, BORDER_HEIGHT, RADIUS)
@@ -292,7 +293,10 @@ if __name__ == "__main__":
 
         # Clearing the screen
         glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT)
+        # Enabling transparencies
 
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         glEnable(GL_DEPTH_TEST)
 
         # Filling or not the shapes depending on the controller state

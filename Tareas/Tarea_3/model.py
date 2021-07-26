@@ -37,14 +37,14 @@ class Circle:
 
     def __init__(self, pipeline, position, velocity, CIRCLE_DISCRETIZATION, RADIUS, texture):
         shape = s3d.createTextureNormalSphere(CIRCLE_DISCRETIZATION)
-        shadow_shape = bs.createTextureNormalsQuad(1, 1)
+        shadow_shape = bs.createTextureNormalsPlane("sombra.png")
 
         # addapting the size of the circle's vertices to have a circle
         # with the desired radius
 
         self.pipeline = pipeline
         self.gpuShape = createTextureGPUShape(shape, self.pipeline, ap.getAssetPath(texture))
-        self.gpuShadowShape = createTextureGPUShape(shadow_shape, self.pipeline, ap.getAssetPath("8.png")) #Cambiar sombra
+        self.gpuShadowShape = createTextureGPUShape(shadow_shape, self.pipeline, ap.getAssetPath("sombra.png")) #Cambiar sombra
 
         self.position = position
         self.radius   = RADIUS
@@ -111,7 +111,7 @@ class Circle:
         self.pipeline.drawCall(self.gpuShape)
 
         glUniformMatrix4fv(glGetUniformLocation(self.pipeline.shaderProgram, transformName), 1, GL_TRUE,
-            tr.matmul([tr.translate(self.position[0], self.position[1], -self.radius+0.001), tr.uniformScale(scaleFactor)])
+            tr.matmul([tr.translate(self.position[0], self.position[1], -self.radius+0.001-0.5), tr.uniformScale(scaleFactor)])
         )
         self.pipeline.drawCall(self.gpuShadowShape)
 

@@ -37,9 +37,11 @@ def textureSimpleSetup(imgName, sWrapMode, tWrapMode, minFilterMode, maxFilterMo
     if image.mode == "RGB":
         internalFormat = GL_RGB
         format = GL_RGB
+
     elif image.mode == "RGBA":
         internalFormat = GL_RGBA
         format = GL_RGBA
+
     else:
         print("Image mode not supported.")
         raise Exception()
