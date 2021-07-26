@@ -53,6 +53,8 @@ class Controller:
         self.polar_camera = PolarCamera()
         ###########################################################
 
+        self.heatMap = False
+
     # Entregar la referencia a la camara
     def get_camera(self):
         return self.polar_camera
@@ -93,6 +95,11 @@ class Controller:
         if key == glfw.KEY_1:
             if action == glfw.PRESS:
                 self.polar_camera.camera_to_up = not self.polar_camera.camera_to_up
+
+        # Activa el heatMAp
+        if key == glfw.KEY_TAB:
+            if action == glfw.PRESS:
+                controller.heatMap = not controller.heatMap
 
 
     #Funcion que recibe el input para manejar la camara y controlar sus coordenadas
@@ -140,7 +147,10 @@ if __name__ == "__main__":
 
     # Creating our shader program and telling OpenGL to use it
     color_pipeline = ls.MultiplePhongShaderProgram()
-    tex_pipeline = ls.MultipleTexturePhongShaderProgram()
+    normal_tex_pipeline = ls.MultipleTexturePhongShaderProgram()
+    heatMap_tex_pipeline = ls.HeatMapTexturePhongShaderProgram()
+
+    tex_pipeline = normal_tex_pipeline
 
     # Setting up the clear screen color
     glClearColor(0.15, 0.15, 0.15, 1.0)
@@ -222,7 +232,7 @@ if __name__ == "__main__":
     spotConcentration = 8
     spot_dir = [0, 0, -1]
     light_pos1 = [0, -3.5, 5] 
-    light_pos2 = [0, 2.5, 5] 
+    light_pos2 = [0, 1.5, 3.2] 
     
     Ld1 = [0.7, 0.7, 0.7]
     Ld2 = [0.7, 0.7, 0.7]
@@ -242,6 +252,12 @@ if __name__ == "__main__":
 
         # Using GLFW to check for input events
         glfw.poll_events()
+
+        # Activa heatMap
+        if controller.heatMap:
+            tex_pipeline = heatMap_tex_pipeline
+        else:
+            tex_pipeline = normal_tex_pipeline
 
         # Using the time as the t parameter
         t = glfw.get_time()

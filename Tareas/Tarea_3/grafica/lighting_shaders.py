@@ -1256,3 +1256,176 @@ class MultipleTexturePhongShaderProgram:
 
         # Unbind the current VAO
         glBindVertexArray(0)
+
+
+# Shader con heatmap para texturas con multiples spotlights usando phong
+class HeatMapTexturePhongShaderProgram:
+
+    def __init__(self):
+        vertex_shader = """
+            #version 330 core
+
+            in vec3 position;
+            in vec2 texCoords;
+            in vec3 normal;
+
+            out vec3 fragPosition;
+            out vec2 fragTexCoords;
+            out vec3 fragNormal;
+
+            uniform mat4 model;
+            uniform mat4 view;
+            uniform mat4 projection;
+
+            void main()
+            {
+                fragPosition = vec3(model * vec4(position, 1.0));
+                fragTexCoords = texCoords;
+                fragNormal = mat3(transpose(inverse(model))) * normal;  
+                
+                gl_Position = projection * view * vec4(fragPosition, 1.0);
+            }
+            """
+
+        fragment_shader = """
+            #version 330 core
+
+            in vec3 fragNormal;
+            in vec3 fragPosition;
+            in vec2 fragTexCoords;
+
+            out vec4 fragColor;
+
+            uniform vec3 lightPosition0; 
+            uniform vec3 lightPosition1;
+
+            uniform vec3 spotDirection1;
+            uniform vec3 spotDirection2;
+
+            uniform float spotConcentration;
+
+            uniform vec3 viewPosition; 
+            uniform vec3 La;
+
+            uniform vec3 Ld1;
+            uniform vec3 Ld2;
+
+            uniform vec3 Ls1;
+            uniform vec3 Ls2;
+
+            uniform vec3 Ka;
+            uniform vec3 Kd;
+            uniform vec3 Ks;
+            uniform uint shininess;
+            uniform float constantAttenuation;
+            uniform float linearAttenuation;
+            uniform float quadraticAttenuation;
+
+            // Niveles de discretizacion
+            const float levels = 4.0;
+
+            uniform sampler2D samplerTex;
+
+            void main()
+            {
+                // ambient
+                vec3 ambient = Ka * La;
+                
+                // diffuse
+                // fragment normal has been interpolated, so it does not necessarily have norm equal to 1
+                vec3 normalizedNormal = normalize(fragNormal);
+
+                vec3 result = vec3(0.0f, 0.0f, 0.0f);
+                vec3 lights[2] = vec3[](lightPosition0, lightPosition1);
+                vec3 spotDirections[2] = vec3[](spotDirection1, spotDirection2);
+                vec3 Ld[2] = vec3[](Ld1, Ld2);
+                vec3 Ls[2] = vec3[](Ls1, Ls2);
+
+                float distToLight;
+
+                for (int i = 0; i < 2; i++){
+                    vec3 toLight = lights[i] - fragPosition;
+                    vec3 lightDir = normalize(toLight);
+                    float diff = max(dot(normalizedNormal, lightDir), 0.0);
+
+                    vec3 diffuse = Kd * Ld[i] * diff;
+
+                    // specular
+                    vec3 viewDir = normalize(viewPosition - fragPosition);
+                    vec3 reflectDir = reflect(-lightDir, normalizedNormal);  
+                    float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+
+                    vec3 specular = Ks * Ls[i] * spec;
+
+                    // attenuation
+                    distToLight = length(toLight);
+                    float attenuation = constantAttenuation
+                        + linearAttenuation * distToLight
+                        + quadraticAttenuation * distToLight * distToLight;
+
+                    result += ((diffuse + specular) *  pow(max(dot(-spotDirections[i], lightDir), 0), spotConcentration)/ attenuation);
+                }
+
+                vec4 fragOriginalColor = texture(samplerTex, fragTexCoords);
+
+                result = (ambient + result) * fragOriginalColor.rgb;
+                
+                if ( 0<=distToLight && distToLight < 3.5){
+                    fragColor = vec4(1.0, 0.0, 0.0, 1.0);
+                }
+                else if ( 3.5<=distToLight && distToLight < 5.5){
+                    fragColor = vec4(1.0, 1.0, 0.0, 1.0);
+                }
+                
+                else if ( 5.5<=distToLight && distToLight < 7.5){
+                    fragColor = vec4(0.0, 1.0, 0.0, 1.0);
+                }
+                
+                else if ( 7.5<=distToLight && distToLight < 9.5){
+                    fragColor = vec4(0.0, 1.0, 1.0, 1.0);
+                }
+                else{
+                    fragColor = vec4(0.0, 0.0, 1.0, 1.0);
+                }
+            }
+            """
+
+        self.shaderProgram = OpenGL.GL.shaders.compileProgram(
+            OpenGL.GL.shaders.compileShader(vertex_shader, OpenGL.GL.GL_VERTEX_SHADER),
+            OpenGL.GL.shaders.compileShader(fragment_shader, OpenGL.GL.GL_FRAGMENT_SHADER))
+
+    def setupVAO(self, gpuShape):
+
+        glBindVertexArray(gpuShape.vao)
+
+        glBindBuffer(GL_ARRAY_BUFFER, gpuShape.vbo)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gpuShape.ebo)
+
+        # 3d vertices + rgb color + 3d normals => 3*4 + 2*4 + 3*4 = 32 bytes
+        position = glGetAttribLocation(self.shaderProgram, "position")
+        glVertexAttribPointer(position, 3, GL_FLOAT, GL_FALSE, 32, ctypes.c_void_p(0))
+        glEnableVertexAttribArray(position)
+        
+        color = glGetAttribLocation(self.shaderProgram, "texCoords")
+        glVertexAttribPointer(color, 2, GL_FLOAT, GL_FALSE, 32, ctypes.c_void_p(12))
+        glEnableVertexAttribArray(color)
+
+        normal = glGetAttribLocation(self.shaderProgram, "normal")
+        glVertexAttribPointer(normal, 3, GL_FLOAT, GL_FALSE, 32, ctypes.c_void_p(20))
+        glEnableVertexAttribArray(normal)
+
+        # Unbinding current vao
+        glBindVertexArray(0)
+
+
+    def drawCall(self, gpuShape, mode=GL_TRIANGLES):
+        assert isinstance(gpuShape, GPUShape)
+
+        # Binding the VAO and executing the draw call
+        glBindVertexArray(gpuShape.vao)
+        glBindTexture(GL_TEXTURE_2D, gpuShape.texture)
+
+        glDrawElements(mode, gpuShape.size, GL_UNSIGNED_INT, None)
+
+        # Unbind the current VAO
+        glBindVertexArray(0)
