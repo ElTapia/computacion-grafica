@@ -305,9 +305,6 @@ def create_scene(color_pipeline, tex_pipeline, width, height, radius):
     brown_cube = bs.createColorNormalsCube(0.4, 0.24, 0.16)
     gpu_brown_cube = createGPUShape(color_pipeline, brown_cube, GL_STATIC_DRAW)
 
-    red_cube = bs.createColorNormalsCube(0.5, 0.2, 0.16)
-    gpu_red_cube = createGPUShape(color_pipeline, red_cube, GL_STATIC_DRAW)
-
     table_png = bs.createTextureNormalsPlane("mesa.png")
     gpu_table_png = createTextureGPUShape(table_png, tex_pipeline, ap.getAssetPath("mesa.png"))
 
@@ -317,19 +314,19 @@ def create_scene(color_pipeline, tex_pipeline, width, height, radius):
 
     borde1_node =  sg.SceneGraphNode("borde 1")
     borde1_node.transform = tr.matmul([tr.translate(0, height/2 + radius + 0.03, -0.15), tr.scale(width, height/20, 0.4)])
-    borde1_node.childs += [gpu_red_cube]
+    borde1_node.childs += [gpu_brown_cube]
 
     borde2_node =  sg.SceneGraphNode("borde 2")
     borde2_node.transform = tr.matmul([tr.translate(0, -height/2 - radius - 0.03, -0.15), tr.scale(width, height/20, 0.4)])
-    borde2_node.childs += [gpu_red_cube]
+    borde2_node.childs += [gpu_brown_cube]
 
     borde3_node =  sg.SceneGraphNode("borde 3")
     borde3_node.transform = tr.matmul([tr.translate(-width/2 - radius - 0.03, 0, -0.15), tr.scale(height/20, height+0.255, 0.4)])
-    borde3_node.childs += [gpu_red_cube]
+    borde3_node.childs += [gpu_brown_cube]
 
     borde4_node =  sg.SceneGraphNode("borde 4")
     borde4_node.transform = tr.matmul([tr.translate(width/2 + radius + 0.03, 0, -0.15), tr.scale(height/20, height+0.255, 0.4)])
-    borde4_node.childs += [gpu_red_cube]
+    borde4_node.childs += [gpu_brown_cube]
 
     borders_node = sg.SceneGraphNode("bordes")
     borders_node.childs += [borde1_node, borde2_node, borde3_node, borde4_node]
@@ -338,14 +335,14 @@ def create_scene(color_pipeline, tex_pipeline, width, height, radius):
     table_cover_node = sg.SceneGraphNode("recubrimiento mesa")
     table_cover_node.childs += [gpu_table_png]
 
-    scaled_table = sg.SceneGraphNode("mesa escalada")
-    scaled_table.transform = tr.matmul([tr.translate(0, 0, -radius-0.25), tr.scale(width, height, 0.5)])
-    scaled_table.childs += [table_cover_node]
+    scaled_table_cover = sg.SceneGraphNode("recubrimiento mesa escalada")
+    scaled_table_cover.transform = tr.matmul([tr.translate(0, 0, -radius-0.25), tr.scale(width, height, 0.5)])
+    scaled_table_cover.childs += [table_cover_node]
 
     skybox = create_skybox(tex_pipeline)
 
     tex_scene = sg.SceneGraphNode("Escena con texturas")
-    tex_scene.childs += [scaled_table, skybox]
+    tex_scene.childs += [scaled_table_cover, skybox]
 
     color_scene = sg.SceneGraphNode("Escena con colores")
     color_scene.childs += [table_node, borders_node]
