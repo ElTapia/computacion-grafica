@@ -1,5 +1,5 @@
 # coding=utf-8
-"""Circles, collisions and gravity"""
+"""Tarea 3b: Pool party"""
 
 import glfw
 from OpenGL.GL import *
@@ -17,7 +17,7 @@ import grafica.performance_monitor as pm
 import grafica.scene_graph as sg
 from model import *
 
-__author__ = "Daniel Calderon"
+__author__ = "Sebastián Tapia"
 __license__ = "MIT"
 
 # Parameters
@@ -125,7 +125,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Creating a glfw window
-    title = "Circles, collisions and gravity"
+    title = "Pool party"
     glfw.window_hint(glfw.CONTEXT_VERSION_MAJOR, 4)
     glfw.window_hint(glfw.CONTEXT_VERSION_MINOR, 1)
     glfw.window_hint(glfw.OPENGL_FORWARD_COMPAT, GL_TRUE)
