@@ -86,11 +86,6 @@ class Controller:
             if action == glfw.PRESS:
                 glfw.set_window_should_close(window, True)
 
-        # Caso de detectar Control izquierdo, se cambia el metodo de dibujo
-        elif key == glfw.KEY_LEFT_CONTROL:
-            if action == glfw.PRESS:
-                self.showAxis = not self.showAxis
-
         # Activa vista desde arriba
         if key == glfw.KEY_1:
             if action == glfw.PRESS:
