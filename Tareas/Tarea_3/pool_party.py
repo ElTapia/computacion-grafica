@@ -36,7 +36,7 @@ BORDER_HEIGHT = 2.74
 GRAVITY = 0.98
 
 MU = params["friccion"]
-C = params["restitución"]
+C = params["restitucion"]
 
 # A class to store the application control
 class Controller:
